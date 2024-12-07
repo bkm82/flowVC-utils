@@ -1,10 +1,13 @@
 import vtk
 import numpy as np
 import sys
-import logging
+import logging.config
+import logging.handlers
+from .jsonlogger import settup_logging
 import argparse
+import os
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("bragbrag")
 
 
 def reader_selection(extension):
@@ -182,7 +185,7 @@ def vtk_to_connectivity_and_coordinates(
 
     logger.info(f"{connectivity.n_elements} elements, connectivity file saved")
 
-    logger.info("Finding adjacency:"),
+    logger.info("Finding adjacency:")
     adjacency = adjacency_file(data)
     adjacency.create_file()
     adjacency.save_file(output_root, offset)
@@ -246,50 +249,77 @@ def vtk_to_bin(
         fout.close()
 
 
-def main():
+def main(root, output, file_name, extension, start, stop, increment):
     """Create binary files from vtu files for FlowVC.
 
     Reference https://shaddenlab.berkeley.edu/uploads/releasenotes.pdf
     """
-    # root_dir = "../../../../Data/CFD-Solutions/Interpolated-File-Series/"
-    # output_dir = "../../../../Data/CFD-Solutions/Bin-File-Series/"
-    root_dir = "/home/bkm82/masters/ECMO/Data/CFD-Solutions/Interpolated-File-Series/"
-    output_dir = "/home/bkm82/masters/ECMO/Data/CFD-Solutions/Bin-File-Series/"
 
     vtk_to_connectivity_and_coordinates(
-        root_dir + "interpolated_velocity_rotated_0.vtu",
-        output_dir + "interpolated_velocity_roated",
+        os.path.join(root, f"{file_name}_{start}{extension}"),
+        os.path.join(output, file_name),
         offset=0,
-        extension=".vtu",
+        extension=extension,
     )
 
     vtk_to_bin(
-        root_dir + "interpolated_velocity_rotated_",
-        output_dir + "interpolated_velocity_rotated",
-        0,
-        19,
-        1,
-        fieldname="Velocity_No_Slip",
+        os.path.join(root, file_name),
+        os.path.join(output, file_name),
+        start,
+        stop,
+        increment,
+        fieldname="Velocity",
         n_components=3,
         file_num_digits=1,
         n_pad_values=1,
-        flag_fenics_zeros=0,  # if 1, then adds zeros similar to Fenics adding zeros to the end of the file name
-        extension=".vtu",
+        flag_fenics_zeros=0,  # if 1, then adds zeros similar to finix
+        extension=extension,
     )
 
 
 if __name__ == "__main__":
+    settup_logging()
     # Parse a CLI flag to enable setting the log level from the CLI
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Process VTU files to a .bin format.")
     parser.add_argument(
-        "-log",
-        "--loglevel",
-        dest="loglevel",
-        default="INFO",
-        help="select the log level (DEBUG, INFO, WARNING, CRITICAL)",
+        "--root",
+        default=os.getcwd(),
+        help="input directory with the VTU files (default: current directory).",
+    )
+    parser.add_argument(
+        "--output",
+        default=os.getcwd(),
+        help="Output directory (default: current directory).",
+    )
+    parser.add_argument(
+        "file_name", type=str, help="Base file name for processing files (required)."
+    )
+    parser.add_argument(
+        "--extension",
+        type=str,
+        default=".vtu",
+        help="File extension (default: '.vtu').",
+    )
+    parser.add_argument(
+        "start",
+        required=True,
+        help="starting index for the processing files (required)",
+    )
+    parser.add_argument(
+        "stop", required=True, help="stopping index for the processing files (required)"
+    )
+    parser.add_argument(
+        "--increment", default=1, help="increment between each vtu file (required)"
     )
 
     args = parser.parse_args()
-    loglevel = args.loglevel
-    logging.basicConfig(level=loglevel)
-    main()
+
+    main(
+        args.root,
+        args.output,
+        args.file_name,
+        args.extension,
+        args.start,
+        args.stop,
+        args.increment,
+    )

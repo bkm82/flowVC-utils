@@ -1,10 +1,8 @@
 import vtk
 import pytest
-import numpy as np
 from unittest.mock import MagicMock
 from flowvcutils.vtu_2_bin import reader_selection
 from flowvcutils.vtu_2_bin import coordinates_file
-from flowvcutils.vtu_2_bin import connectivity_file
 
 
 @pytest.mark.parametrize(
