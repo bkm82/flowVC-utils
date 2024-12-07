@@ -1,11 +1,10 @@
-import flowvcutils
 from flowvcutils.main import bray_add
 import pytest
 
 
 def test_bray_add():
     expected = 8
-    actual = flowvcutils.main.bray_add(3, 5)
+    actual = bray_add(3, 5)
     assert expected == actual
 
 
