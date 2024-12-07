@@ -3,6 +3,7 @@ import json
 import logging
 import pathlib
 import argparse
+from typing import Dict, Optional
 
 LOG_RECORD_BUILTIN_ATTRS = {
     "args",
@@ -42,7 +43,8 @@ class flowvcutilsJSONFormatter(logging.Formatter):
     def __init__(
         self,
         *,
-        fmt_keys: dict[str, str] | None = None,
+        fmt_keys: Optional[Dict[str, str]] = None,
+        # fmt_keys: Dict[str, str] | None = None,
     ):
         super().__init__()
         self.fmt_keys = fmt_keys if fmt_keys is not None else {}
