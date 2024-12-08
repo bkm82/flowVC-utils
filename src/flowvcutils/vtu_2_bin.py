@@ -250,16 +250,13 @@ def vtk_to_bin(
         fout.close()
 
 
-def main(root, output, file_name, extension, start, stop, increment):
+def main(root, output, file_name, extension, start, stop, increment, num_digits):
     """Create binary files from vtu files for FlowVC.
 
     Reference https://shaddenlab.berkeley.edu/uploads/releasenotes.pdf
     """
-    logger.warning("starting main")
-    logger.info("Info")
-    logger.debug("Debug")
     vtk_to_connectivity_and_coordinates(
-        os.path.join(root, f"{file_name}_{start}{extension}"),
+        os.path.join(root, f"{file_name}_{start:0{num_digits}d}{extension}"),
         os.path.join(output, file_name),
         offset=0,
         extension=extension,
@@ -273,7 +270,7 @@ def main(root, output, file_name, extension, start, stop, increment):
         increment,
         fieldname="Velocity",
         n_components=3,
-        file_num_digits=5,
+        file_num_digits=num_digits,
         n_pad_values=1,
         flag_fenics_zeros=0,  # if 1, then adds zeros similar to finix
         extension=extension,
@@ -314,6 +311,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--increment", default=1, help="increment between each vtu file (default = 1)"
     )
+    parser.add_argument(
+        "--num_digits",
+        default=5,
+        help="num_digits: number of digits in file name (i.e. 5 for test_00100.vtu. (default: 5)",
+    )
 
     args = parser.parse_args()
 
@@ -325,4 +327,5 @@ if __name__ == "__main__":
         args.start,
         args.stop,
         args.increment,
+        args.num_digits,
     )
