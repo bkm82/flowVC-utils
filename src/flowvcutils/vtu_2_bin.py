@@ -215,6 +215,7 @@ def vtk_to_bin(
     logger.debug("starting vtk_to_bin")
     if not flag_fenics_zeros:
         file_num_format = "%0" + str(file_num_digits) + "d"
+
     for file_num in range(start, stop + 1, increment):
         logger.info(f"Writing .bin {file_num}")
         if flag_fenics_zeros:
@@ -302,14 +303,17 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "start",
-        type=str,
+        type=int,
         help="starting index for the processing files (required)",
     )
     parser.add_argument(
-        "stop", type=str, help="stopping index for the processing files (required)"
+        "stop", type=int, help="stopping index for the processing files (required)"
     )
     parser.add_argument(
-        "--increment", default=1, help="increment between each vtu file (default = 1)"
+        "--increment",
+        type=int,
+        default=1,
+        help="increment between each vtu file (default = 1)",
     )
     parser.add_argument(
         "--num_digits",
