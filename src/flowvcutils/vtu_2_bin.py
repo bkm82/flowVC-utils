@@ -3,7 +3,7 @@ import numpy as np
 import sys
 import logging.config
 import logging.handlers
-from .jsonlogger import settup_logging
+from flowvcutils.jsonlogger import settup_logging
 import argparse
 import os
 
@@ -302,14 +302,13 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "start",
-        required=True,
         help="starting index for the processing files (required)",
     )
     parser.add_argument(
-        "stop", required=True, help="stopping index for the processing files (required)"
+        "stop", help="stopping index for the processing files (required)"
     )
     parser.add_argument(
-        "--increment", default=1, help="increment between each vtu file (required)"
+        "--increment", default=1, help="increment between each vtu file (default = 1)"
     )
 
     args = parser.parse_args()
