@@ -256,6 +256,8 @@ def main(root, output, file_name, extension, start, stop, increment):
     Reference https://shaddenlab.berkeley.edu/uploads/releasenotes.pdf
     """
     logger.warning("starting main")
+    logger.info("Info")
+    logger.debug("Debug")
     vtk_to_connectivity_and_coordinates(
         os.path.join(root, f"{file_name}_{start}{extension}"),
         os.path.join(output, file_name),
