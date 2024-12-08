@@ -166,7 +166,7 @@ def vtk_to_connectivity_and_coordinates(
     offset: Set offset to 1 if node IDs should be 1 indexed
     extension: input file extension (default .vtu)
     """
-
+    logger.debug("starting vtk_to_connectivity_and_cordinates")
     reader = reader_selection(extension)
     logger.debug("reader selected")
     reader.SetFileName(vtk_filename)
@@ -212,6 +212,7 @@ def vtk_to_bin(
     n_pad_values: number of zeros at beginning of bin file
       (needed to match timestamp from Simvascular output
     """
+    logger.debug("starting vtk_to_bin")
     if not flag_fenics_zeros:
         file_num_format = "%0" + str(file_num_digits) + "d"
     for file_num in range(start, stop + 1, increment):
@@ -254,7 +255,7 @@ def main(root, output, file_name, extension, start, stop, increment):
 
     Reference https://shaddenlab.berkeley.edu/uploads/releasenotes.pdf
     """
-
+    logger.debug("starting main")
     vtk_to_connectivity_and_coordinates(
         os.path.join(root, f"{file_name}_{start}{extension}"),
         os.path.join(output, file_name),
