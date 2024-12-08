@@ -45,12 +45,12 @@ def settup_logging():
 
     with open(config_file) as f_in:
         config = json.load(f_in)
-    logging.config.dictConfig(config)
 
     #    for handler_name, handler in config["handlers"].items():
     for handler_name, handler in config["handlers"].items():
         if "filename" in handler:
             handler["filename"] = str(logs_dir / pathlib.Path(handler["filename"]).name)
+    logging.config.dictConfig(config)
 
 
 class flowvcutilsJSONFormatter(logging.Formatter):
