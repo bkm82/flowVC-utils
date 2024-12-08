@@ -33,7 +33,11 @@ LOG_RECORD_BUILTIN_ATTRS = {
 
 
 def settup_logging():
-    config_file = pathlib.Path("logging_configs/config.json")
+    current_dir = pathlib.Path(__file__).parent
+    config_file = current_dir / "logging_configs" / "config.json"
+    if not config_file.exists():
+        raise FileNotFoundError(f"logging configuration not found:{config_file}")
+
     with open(config_file) as f_in:
         config = json.load(f_in)
     logging.config.dictConfig(config)
