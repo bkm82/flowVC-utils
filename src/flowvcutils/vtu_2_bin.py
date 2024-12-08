@@ -251,7 +251,9 @@ def vtk_to_bin(
         fout.close()
 
 
-def main(root, output, file_name, extension, start, stop, increment, num_digits):
+def main(
+    root, output, file_name, extension, start, stop, increment, num_digits, field_name
+):
     """Create binary files from vtu files for FlowVC.
 
     Reference https://shaddenlab.berkeley.edu/uploads/releasenotes.pdf
@@ -269,7 +271,7 @@ def main(root, output, file_name, extension, start, stop, increment, num_digits)
         start,
         stop,
         increment,
-        fieldname="Velocity",
+        fieldname=field_name,
         n_components=3,
         file_num_digits=num_digits,
         n_pad_values=1,
@@ -322,6 +324,11 @@ if __name__ == "__main__":
         default=5,
         help="num_digits: number of digits in file name (i.e. 5 for test_00100.vtu. (default: 5)",
     )
+    parser.add_argument(
+        "--field_name",
+        default="velocity",
+        help="Field name for velocity data (default: 'velocity')",
+    )
 
     args = parser.parse_args()
 
@@ -334,4 +341,5 @@ if __name__ == "__main__":
         args.stop,
         args.increment,
         args.num_digits,
+        args.field_name,
     )
