@@ -7,7 +7,7 @@ from flowvcutils.jsonlogger import settup_logging
 import argparse
 import os
 
-logger = logging.getLogger("bragbrag")
+logger = logging.getLogger("vtu_2_bin")
 
 
 def reader_selection(extension):
@@ -270,7 +270,7 @@ def main(root, output, file_name, extension, start, stop, increment):
         increment,
         fieldname="Velocity",
         n_components=3,
-        file_num_digits=1,
+        file_num_digits=5,
         n_pad_values=1,
         flag_fenics_zeros=0,  # if 1, then adds zeros similar to finix
         extension=extension,
@@ -302,10 +302,11 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "start",
+        type=str,
         help="starting index for the processing files (required)",
     )
     parser.add_argument(
-        "stop", help="stopping index for the processing files (required)"
+        "stop", type=str, help="stopping index for the processing files (required)"
     )
     parser.add_argument(
         "--increment", default=1, help="increment between each vtu file (default = 1)"
