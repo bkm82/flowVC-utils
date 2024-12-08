@@ -34,13 +34,23 @@ LOG_RECORD_BUILTIN_ATTRS = {
 
 def settup_logging():
     current_dir = pathlib.Path(__file__).parent
+    project_root = current_dir.parent
+
     config_file = current_dir / "logging_configs" / "config.json"
+    logs_dir = project_root / "logs"
+    logs_dir.mkdir(exist_ok=True)
+
     if not config_file.exists():
         raise FileNotFoundError(f"logging configuration not found:{config_file}")
 
     with open(config_file) as f_in:
         config = json.load(f_in)
     logging.config.dictConfig(config)
+
+    #    for handler_name, handler in config["handlers"].items():
+    for handler_name, handler in config["handlers"].items():
+        if "filename" in handler:
+            handler["filename"] = str(logs_dir / pathlib.Path(handler["filename"]).name)
 
 
 class flowvcutilsJSONFormatter(logging.Formatter):

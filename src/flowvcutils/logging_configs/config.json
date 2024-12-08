@@ -34,7 +34,7 @@
 	    "class": "logging.handlers.RotatingFileHandler",
 	    "level": "DEBUG",
 	    "formatter": "detailed",
-	    "filename" : "logs/flowvcutils.log",
+	    "filename" : "flowvcutils.log",
 	    "maxBytes": 1000000,
 	    "backupCount": 3
 	},
@@ -42,7 +42,7 @@
 	    "class": "logging.handlers.RotatingFileHandler",
 	    "level": "DEBUG",
 	    "formatter": "json",
-	    "filename" : "logs/flowvcutils.log.jsonl",
+	    "filename" : "flowvcutils.log.jsonl",
 	    "maxBytes": 1000000,
 	    "backupCount": 3
 	}
