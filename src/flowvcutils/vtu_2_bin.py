@@ -212,7 +212,7 @@ def vtk_to_bin(
     n_pad_values: number of zeros at beginning of bin file
       (needed to match timestamp from Simvascular output
     """
-    logger.debug("starting vtk_to_bin")
+    logger.info("starting vtk_to_bin")
     if not flag_fenics_zeros:
         file_num_format = "%0" + str(file_num_digits) + "d"
 
@@ -257,7 +257,7 @@ def main(root, output, file_name, extension, start, stop, increment, num_digits)
     Reference https://shaddenlab.berkeley.edu/uploads/releasenotes.pdf
     """
     vtk_to_connectivity_and_coordinates(
-        os.path.join(root, f"{file_name}_{start:0{num_digits}d}{extension}"),
+        os.path.join(root, f"{file_name}{start:0{num_digits}d}{extension}"),
         os.path.join(output, file_name),
         offset=0,
         extension=extension,
@@ -293,7 +293,9 @@ if __name__ == "__main__":
         help="Output directory (default: current directory).",
     )
     parser.add_argument(
-        "file_name", type=str, help="Base file name for processing files (required)."
+        "file_name",
+        type=str,
+        help="Base file name (i.e. steady_ for steady_00000.vtu) (required).",
     )
     parser.add_argument(
         "--extension",
