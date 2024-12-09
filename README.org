@@ -54,11 +54,11 @@ rename_vtu_files is a Python command-line tool designed to rename .vtu files in 
 *** Usage
 1. Navigate to the directory containing the files to rename
 2. Run the script.
-   1. --root can be specified to point to a differnt directory
+   1. \--root can be specified to point to a differnt directory
 
-   2. --prefix can be specified to a specified name. (Default is direcory name)
+   2. \--prefix can be specified to a specified name. (Default is directory name)
 
-   3. --currentname can be specified if the files are not named all_results_
+   3. \--currentname can be specified if the files are not named all_results_
 
       #+begin_src shell
         python -m flowvcutils.filerename --root . --prefix <desired_name>
