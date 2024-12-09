@@ -322,7 +322,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--num_digits",
         default=5,
-        help="num_digits: number of digits in file name (i.e. 5 for test_00100.vtu. (default: 5)",
+        help="num_digits:digits in file name (i.e. 5 for test_00100.vtu. (default: 5)",
     )
     parser.add_argument(
         "--field_name",
