@@ -25,6 +25,35 @@ For more information, refer to https://shaddenlab.berkeley.edu/uploads/releaseno
   python -m flowvcutils.vtu_2_bin
 #+end_src
 
+#+Begin_SRC text
+usage: vtu_2_bin.py [-h] [--root ROOT] [--output OUTPUT]
+                    [--extension EXTENSION] [--increment INCREMENT]
+                    [--num_digits NUM_DIGITS] [--field_name FIELD_NAME]
+                    file_name start stop
+
+Process VTU files to a .bin format.
+
+positional arguments:
+  file_name             Base file name (i.e. steady_ for steady_00000.vtu)
+                        (required).
+  start                 starting index for the processing files (required)
+  stop                  stopping index for the processing files (required)
+
+options:
+  -h, --help            show this help message and exit
+  --root ROOT           input directory with the VTU files (default: current
+                        directory).
+  --output OUTPUT       Output directory (default: current directory).
+  --extension EXTENSION
+                        File extension (default: '.vtu').
+  --increment INCREMENT
+                        increment between each vtu file (default = 1)
+  --num_digits NUM_DIGITS
+                        num_digits:digits in file name (i.e. 5 for
+                        test_00100.vtu. (default: 5)
+  --field_name FIELD_NAME
+                        Field name for velocity data (default: 'velocity')
+#+END_SRC
 *** Output File Format
 **** coordinates.bin
 filename_cordinates.bin will have a file format in the following form
