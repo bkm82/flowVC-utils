@@ -7,7 +7,7 @@ import os
 logger = logging.getLogger("filerename")
 
 
-def rename_files(directory, prefix=None):
+def rename_files(directory, currentname="all_results_", prefix=None):
     """
     Rename all .vtu files in the specified directory.
 
@@ -19,6 +19,9 @@ def rename_files(directory, prefix=None):
     default_prefix = os.path.basename(os.path.abspath(directory))
     prefix = prefix or default_prefix
 
+    if prefix.endswith("_"):
+        prefix = prefix[:-1]
+
     # Ensure the directory exists
     if not os.path.isdir(directory):
         print(f"Error: Directory '{directory}' does not exist.")
@@ -26,7 +29,7 @@ def rename_files(directory, prefix=None):
 
     # Process each file
     for filename in os.listdir(directory):
-        if filename.startswith("all_results_") and filename.endswith(".vtu"):
+        if filename.startswith(currentname) and filename.endswith(".vtu"):
             # Extract the unique identifier from the filename
             identifier = filename.split("_")[-1].replace(".vtu", "")
 
@@ -40,9 +43,9 @@ def rename_files(directory, prefix=None):
             print(f"Renamed: {filename} -> {new_name}")
 
 
-def main(root, prefix):
+def main(root, filename, prefix):
     logger.info("Starting file renaming")
-    rename_files(root, prefix)
+    rename_files(root, prefix, filename)
     logger.info("Done!")
 
 
@@ -60,7 +63,12 @@ if __name__ == "__main__":
         default=None,
         help="new file name (default: current directory name).",
     )
+    parser.add_argument(
+        "--currentname",
+        default="all_results_",
+        help="current file name (default: all_results_).",
+    )
 
     args = parser.parse_args()
 
-    main(args.root, args.prefix)
+    main(args.root, args.prefix, args.currentname)
