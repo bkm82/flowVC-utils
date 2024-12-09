@@ -58,32 +58,35 @@ options:
 **** coordinates.bin
 filename_cordinates.bin will have a file format in the following form
 #+BEGIN_SRC text
- n x_0 y_0 z_0 x_1 y_1 z_1 ... x_(n-1) y_(n-1) z_(n-1)
-#+END_SRC
- where
- #+BEGIN_SRC text
-   n(int):    the number of components
-   x(double): the x cordianate of the point
-   y(double): the y cordianate of the point
-   z(double): the z cordianate of the point
+  n x_0 y_0 z_0 x_1 y_1 z_1 ... x_(n-1) y_(n-1) z_(n-1)
+
+  where
+
+  n(int):    the number of components
+  x(double): the x cordianate of the point
+  y(double): the y cordianate of the point
+  z(double): the z cordianate of the point
 #+END_SRC
 **** connectivity.bin
  filename_connectivity.bin will have a file format
-
+ #+BEGIN_SRC text
  e i_0^0 i_0^1 i_0^2 i_0^3 i_1^0 i_1^1 i_1^2 i_0^3 ....
 
  where
+
  e(int):       the number of elements
  i_0:(4 ints)  the 4 elements that make up an element
+ #+END_SRC
+**** adjacency.bin
+ filename_adjacency.bin will have a file format
+ #+BEGIN_SRC text
+   e e_0^0 e_0^1 e_0^2 e_0^3 e_1^0 e_1^1 e_1^2 e_0^3 ....
 
-*** adjacency.bin
- the yourfilename_adjacency.bin will have a file format
+   where
 
- e e_0^0 e_0^1 e_0^2 e_0^3 e_1^0 e_1^1 e_1^2 e_0^3 ....
-
- where
- e(int):       the number of elements
- i_0:(4 ints)  the 4 elements that share a common face with the element
+   e(int):       the number of elements
+   i_0:(4 ints)  the 4 elements that share a common face with the element
+ #+END_SRC
 
 ** filerename.py
 Rename the files in a directory.
@@ -105,20 +108,17 @@ dir
 
 
 *** Usage
-#+begin_src shell
-  cd dir
-  python -m flowvcutils.filerename
-#+end_src
+#+BEGIN_SRC text
+  usage: filerename.py [-h] [--root ROOT] [--prefix PREFIX]
+                       [--currentname CURRENTNAME]
 
-*** Options
-\--root: directory to rename (Default current directory)
+  Rename the file names in a directory.
 
-\--prefix: What to name the new file. (Default is directory name)
-
-\--currentname: Current file name (default all_results_)
-
-*** Help
-For a list of available options run:
-#+begin_src shell
-  python -m flowvcutils.filerename -h
-#+end_src
+  options:
+    -h, --help            show this help message and exit
+    --root ROOT           input directory with the files (default: current
+                          directory).
+    --prefix PREFIX       new file name (default: current directory name).
+    --currentname CURRENTNAME
+                          current file name (default: all_results_).
+#+END_SRC
