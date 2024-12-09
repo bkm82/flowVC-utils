@@ -2,6 +2,17 @@
 utilities for the flowVC project
 
 [[https://github.com/bkm82/bragbrag/actions][https://github.com/bkm82/flowVCUtils/actions/workflows/tests.yml/badge.svg]]
+** Installation
+Clone and install the repository
+#+begin_src shell
+  git clone https://github.com/bkm82/flowVCUtils.git
+  cd flowVCUtils.git
+#+end_src
+
+Install the package (optional add a -e after install for editable mode)
+#+begin_src shell
+  pip install .
+#+end_src
 
 ** vtu_2bin.py
 This file converts a file from a vtu file format to a .bin file that can be read and utilized by the flowVC code
@@ -36,3 +47,22 @@ the yourfilename_cordinates.bin will have a file format in the following form
  where
  e(int):       the number of elements
  i_0:(4 ints)  the 4 elements that share a common face with the element
+
+** filerename.py
+rename_vtu_files is a Python command-line tool designed to rename .vtu files in a directory. The tool renames files like all_results_00001.vtu to <directory_name>_00001.vtu, where <directory_name> is the name of the directory where the files are stored. This is particularly usefull for renaming simulation results from simvascular that default to all_results to names descriptive of the simulation conditions.
+
+*** Usage
+1. Navigate to the directory containing the files to rename
+2. Run the script.
+   Notes:
+   --root can be specified to point to a differnt directory
+   --prefix can be specified to a specified name. (Default is direcory name)
+
+   #+begin_src shell
+     python -m flowvcutils.filerename --root . --prefix <desired_name>
+   #+end_src
+*** Help
+For a list of available options run:
+#+begin_src shell
+  python -m flowvcutils.filerename -h
+#+end_src
