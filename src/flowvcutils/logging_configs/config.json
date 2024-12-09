@@ -10,7 +10,7 @@
 	    "datefmt": "%Y-%m-%dT%H:%M:%S%z"
 	},
 	"json": {
-	    "()": "jsonlogger.flowvcutilsJSONFormatter",
+	    "()": "flowvcutils.jsonlogger.flowvcutilsJSONFormatter",
 	    "fmt_keys": {
 		"level": "levelname",
 		"message": "message",
@@ -30,11 +30,17 @@
 	    "formatter": "simple",
 	    "stream": "ext://sys.stderr"
 	},
+        "stdout":{
+            "class": "logging.StreamHandler",
+            "level": "INFO",
+            "formatter": "simple",
+            "stream": "ext://sys.stdout"
+        },
 	"file":{
 	    "class": "logging.handlers.RotatingFileHandler",
 	    "level": "DEBUG",
 	    "formatter": "detailed",
-	    "filename" : "logs/flowvcutils.log",
+	    "filename" : "flowvcutils.log",
 	    "maxBytes": 1000000,
 	    "backupCount": 3
 	},
@@ -42,7 +48,7 @@
 	    "class": "logging.handlers.RotatingFileHandler",
 	    "level": "DEBUG",
 	    "formatter": "json",
-	    "filename" : "logs/flowvcutils.log.jsonl",
+	    "filename" : "flowvcutils.log.jsonl",
 	    "maxBytes": 1000000,
 	    "backupCount": 3
 	}
@@ -52,6 +58,7 @@
 	    "level": "DEBUG",
 	    "handlers":[
 		"stderr",
+                "stdout",
 		"file",
 		"jsonfile"
 	    ]

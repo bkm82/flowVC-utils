@@ -1,6 +1,6 @@
 import logging.config
 import logging.handlers
-from .jsonlogger import settup_logging
+from flowvcutils.jsonlogger import settup_logging
 
 logger = logging.getLogger("flowVCUtils")
 

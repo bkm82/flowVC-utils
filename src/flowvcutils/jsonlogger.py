@@ -3,6 +3,7 @@ import json
 import logging
 import pathlib
 import argparse
+from typing import Dict, Optional
 
 LOG_RECORD_BUILTIN_ATTRS = {
     "args",
@@ -32,9 +33,23 @@ LOG_RECORD_BUILTIN_ATTRS = {
 
 
 def settup_logging():
-    config_file = pathlib.Path("logging_configs/config.json")
+    current_dir = pathlib.Path(__file__).parent
+    project_root = current_dir.parent
+
+    config_file = current_dir / "logging_configs" / "config.json"
+    logs_dir = project_root / "logs"
+    logs_dir.mkdir(exist_ok=True)
+
+    if not config_file.exists():
+        raise FileNotFoundError(f"logging configuration not found:{config_file}")
+
     with open(config_file) as f_in:
         config = json.load(f_in)
+
+    #    for handler_name, handler in config["handlers"].items():
+    for handler_name, handler in config["handlers"].items():
+        if "filename" in handler:
+            handler["filename"] = str(logs_dir / pathlib.Path(handler["filename"]).name)
     logging.config.dictConfig(config)
 
 
@@ -42,7 +57,8 @@ class flowvcutilsJSONFormatter(logging.Formatter):
     def __init__(
         self,
         *,
-        fmt_keys: dict[str, str] | None = None,
+        fmt_keys: Optional[Dict[str, str]] = None,
+        # fmt_keys: Dict[str, str] | None = None,
     ):
         super().__init__()
         self.fmt_keys = fmt_keys if fmt_keys is not None else {}
