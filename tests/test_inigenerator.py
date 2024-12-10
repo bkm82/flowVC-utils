@@ -76,7 +76,7 @@ def test_validate_directory_exists():
     # Create a temporary directory using tempfile
     with TemporaryDirectory() as temp_dir:
         # Assert that the validate_directory function returns True for a valid directory
-        assert validate_directory(temp_dir) == True
+        assert validate_directory(temp_dir)
 
 
 def test_validate_directory_does_not_exist():
@@ -85,5 +85,4 @@ def test_validate_directory_does_not_exist():
     """
     non_existent_dir = "/path/to/nonexistent/directory"
 
-    # Assert that the validate_directory function returns False for a non-existent directory
-    assert validate_directory(non_existent_dir) == False
+    assert not validate_directory(non_existent_dir)

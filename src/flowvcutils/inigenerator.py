@@ -73,10 +73,11 @@ def validate_directory(directory):
     Returns:
         bool: True if the directory is valid, False otherwise.
     """
-    if not os.path.isdir(directory):
+    if os.path.isdir(directory):
+        return True
+    else:
         logger.error(f"{directory} is not a valid directory.")
         return False
-    return True
 
 
 def main():
@@ -96,8 +97,9 @@ def main():
     if not validate_directory(directory):
         return
 
-        # Process the directory and print results
-    x_range, y_range, z_range = find_data_range(directory)
+    processor = resultsProcessor(directory)
+    # Process the directory and print results
+    x_range, y_range, z_range = processor.find_data_range(directory)
     logger.info(f"Directory: {directory}")
     logger.info(f"X Range: {x_range}")
     logger.info(f"Y Range: {y_range}")
