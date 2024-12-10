@@ -2,7 +2,8 @@ import pytest
 import vtk
 import os
 from tempfile import TemporaryDirectory
-from flowvcutils.inigenerator import resultsProcessor, validate_directory
+from flowvcutils.inigenerator import resultsProcessor, directoryHandler
+from unittest.mock import MagicMock
 
 
 @pytest.fixture
@@ -37,8 +38,9 @@ def test_find_data_range(create_sample_vtu_file):
     Test the find_data_range function.
     """
     file_path = create_sample_vtu_file
-    directory = os.path.dirname(file_path)
-    processor = resultsProcessor(directory)
+
+    mock_directory_handler = MagicMock()
+    processor = resultsProcessor(mock_directory_handler)
 
     # Run the function on the test file
     x_range, y_range, z_range = processor.find_data_range(file_path)
@@ -51,14 +53,15 @@ def test_find_data_range(create_sample_vtu_file):
 
 def test_find_data_state(create_sample_vtu_file):
     """
-    Test the find_data stores the x, y and z range state.
+    Test that initializing a file processor stores the x, y and z range state.
     """
     file_path = create_sample_vtu_file
-    directory = os.path.dirname(file_path)
-    processor = resultsProcessor(directory)
+    mock_directory_handler = MagicMock()
+    mock_directory_handler.find_vtu.return_value = file_path
+    processor = resultsProcessor(mock_directory_handler)
 
-    # Run the function on the test file
-    processor.find_data_range(file_path)
+    # Call the find_data_range without a filepath
+    processor.find_data_range()
 
     # Assert the expected results
     assert processor.min_x == -1.0, f"Unexpected X range: {processor.min_x}"
@@ -76,7 +79,8 @@ def test_validate_directory_exists():
     # Create a temporary directory using tempfile
     with TemporaryDirectory() as temp_dir:
         # Assert that the validate_directory function returns True for a valid directory
-        assert validate_directory(temp_dir)
+        valid_dir = directoryHandler(temp_dir)
+        assert valid_dir.directory == temp_dir
 
 
 def test_validate_directory_does_not_exist():
@@ -84,5 +88,28 @@ def test_validate_directory_does_not_exist():
     Test case where the directory does not exist.
     """
     non_existent_dir = "/path/to/nonexistent/directory"
+    with pytest.raises(FileNotFoundError):
+        directoryHandler(non_existent_dir)
 
-    assert not validate_directory(non_existent_dir)
+
+def test_vtu_file_exist():
+    """
+    Test case where the vtu file exists.
+    """
+    with TemporaryDirectory() as temp_dir:
+        expected = os.path.join(temp_dir, "test_file.vtu")
+        with open(expected, "w") as f:
+            f.write("dummy content")
+        dir_handler = directoryHandler(temp_dir)
+        actual = dir_handler.find_vtu()
+        assert actual == expected
+
+
+def test_vtu_file_doesnt_exist():
+    """
+    Test case where the vtu file does not exist to ensure error is raised.
+    """
+    with TemporaryDirectory() as temp_dir:
+        dir_handler = directoryHandler(temp_dir)
+        with pytest.raises(FileNotFoundError):
+            dir_handler.find_vtu()

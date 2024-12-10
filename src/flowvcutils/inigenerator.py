@@ -8,23 +8,52 @@ import os
 logger = logging.getLogger("inigenerator")
 
 
-class resultsProcessor:
+class directoryHandler:
     def __init__(self, directory):
         self.directory = directory
-        self.min_x, self.max_x = float("inf"), float("-inf")
-        self.min_y, self.max_y = float("inf"), float("-inf")
-        self.min_z, self.max_z = float("inf"), float("-inf")
+        self.validate_directory()
 
-    def find_first_vtu(self):
+    def validate_directory(self):
+        """
+        Validates that the given directory exists.
+
+        Args:
+            directory (str): Directory to validate.
+
+        Returns:
+            bool: True if the directory is valid.
+        """
+        if not os.path.isdir(self.directory):
+
+            logger.error(f"{self.directory} is not a valid directory.")
+            raise FileNotFoundError(f"{self.directory} is not a valid directory")
+
+        return True
+
+    def find_vtu(self):
         """
         Search the current directory and return the first file with a ".vtu" extension.
 
         Returns:
             str: The filepath of the first .vtu file found.
         """
-        pass
+        for file in os.listdir(self.directory):
+            file_path = os.path.join(self.directory, file)
+            if os.path.isfile(file_path) and file.endswith(".vtu"):
+                return file_path
+        raise FileNotFoundError(
+            f"No .vtu file found in the directory: {self.directory}"
+        )
 
-    def find_data_range(self, file_path):
+
+class resultsProcessor:
+    def __init__(self, directory_handler):
+        self.directory_handler = directory_handler
+        self.min_x, self.max_x = float("inf"), float("-inf")
+        self.min_y, self.max_y = float("inf"), float("-inf")
+        self.min_z, self.max_z = float("inf"), float("-inf")
+
+    def find_data_range(self, file_path=None):
         """
         Find the min and max x, y, and z coordinates in a .vtu file using vtk.
 
@@ -34,6 +63,8 @@ class resultsProcessor:
         Returns:
             tuple: Min and max ranges for x, y, and z coordinates.
         """
+        if file_path is None:
+            file_path = self.directory_handler.find_vtu()
         # Read the .vtu file
         reader = vtk.vtkXMLUnstructuredGridReader()
         reader.SetFileName(file_path)
@@ -63,23 +94,6 @@ class resultsProcessor:
         )
 
 
-def validate_directory(directory):
-    """
-    Validates that the given directory exists.
-
-    Args:
-        directory (str): Directory to validate.
-
-    Returns:
-        bool: True if the directory is valid, False otherwise.
-    """
-    if os.path.isdir(directory):
-        return True
-    else:
-        logger.error(f"{directory} is not a valid directory.")
-        return False
-
-
 def main():
     settup_logging()
     logger.info("Starting inigenerator")
@@ -92,15 +106,10 @@ def main():
         help="Directory containing the .vtu files (default: current dir)",
     )
     args = parser.parse_args()
-    directory = args.directory
-    # validate directory
-    if not validate_directory(directory):
-        return
+    directory_handler = directoryHandler(args.directory)
 
-    processor = resultsProcessor(directory)
-    # Process the directory and print results
-    x_range, y_range, z_range = processor.find_data_range(directory)
-    logger.info(f"Directory: {directory}")
+    processor = resultsProcessor(directory_handler)
+    x_range, y_range, z_range = processor.find_data_range()
     logger.info(f"X Range: {x_range}")
     logger.info(f"Y Range: {y_range}")
     logger.info(f"Z Range: {z_range}")
