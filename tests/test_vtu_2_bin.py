@@ -5,6 +5,8 @@ from flowvcutils.vtu_2_bin import (
     reader_selection,
     coordinates_file,
     create_vel_file_path,
+    strip_trailing_underscore,
+    create_file_path,
 )
 
 
@@ -50,10 +52,65 @@ def test_coordinates_shape(mock_data):
     assert obj.coordinates.shape == (6,)
 
 
-def test_create_vel_file_path():
-    root = "/some/directory"
-    file_name = "file_name_"
-    file_num = 50
-    expected = "/some/directory/file_name_vel.50.bin"
-    actual = create_vel_file_path(root, file_name, file_num)
+@pytest.mark.parametrize(
+    "file_name, expected", [("test_name", "test_name"), ("test_name_", "test_name")]
+)
+def test_strip_trailing_underscore(file_name, expected):
+    assert strip_trailing_underscore(file_name) == expected
+
+
+@pytest.mark.parametrize(
+    "root, file_name, file_num, expected",
+    [
+        ("/some/directory", "file_name_", 50, "/some/directory/file_name_vel.50.bin"),
+        ("/some/directory", "file_name", 50, "/some/directory/file_name_vel.50.bin"),
+    ],
+)
+def test_create_vel_file_path(root, file_name, file_num, expected):
+    assert create_vel_file_path(root, file_name, file_num) == expected
+
+
+@pytest.mark.parametrize(
+    "root, file_name, file_type, expected",
+    [
+        (
+            "/some/directory",
+            "file_name_",
+            "coordinates",
+            "/some/directory/file_name_coordinates.bin",
+        ),
+        (
+            "/some/directory",
+            "file_name",
+            "coordinates",
+            "/some/directory/file_name_coordinates.bin",
+        ),
+        (
+            "/some/directory",
+            "file_name_",
+            "adjacency",
+            "/some/directory/file_name_adjacency.bin",
+        ),
+        (
+            "/some/directory",
+            "file_name",
+            "adjacency",
+            "/some/directory/file_name_adjacency.bin",
+        ),
+        (
+            "/some/directory",
+            "file_name_",
+            "connectivity",
+            "/some/directory/file_name_connectivity.bin",
+        ),
+        (
+            "/some/directory",
+            "file_name",
+            "connectivity",
+            "/some/directory/file_name_connectivity.bin",
+        ),
+    ],
+)
+def test_create_file_path(root, file_name, file_type, expected):
+    actual = create_file_path(root=root, file_name=file_name, file_type=file_type)
     assert actual == expected

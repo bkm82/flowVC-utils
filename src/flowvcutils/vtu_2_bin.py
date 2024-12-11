@@ -46,12 +46,15 @@ class coordinates_file:
         for i in range(self.n_nodes):
             self.data.GetPoint(i, self.coordinates[i * 3 : i * 3 + 3])
 
-    def save_file(self, output_root):
+    def save_file(self, output_root, file_name):
         """Save a cordinates binary file in the specified location.
 
         File Name: {output_root}_coordinates.bin
         """
-        fout = open(output_root + "_coordinates.bin", "wb")
+        file_path = create_file_path(
+            root=output_root, file_name=file_name, file_type="coordinates"
+        )
+        fout = open(file_path, "wb")
         logger.debug(f"n_nodes data type: {type(self.n_nodes)}")
         (self.n_nodes * np.ones(1, dtype=np.int32)).tofile(fout)
         self.coordinates.tofile(fout)
@@ -85,12 +88,15 @@ class connectivity_file:
             count = count + 1
         # self.connectivity += offset
 
-    def save_file(self, output_root):
+    def save_file(self, output_root, file_name):
         """Save a cordinates binary file in the specified location.
 
         File Name: {output_root}_connectivity.bin
         """
-        fout = open(output_root + "_connectivity.bin", "wb")
+        file_path = create_file_path(
+            root=output_root, file_name=file_name, file_type="connectivity"
+        )
+        fout = open(file_path, "wb")
         (self.n_elements * np.ones(1, dtype=np.int32)).tofile(fout)
         self.connectivity.tofile(fout)
         fout.close()
@@ -140,12 +146,15 @@ class adjacency_file:
         logger.info("progress 100")
         # self.connectivity += offset
 
-    def save_file(self, output_root, offset=0):
+    def save_file(self, output_root, file_name, offset=0):
         """Save the adjacency binary file in the specified location.
 
         File Name: {output_root}_adjacency.bin
         """
-        fout = open(output_root + "_adjacency.bin", "wb")
+        file_path = create_file_path(
+            root=output_root, file_name=file_name, file_type="adjacency"
+        )
+        fout = open(file_path, "wb")
         (self.n_elements * np.ones(1, dtype=np.int32)).tofile(fout)
         ((self.adjacency) + offset).tofile(fout)
         fout.close()
@@ -154,8 +163,11 @@ class adjacency_file:
 
 
 def vtk_to_connectivity_and_coordinates(
-    vtk_filename,
+    input_root,
     output_root,
+    file_name,
+    start=0,
+    num_digits=5,
     offset=0,
     extension=".vtu",
 ):
@@ -169,26 +181,30 @@ def vtk_to_connectivity_and_coordinates(
     logger.debug("starting vtk_to_connectivity_and_cordinates")
     reader = reader_selection(extension)
     logger.debug("reader selected")
-    reader.SetFileName(vtk_filename)
+    # Select the first .vtu file to create coordinates, adjacency, and connectivity files
+    first_file_path = os.path.join(
+        input_root, f"{file_name}{start:0{num_digits}d}{extension}"
+    )
+    reader.SetFileName(first_file_path)
     logger.debug("reader setfilename")
     reader.Update()
     data = reader.GetOutput()
     logger.debug("data selected")
     coordinates = coordinates_file(data)
     coordinates.create_file()
-    coordinates.save_file(output_root)
+    coordinates.save_file(output_root, file_name)
     logger.info(f"{coordinates.n_nodes} nodes, coordinated file created")
 
     connectivity = connectivity_file(data)
     connectivity.create_file()
-    connectivity.save_file(output_root)
+    connectivity.save_file(output_root, file_name)
 
     logger.info(f"{connectivity.n_elements} elements, connectivity file saved")
 
     logger.info("Finding adjacency:")
     adjacency = adjacency_file(data)
     adjacency.create_file()
-    adjacency.save_file(output_root, offset)
+    adjacency.save_file(output_root, file_name, offset)
 
 
 def vtk_to_bin(
@@ -253,8 +269,26 @@ def vtk_to_bin(
         fout.close()
 
 
+def strip_trailing_underscore(file_name):
+    if file_name.endswith("_"):
+        return file_name[:-1]
+    return file_name
+
+
 def create_vel_file_path(root, file_name, file_num):
-    return os.path.join(root, file_name + "vel." + str(file_num) + ".bin")
+    return os.path.join(
+        root, strip_trailing_underscore(file_name) + "_vel." + str(file_num) + ".bin"
+    )
+
+
+def create_file_path(root, file_name, file_type):
+    return os.path.join(
+        root, strip_trailing_underscore(file_name) + "_" + file_type + ".bin"
+    )
+    pass
+
+
+# os.path.join(output, file_name),
 
 
 def main(
@@ -265,8 +299,11 @@ def main(
     Reference https://shaddenlab.berkeley.edu/uploads/releasenotes.pdf
     """
     vtk_to_connectivity_and_coordinates(
-        os.path.join(root, f"{file_name}{start:0{num_digits}d}{extension}"),
-        os.path.join(output, file_name),
+        input_root=root,
+        output_root=output,
+        file_name=file_name,
+        start=start,
+        num_digits=num_digits,
         offset=0,
         extension=extension,
     )
