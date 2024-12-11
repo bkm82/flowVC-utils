@@ -329,20 +329,6 @@ def main(
 
     Reference https://shaddenlab.berkeley.edu/uploads/releasenotes.pdf
     """
-    process_subdirectories(
-        root,
-        output,
-        file_name,
-        extension,
-        start,
-        stop,
-        increment,
-        num_digits,
-        field_name,
-    )
-
-
-if __name__ == "__main__":
     settup_logging()
     # Parse a CLI flag to enable setting the log level from the CLI
     parser = argparse.ArgumentParser(description="Process VTU files to a .bin format.")
@@ -394,7 +380,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    main(
+    process_subdirectories(
         args.root,
         args.output,
         args.file_name,
@@ -405,3 +391,7 @@ if __name__ == "__main__":
         args.num_digits,
         args.field_name,
     )
+
+
+if __name__ == "__main__":
+    main()
