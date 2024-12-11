@@ -289,9 +289,7 @@ def create_file_path(root, file_name, file_type):
 
 
 # os.path.join(output, file_name),
-
-
-def main(
+def process_subdirectories(
     root, output, file_name, extension, start, stop, increment, num_digits, field_name
 ):
     """Create binary files from vtu files for FlowVC.
@@ -321,6 +319,26 @@ def main(
         n_pad_values=1,
         flag_fenics_zeros=0,  # if 1, then adds zeros similar to finix
         extension=extension,
+    )
+
+
+def main(
+    root, output, file_name, extension, start, stop, increment, num_digits, field_name
+):
+    """Create binary files from vtu files for FlowVC.
+
+    Reference https://shaddenlab.berkeley.edu/uploads/releasenotes.pdf
+    """
+    process_subdirectories(
+        root,
+        output,
+        file_name,
+        extension,
+        start,
+        stop,
+        increment,
+        num_digits,
+        field_name,
     )
 
 
