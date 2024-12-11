@@ -251,6 +251,10 @@ def vtk_to_bin(
         fout.close()
 
 
+def create_vel_filename():
+    pass
+
+
 def main(
     root, output, file_name, extension, start, stop, increment, num_digits, field_name
 ):

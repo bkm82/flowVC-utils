@@ -1,8 +1,11 @@
 import vtk
 import pytest
 from unittest.mock import MagicMock
-from flowvcutils.vtu_2_bin import reader_selection
-from flowvcutils.vtu_2_bin import coordinates_file
+from flowvcutils.vtu_2_bin import (
+    reader_selection,
+    coordinates_file,
+    create_vel_filename,
+)
 
 
 @pytest.mark.parametrize(
@@ -45,3 +48,12 @@ def test_coordinates_shape(mock_data):
     obj = coordinates_file(mock_data)
     obj.create_file()
     assert obj.coordinates.shape == (6,)
+
+
+def test_create_vel_filename():
+    root = "/some/directory"
+    file_name = "file_name_"
+    file_num = 50
+    expected = "/some/directory/file_name_vel.50.bin"
+    actual = create_vel_filename(root, file_name, file_num)
+    assert actual == expected
