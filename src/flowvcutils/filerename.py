@@ -52,9 +52,7 @@ def main(root, filename, prefix):
 if __name__ == "__main__":
     settup_logging()
     # Parse a CLI flag to enable setting the log level from the CLI
-    parser = argparse.ArgumentParser(
-        description="Rename the file names in a directory."
-    )
+    parser = argparse.ArgumentParser(description="Process VTU files to a .bin format.")
     parser.add_argument(
         "--root",
         default=os.getcwd(),

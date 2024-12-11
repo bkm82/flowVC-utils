@@ -15,110 +15,56 @@ Install the package (optional add a -e after install for editable mode)
 #+end_src
 
 ** vtu_2bin.py
-Convert a file file from a vtu file format to a .bin file that can be read and utilized by the flowVC code
+This file converts a file from a vtu file format to a .bin file that can be read and utilized by the flowVC code
 
 For more information, refer to https://shaddenlab.berkeley.edu/uploads/releasenotes.pdf
 
-*** Usage
-#+begin_src shell
-  cd dir
-  python -m flowvcutils.vtu_2_bin
-#+end_src
-
-#+Begin_SRC text
-usage: vtu_2_bin.py [-h] [--root ROOT] [--output OUTPUT]
-                    [--extension EXTENSION] [--increment INCREMENT]
-                    [--num_digits NUM_DIGITS] [--field_name FIELD_NAME]
-                    file_name start stop
-
-Process VTU files to a .bin format.
-
-positional arguments:
-  file_name             Base file name (i.e. steady_ for steady_00000.vtu)
-                        (required).
-  start                 starting index for the processing files (required)
-  stop                  stopping index for the processing files (required)
-
-options:
-  -h, --help            show this help message and exit
-  --root ROOT           input directory with the VTU files (default: current
-                        directory).
-  --output OUTPUT       Output directory (default: current directory).
-  --extension EXTENSION
-                        File extension (default: '.vtu').
-  --increment INCREMENT
-                        increment between each vtu file (default = 1)
-  --num_digits NUM_DIGITS
-                        num_digits:digits in file name (i.e. 5 for
-                        test_00100.vtu. (default: 5)
-  --field_name FIELD_NAME
-                        Field name for velocity data (default: 'velocity')
-#+END_SRC
-*** Output File Format
-**** coordinates.bin
-filename_cordinates.bin will have a file format in the following form
-#+BEGIN_SRC text
-  n x_0 y_0 z_0 x_1 y_1 z_1 ... x_(n-1) y_(n-1) z_(n-1)
-
-  where
-
-  n(int):    the number of components
-  x(double): the x cordianate of the point
-  y(double): the y cordianate of the point
-  z(double): the z cordianate of the point
-#+END_SRC
-**** connectivity.bin
- filename_connectivity.bin will have a file format
- #+BEGIN_SRC text
- e i_0^0 i_0^1 i_0^2 i_0^3 i_1^0 i_1^1 i_1^2 i_0^3 ....
+*** coordinates.bin
+the yourfilename_cordinates.bin will have a file format in the following form
+ n x_0 y_0 z_0 x_1 y_1 z_1 ... x_(n-1) y_(n-1) z_(n-1)
 
  where
 
+ n(int):    the number of components
+ x(double): the x cordianate of the point
+ y(double): the y cordianate of the point
+ z(double): the z cordianate of the point
+
+*** connectivity.bin
+ the yourfilename_connectivity.bin will have a file format
+
+ e i_0^0 i_0^1 i_0^2 i_0^3 i_1^0 i_1^1 i_1^2 i_0^3 ....
+
+ where
  e(int):       the number of elements
  i_0:(4 ints)  the 4 elements that make up an element
- #+END_SRC
-**** adjacency.bin
- filename_adjacency.bin will have a file format
- #+BEGIN_SRC text
-   e e_0^0 e_0^1 e_0^2 e_0^3 e_1^0 e_1^1 e_1^2 e_0^3 ....
 
-   where
+*** adjacency.bin
+ the yourfilename_adjacency.bin will have a file format
 
-   e(int):       the number of elements
-   i_0:(4 ints)  the 4 elements that share a common face with the element
- #+END_SRC
+ e e_0^0 e_0^1 e_0^2 e_0^3 e_1^0 e_1^1 e_1^2 e_0^3 ....
+
+ where
+ e(int):       the number of elements
+ i_0:(4 ints)  the 4 elements that share a common face with the element
 
 ** filerename.py
-Rename the files in a directory.
-For example From:
-#+BEGIN_SRC text
-dir
-├── all_results_00000.vtu
-├── all_results_00050.vtu
-├── all_results_00100.vtu
-#+END_SRC
-
-To
-#+BEGIN_SRC text
-dir
-├── directory_name_00000.vtu
-├── directory_name_00050.vtu
-├── directory_name_00100.vtu
-#+END_SRC
-
+rename_vtu_files is a Python command-line tool designed to rename .vtu files in a directory. The tool renames files like all_results_00001.vtu to <directory_name>_00001.vtu, where <directory_name> is the name of the directory where the files are stored. This is particularly usefull for renaming simulation results from simvascular that default to all_results to names descriptive of the simulation conditions.
 
 *** Usage
-#+BEGIN_SRC text
-  usage: filerename.py [-h] [--root ROOT] [--prefix PREFIX]
-                       [--currentname CURRENTNAME]
+1. Navigate to the directory containing the files to rename
+2. Run the script.
+   1. \--root can be specified to point to a differnt directory
 
-  Rename the file names in a directory.
+   2. \--prefix can be specified to a specified name. (Default is directory name)
 
-  options:
-    -h, --help            show this help message and exit
-    --root ROOT           input directory with the files (default: current
-                          directory).
-    --prefix PREFIX       new file name (default: current directory name).
-    --currentname CURRENTNAME
-                          current file name (default: all_results_).
-#+END_SRC
+   3. \--currentname can be specified if the files are not named all_results_
+
+      #+begin_src shell
+        python -m flowvcutils.filerename --root . --prefix <desired_name>
+      #+end_src
+*** Help
+For a list of available options run:
+#+begin_src shell
+  python -m flowvcutils.filerename -h
+#+end_src
