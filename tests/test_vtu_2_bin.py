@@ -2,6 +2,7 @@ import vtk
 import pytest
 import os
 from unittest.mock import MagicMock
+import tempfile
 from flowvcutils.vtu_2_bin import (
     reader_selection,
     coordinates_file,
@@ -61,59 +62,57 @@ def test_strip_trailing_underscore(file_name, expected):
 
 
 @pytest.mark.parametrize(
-    "root, file_name, file_num, expected",
+    "file_name, file_num, expected",
     [
-        ("/some/directory", "file_name_", 50, "/some/directory/file_name_vel.50.bin"),
-        ("/some/directory", "file_name", 50, "/some/directory/file_name_vel.50.bin"),
+        ("file_name_", 50, "file_name_vel.50.bin"),
+        ("file_name", 50, "file_name_vel.50.bin"),
     ],
 )
-def test_create_vel_file_path(root, file_name, file_num, expected):
-    expected_path = os.path.normpath(expected)
-    assert create_vel_file_path(root, file_name, file_num) == expected_path
+def test_create_vel_file_path(file_name, file_num, expected):
+    temp_dir = tempfile.mkdtemp()
+
+    expected_path = os.path.join(temp_dir, expected)
+    assert create_vel_file_path(temp_dir, file_name, file_num) == expected_path
 
 
 @pytest.mark.parametrize(
-    "root, file_name, file_type, expected",
+    "file_name, file_type, expected",
     [
         (
-            "/some/directory",
             "file_name_",
             "coordinates",
-            "/some/directory/file_name_coordinates.bin",
+            "file_name_coordinates.bin",
         ),
         (
-            "/some/directory",
             "file_name",
             "coordinates",
-            "/some/directory/file_name_coordinates.bin",
+            "file_name_coordinates.bin",
         ),
         (
-            "/some/directory",
             "file_name_",
             "adjacency",
-            "/some/directory/file_name_adjacency.bin",
+            "file_name_adjacency.bin",
         ),
         (
-            "/some/directory",
             "file_name",
             "adjacency",
-            "/some/directory/file_name_adjacency.bin",
+            "file_name_adjacency.bin",
         ),
         (
-            "/some/directory",
             "file_name_",
             "connectivity",
-            "/some/directory/file_name_connectivity.bin",
+            "file_name_connectivity.bin",
         ),
         (
-            "/some/directory",
             "file_name",
             "connectivity",
-            "/some/directory/file_name_connectivity.bin",
+            "file_name_connectivity.bin",
         ),
     ],
 )
-def test_create_file_path(root, file_name, file_type, expected):
-    expected_path = os.path.normpath(expected)
-    actual = create_file_path(root=root, file_name=file_name, file_type=file_type)
+def test_create_file_path(file_name, file_type, expected):
+    temp_dir = tempfile.mkdtemp()
+
+    expected_path = os.path.join(temp_dir, expected)
+    actual = create_file_path(root=temp_dir, file_name=file_name, file_type=file_type)
     assert actual == expected_path
