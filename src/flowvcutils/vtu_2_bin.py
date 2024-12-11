@@ -322,9 +322,7 @@ def process_subdirectories(
     )
 
 
-def main(
-    root, output, file_name, extension, start, stop, increment, num_digits, field_name
-):
+def main():
     """Create binary files from vtu files for FlowVC.
 
     Reference https://shaddenlab.berkeley.edu/uploads/releasenotes.pdf
