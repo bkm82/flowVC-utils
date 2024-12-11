@@ -34,7 +34,7 @@ def rename_files(directory, currentname="all_results_", prefix=None):
             identifier = filename.split("_")[-1].replace(".vtu", "")
 
             # Construct the new filename
-            new_name = f"{prefix}_vel.{identifier}.vtu"
+            new_name = f"{prefix}_{identifier}.vtu"
 
             # Rename the file
             old_path = os.path.join(directory, filename)
