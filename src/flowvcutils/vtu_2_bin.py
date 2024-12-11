@@ -181,7 +181,7 @@ def vtk_to_connectivity_and_coordinates(
     logger.debug("starting vtk_to_connectivity_and_cordinates")
     reader = reader_selection(extension)
     logger.debug("reader selected")
-    # Select the first .vtu file to create coordinates, adjacency, and connectivity files
+    # Select first .vtu file to create coordinates, adjacency, and connectivity files
     first_file_path = os.path.join(
         input_root, f"{file_name}{start:0{num_digits}d}{extension}"
     )
