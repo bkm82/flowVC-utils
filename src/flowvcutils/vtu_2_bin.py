@@ -194,6 +194,7 @@ def vtk_to_connectivity_and_coordinates(
 def vtk_to_bin(
     vtk_root,
     output_root,
+    file_name,
     start,
     stop,
     increment,
@@ -245,14 +246,14 @@ def vtk_to_bin(
                     + n_pad_values
                 ],
             )
-
-        fout = open(output_root + "." + str(file_num) + ".bin", "wb")
+        out_file_path = create_vel_file_path(output_root, file_name)
+        fout = open(out_file_path, "wb")
         out_data.tofile(fout)
         fout.close()
 
 
-def create_vel_filename():
-    pass
+def create_vel_file_path(root, file_name, file_num):
+    return os.path.join(root, file_name + "vel." + str(file_num) + ".bin")
 
 
 def main(
@@ -271,7 +272,8 @@ def main(
 
     vtk_to_bin(
         os.path.join(root, file_name),
-        os.path.join(output, file_name),
+        output,
+        file_name,
         start,
         stop,
         increment,

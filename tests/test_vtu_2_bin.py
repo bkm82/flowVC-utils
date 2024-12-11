@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 from flowvcutils.vtu_2_bin import (
     reader_selection,
     coordinates_file,
-    create_vel_filename,
+    create_vel_file_path,
 )
 
 
@@ -50,10 +50,10 @@ def test_coordinates_shape(mock_data):
     assert obj.coordinates.shape == (6,)
 
 
-def test_create_vel_filename():
+def test_create_vel_file_path():
     root = "/some/directory"
     file_name = "file_name_"
     file_num = 50
     expected = "/some/directory/file_name_vel.50.bin"
-    actual = create_vel_filename(root, file_name, file_num)
+    actual = create_vel_file_path(root, file_name, file_num)
     assert actual == expected
