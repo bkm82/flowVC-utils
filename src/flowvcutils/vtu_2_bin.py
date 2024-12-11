@@ -247,7 +247,7 @@ def vtk_to_bin(
                     + n_pad_values
                 ],
             )
-        out_file_path = create_vel_file_path(output_root, file_name)
+        out_file_path = create_vel_file_path(output_root, file_name, file_num)
         fout = open(out_file_path, "wb")
         out_data.tofile(fout)
         fout.close()
