@@ -272,7 +272,7 @@ def main(
     )
 
     vtk_to_bin(
-        os.path.join(root, file_name),
+        root,
         output,
         file_name,
         start,
