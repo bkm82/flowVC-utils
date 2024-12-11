@@ -192,7 +192,7 @@ def vtk_to_connectivity_and_coordinates(
 
 
 def vtk_to_bin(
-    vtk_root,
+    input_root,
     output_root,
     file_name,
     start,
@@ -225,8 +225,9 @@ def vtk_to_bin(
             file_num_string = file_num_format % file_num
 
         reader = reader_selection(extension)
-        logger.info(f"Reading..{vtk_root + file_num_string + extension}")
-        reader.SetFileName(vtk_root + file_num_string + extension)
+        input_path = os.path.join(input_root, file_name + file_num_string + extension)
+        logger.info(f"Reading..{input_path}")
+        reader.SetFileName(input_path)
         reader.Update()
         data = reader.GetOutput()
 
