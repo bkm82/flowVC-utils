@@ -1,5 +1,6 @@
 import vtk
 import pytest
+import os
 from unittest.mock import MagicMock
 from flowvcutils.vtu_2_bin import (
     reader_selection,
@@ -67,7 +68,8 @@ def test_strip_trailing_underscore(file_name, expected):
     ],
 )
 def test_create_vel_file_path(root, file_name, file_num, expected):
-    assert create_vel_file_path(root, file_name, file_num) == expected
+    expected_path = os.path.normpath(expected)
+    assert create_vel_file_path(root, file_name, file_num) == expected_path
 
 
 @pytest.mark.parametrize(
@@ -112,5 +114,6 @@ def test_create_vel_file_path(root, file_name, file_num, expected):
     ],
 )
 def test_create_file_path(root, file_name, file_type, expected):
+    expected_path = os.path.normpath(expected)
     actual = create_file_path(root=root, file_name=file_name, file_type=file_type)
-    assert actual == expected
+    assert actual == expected_path
