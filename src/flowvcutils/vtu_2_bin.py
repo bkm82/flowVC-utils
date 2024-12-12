@@ -337,7 +337,7 @@ def process_directory(
     """
     for sub_directory in os.listdir(root):
         sub_dir_path = os.path.join(root, sub_directory)
-
+        logger.debug(f"sub_directory:{sub_directory}")
         if os.path.isdir(sub_dir_path):
             logger.info(f"Processing Directory {sub_directory}")
             bin_dir = os.path.join(sub_dir_path, "bin")
@@ -409,7 +409,10 @@ class Parser:
             type=str,
             nargs="?",
             action=conditional_required("file_name"),
-            help="Base file name (e.g., steady_ for steady_00000.vtu) (required for folder).",
+            help=(
+                "Base file name (e.g., steady_ for steady_00000.vtu)"
+                "(required for folder)."
+            ),
         )
 
         self.parser.add_argument(
