@@ -431,6 +431,42 @@ class Parser:
         return self.parser.parse_args(args)
 
 
+class Router:
+    """Routes the execution based on CLI arguments."""
+
+    def __init__(self, args):
+        self.args = args
+
+    def route(self):
+        """Route to the appropriate processing function."""
+        if self.args.process == "folder":
+            process_folder(
+                root=self.args.root,
+                output=self.args.output,
+                file_name=self.args.file_name,
+                extension=self.args.extension,
+                start=self.args.start,
+                stop=self.args.stop,
+                increment=self.args.increment,
+                num_digits=self.args.num_digits,
+                field_name=self.args.field_name,
+            )
+        elif self.args.process == "directory":
+            process_directory(
+                root=self.args.root,
+                output=self.args.output,
+                file_name=self.args.file_name,
+                extension=self.args.extension,
+                start=self.args.start,
+                stop=self.args.stop,
+                increment=self.args.increment,
+                num_digits=self.args.num_digits,
+                field_name=self.args.field_name,
+            )
+        else:
+            raise ValueError("Invalid process type specified.")
+
+
 def main():
     """Create binary files from vtu files for FlowVC.
 

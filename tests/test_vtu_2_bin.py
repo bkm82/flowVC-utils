@@ -1,7 +1,7 @@
 import vtk
 import pytest
 import os
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 import tempfile
 from flowvcutils.vtu_2_bin import (
     reader_selection,
@@ -10,6 +10,7 @@ from flowvcutils.vtu_2_bin import (
     strip_trailing_underscore,
     create_file_path,
     Parser,
+    Router,
 )
 
 
@@ -173,3 +174,37 @@ class TestParser:
             self.parser.parse_arguments(
                 ["--process", "invalid", "file_name", "0", "10"]
             )
+
+
+class TestRouter:
+    @patch("flowvcutils.vtu_2_bin.process_folder")
+    @patch("flowvcutils.vtu_2_bin.process_directory")
+    def test_route_to_process_folder(self, mock_process_directory, mock_process_folder):
+        # Mock arguments for 'folder' processing
+        args = MagicMock()
+        args.process = "folder"
+
+        # Create Router and call route
+        router = Router(args)
+        router.route()
+
+        # Assert process_folder is called with correct arguments
+        mock_process_folder.assert_called_once()
+        mock_process_directory.assert_not_called()
+
+    @patch("flowvcutils.vtu_2_bin.process_folder")
+    @patch("flowvcutils.vtu_2_bin.process_directory")
+    def test_route_to_process_dirctory(
+        self, mock_process_directory, mock_process_folder
+    ):
+        # Mock arguments for 'folder' processing
+        args = MagicMock()
+        args.process = "directory"
+
+        # Create Router and call route
+        router = Router(args)
+        router.route()
+
+        # Assert process_folder is called with correct arguments
+        mock_process_folder.assert_not_called()
+        mock_process_directory.assert_called_once()
