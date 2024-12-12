@@ -97,25 +97,6 @@ filename_cordinates.bin will have a file format in the following form
 
 
 
-*** connectivity.bin
- the yourfilename_connectivity.bin will have a file format
-
- e i_0^0 i_0^1 i_0^2 i_0^3 i_1^0 i_1^1 i_1^2 i_0^3 ....
-
- where
- e(int):       the number of elements
- i_0:(4 ints)  the 4 elements that make up an element
-
-*** adjacency.bin
- the yourfilename_adjacency.bin will have a file format
-
- e e_0^0 e_0^1 e_0^2 e_0^3 e_1^0 e_1^1 e_1^2 e_0^3 ....
-
- where
- e(int):       the number of elements
- i_0:(4 ints)  the 4 elements that share a common face with the element
-
-
 ** filerename.py
 Rename the files in a directory.
 For example From:
