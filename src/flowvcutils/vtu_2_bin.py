@@ -323,9 +323,7 @@ def process_folder(
     )
 
 
-def process_directory(
-    root, output, file_name, extension, start, stop, increment, num_digits, field_name
-):
+def process_directory(root, extension, start, stop, increment, num_digits, field_name):
     """
     Process an entire directory vtu files to .bin file.
 
@@ -479,8 +477,8 @@ class Router:
         elif self.args.process == "directory":
             process_directory(
                 root=self.args.root,
-                output=self.args.output,
-                file_name=self.args.file_name,
+                # output=self.args.output,
+                # file_name=self.args.file_name,
                 extension=self.args.extension,
                 start=self.args.start,
                 stop=self.args.stop,
@@ -501,18 +499,8 @@ def main():
     # Parse a CLI flag to enable setting the log level from the CLI
     parser = Parser()
     args = parser.parse_arguments()
-
-    process_folder(
-        args.root,
-        args.output,
-        args.file_name,
-        args.extension,
-        args.start,
-        args.stop,
-        args.increment,
-        args.num_digits,
-        args.field_name,
-    )
+    router = Router(args)
+    router.route()
 
 
 if __name__ == "__main__":
