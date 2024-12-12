@@ -6,6 +6,7 @@ import logging.handlers
 from flowvcutils.jsonlogger import settup_logging
 import argparse
 import os
+import shutil
 
 logger = logging.getLogger("vtu_2_bin")
 
@@ -289,7 +290,7 @@ def create_file_path(root, file_name, file_type):
 
 
 # os.path.join(output, file_name),
-def process_subdirectories(
+def process_folder(
     root, output, file_name, extension, start, stop, increment, num_digits, field_name
 ):
     """Create binary files from vtu files for FlowVC.
@@ -320,6 +321,42 @@ def process_subdirectories(
         flag_fenics_zeros=0,  # if 1, then adds zeros similar to finix
         extension=extension,
     )
+
+
+def process_directory(
+    root, output, file_name, extension, start, stop, increment, num_digits, field_name
+):
+    """
+    Process an entire directory vtu files to .bin file.
+
+    Goes into each sub directory.
+    Runns process folder with the arguments
+       file_name = subdirectory_name
+       output = subdir/bin
+    #WARNING: This removes the current subdirectory/bin folder if it exists
+    """
+    for sub_directory in os.listdir(root):
+        sub_dir_path = os.path.join(root, sub_directory)
+
+        if os.path.isdir(sub_dir_path):
+            logger.info(f"Processing Directory {sub_directory}")
+            bin_dir = os.path.join(sub_dir_path, "bin")
+            if os.path.exists(bin_dir):
+                shutil.rmtree(bin_dir)
+
+            os.makedirs(bin_dir)
+
+            process_folder(
+                root=sub_dir_path,
+                output=bin_dir,
+                file_name=sub_directory,
+                extension=extension,
+                start=start,
+                stop=stop,
+                increment=increment,
+                num_digits=num_digits,
+                field_name=field_name,
+            )
 
 
 def main():
@@ -378,7 +415,7 @@ def main():
 
     args = parser.parse_args()
 
-    process_subdirectories(
+    process_folder(
         args.root,
         args.output,
         args.file_name,
