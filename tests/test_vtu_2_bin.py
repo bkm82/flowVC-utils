@@ -168,7 +168,7 @@ class TestParser:
         assert args.field_name == "velocity_noslip"
         assert args.process == "folder"
 
-    @pytest.mark.xfail()
+    # @pytest.mark.xfail()
     def test_directory_path(self):
         """
         Test parsing with path = directory.
@@ -182,7 +182,7 @@ class TestParser:
                 "20",
             ]
         )
-        assert args.process == "folder"
+        assert args.process == "directory"
 
     def test_invalid_process_option(self):
         """Test that an invalid process option raises a SystemExit."""

@@ -371,6 +371,30 @@ class Parser:
     def _setup_arguments(self):
         """Define CLI arguments."""
         self.parser.add_argument(
+            "--process",
+            choices=["folder", "directory"],
+            default="folder",
+            help=(
+                "Processing mode: 'folder' for a single folder or 'directory'"
+                "to process subdirectories (default: 'folder')."
+            ),
+        )
+
+        def conditional_required(argument):
+            class ConditionalRequired(argparse.Action):
+                def __call__(self, parser, namespace, values, option_string=None):
+                    process = getattr(namespace, "process", "folder")
+
+                    # If in 'folder' mode these arguments are required
+                    if process == "folder":
+                        if values is None:
+                            parser.error(f'{argument} is requried for "folder"')
+
+                    setattr(namespace, self.dest, values)
+
+            return ConditionalRequired
+
+        self.parser.add_argument(
             "--root",
             default=os.getcwd(),
             help="Input directory with the VTU files (default: current directory).",
@@ -383,7 +407,9 @@ class Parser:
         self.parser.add_argument(
             "file_name",
             type=str,
-            help="Base file name (e.g., steady_ for steady_00000.vtu) (required).",
+            nargs="?",
+            action=conditional_required("file_name"),
+            help="Base file name (e.g., steady_ for steady_00000.vtu) (required for folder).",
         )
         self.parser.add_argument(
             "--extension",
@@ -415,15 +441,6 @@ class Parser:
             "--field_name",
             default="velocity",
             help="Field name for velocity data (default: 'velocity').",
-        )
-        self.parser.add_argument(
-            "--process",
-            choices=["folder", "directory"],
-            default="folder",
-            help=(
-                "Processing mode: 'folder' for a single folder or 'directory'"
-                "to process subdirectories (default: 'folder')."
-            ),
         )
 
     def parse_arguments(self, args=None):
