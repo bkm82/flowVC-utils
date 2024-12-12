@@ -405,6 +405,14 @@ class Parser:
             help="Output directory (default: current directory).",
         )
         self.parser.add_argument(
+            "start",
+            type=int,
+            help="Starting index for the processing files (required).",
+        )
+        self.parser.add_argument(
+            "stop", type=int, help="Stopping index for the processing files (required)."
+        )
+        self.parser.add_argument(
             "file_name",
             type=str,
             nargs="?",
@@ -417,14 +425,7 @@ class Parser:
             default=".vtu",
             help="File extension (default: '.vtu').",
         )
-        self.parser.add_argument(
-            "start",
-            type=int,
-            help="Starting index for the processing files (required).",
-        )
-        self.parser.add_argument(
-            "stop", type=int, help="Stopping index for the processing files (required)."
-        )
+
         self.parser.add_argument(
             "--increment",
             type=int,
