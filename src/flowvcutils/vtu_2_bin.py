@@ -395,7 +395,7 @@ class Parser:
             default=os.path.basename(os.getcwd()),
             help=(
                 "Base file name (e.g., steady_ for steady_00000.vtu)"
-                "(required for folder)."
+                "(default= directory name)."
             ),
         )
 
