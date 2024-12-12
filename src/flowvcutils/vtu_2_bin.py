@@ -400,7 +400,9 @@ class Parser:
             help="Starting index for the processing files (required).",
         )
         self.parser.add_argument(
-            "stop", type=int, help="Stopping index for the processing files (required)."
+            "stop",
+            type=int,
+            help=("Stopping index for the processing files (required)."),
         )
         self.parser.add_argument(
             "file_name",
