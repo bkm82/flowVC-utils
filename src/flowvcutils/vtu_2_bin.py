@@ -388,15 +388,6 @@ class Parser:
             type=int,
             help=("Stopping index for the processing files (required)."),
         )
-        self.parser.add_argument(
-            "--file_name",
-            type=str,
-            default=os.path.basename(os.getcwd()),
-            help=(
-                "Base file name (e.g., steady_ for steady_00000.vtu)"
-                "(default= directory name)."
-            ),
-        )
 
         self.parser.add_argument(
             "--root",
@@ -407,6 +398,16 @@ class Parser:
             "--output",
             default=os.getcwd(),
             help="Output directory (default: current directory).",
+        )
+
+        self.parser.add_argument(
+            "--file_name",
+            type=str,
+            default=os.path.basename(os.getcwd()),
+            help=(
+                "Base file name (e.g., steady_ for steady_00000.vtu)"
+                "(default= directory name)."
+            ),
         )
 
         self.parser.add_argument(
