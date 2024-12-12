@@ -434,8 +434,8 @@ class Parser:
         self.parser.add_argument(
             "--increment",
             type=int,
-            default=1,
-            help="Increment between each vtu file (default = 1).",
+            default=50,
+            help="Increment between each vtu file (default = 50).",
         )
         self.parser.add_argument(
             "--num_digits",

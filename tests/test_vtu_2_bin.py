@@ -132,7 +132,7 @@ class TestParser:
         assert args.root == os.getcwd()
         assert args.output == os.getcwd()
         assert args.extension == ".vtu"
-        assert args.increment == 1
+        assert args.increment == 50
         assert args.num_digits == 5
         assert args.field_name == "velocity"
         assert args.process == "folder"
