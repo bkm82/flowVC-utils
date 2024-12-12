@@ -128,7 +128,7 @@ class TestParser:
 
     def test_default_arguments(self):
         """Test that default arguments are set correctly."""
-        args = self.parser.parse_arguments(["0", "100", "test_file_name"])
+        args = self.parser.parse_arguments(["0", "100"])
         assert args.root == os.getcwd()
         assert args.output == os.getcwd()
         assert args.extension == ".vtu"
@@ -155,9 +155,10 @@ class TestParser:
                 "velocity_noslip",
                 "--process",
                 "folder",
+                "--file_name",
+                "test_file_name",
                 "0",
                 "20",
-                "test_file_name",
             ]
         )
         assert args.root == "/input/dir"

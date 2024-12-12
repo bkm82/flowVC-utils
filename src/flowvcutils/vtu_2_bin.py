@@ -389,9 +389,8 @@ class Parser:
             help=("Stopping index for the processing files (required)."),
         )
         self.parser.add_argument(
-            "file_name",
+            "--file_name",
             type=str,
-            nargs="?",
             default=os.path.basename(os.getcwd()),
             help=(
                 "Base file name (e.g., steady_ for steady_00000.vtu)"
