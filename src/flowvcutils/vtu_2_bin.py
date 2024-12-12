@@ -359,6 +359,78 @@ def process_directory(
             )
 
 
+class Parser:
+    """Handles CLI argument parsing."""
+
+    def __init__(self):
+        self.parser = argparse.ArgumentParser(
+            description="Process VTU files to a .bin format."
+        )
+        self._setup_arguments()
+
+    def _setup_arguments(self):
+        """Define CLI arguments."""
+        self.parser.add_argument(
+            "--root",
+            default=os.getcwd(),
+            help="Input directory with the VTU files (default: current directory).",
+        )
+        self.parser.add_argument(
+            "--output",
+            default=os.getcwd(),
+            help="Output directory (default: current directory).",
+        )
+        self.parser.add_argument(
+            "file_name",
+            type=str,
+            help="Base file name (e.g., steady_ for steady_00000.vtu) (required).",
+        )
+        self.parser.add_argument(
+            "--extension",
+            type=str,
+            default=".vtu",
+            help="File extension (default: '.vtu').",
+        )
+        self.parser.add_argument(
+            "start",
+            type=int,
+            help="Starting index for the processing files (required).",
+        )
+        self.parser.add_argument(
+            "stop", type=int, help="Stopping index for the processing files (required)."
+        )
+        self.parser.add_argument(
+            "--increment",
+            type=int,
+            default=1,
+            help="Increment between each vtu file (default = 1).",
+        )
+        self.parser.add_argument(
+            "--num_digits",
+            default=5,
+            type=int,
+            help="Digits in file name (e.g., 5 for test_00100.vtu). (default: 5).",
+        )
+        self.parser.add_argument(
+            "--field_name",
+            default="velocity",
+            help="Field name for velocity data (default: 'velocity').",
+        )
+        self.parser.add_argument(
+            "--process",
+            choices=["folder", "directory"],
+            default="folder",
+            help=(
+                "Processing mode: 'folder' for a single folder or 'directory'"
+                "to process subdirectories (default: 'folder')."
+            ),
+        )
+
+    def parse_arguments(self, args=None):
+        """Parse the CLI arguments."""
+        return self.parser.parse_args(args)
+
+
 def main():
     """Create binary files from vtu files for FlowVC.
 
@@ -366,54 +438,8 @@ def main():
     """
     settup_logging()
     # Parse a CLI flag to enable setting the log level from the CLI
-    parser = argparse.ArgumentParser(description="Process VTU files to a .bin format.")
-    parser.add_argument(
-        "--root",
-        default=os.getcwd(),
-        help="input directory with the VTU files (default: current directory).",
-    )
-    parser.add_argument(
-        "--output",
-        default=os.getcwd(),
-        help="Output directory (default: current directory).",
-    )
-    parser.add_argument(
-        "file_name",
-        type=str,
-        help="Base file name (i.e. steady_ for steady_00000.vtu) (required).",
-    )
-    parser.add_argument(
-        "--extension",
-        type=str,
-        default=".vtu",
-        help="File extension (default: '.vtu').",
-    )
-    parser.add_argument(
-        "start",
-        type=int,
-        help="starting index for the processing files (required)",
-    )
-    parser.add_argument(
-        "stop", type=int, help="stopping index for the processing files (required)"
-    )
-    parser.add_argument(
-        "--increment",
-        type=int,
-        default=1,
-        help="increment between each vtu file (default = 1)",
-    )
-    parser.add_argument(
-        "--num_digits",
-        default=5,
-        help="num_digits:digits in file name (i.e. 5 for test_00100.vtu. (default: 5)",
-    )
-    parser.add_argument(
-        "--field_name",
-        default="velocity",
-        help="Field name for velocity data (default: 'velocity')",
-    )
-
-    args = parser.parse_args()
+    parser = Parser()
+    args = parser.parse_arguments()
 
     process_folder(
         args.root,
