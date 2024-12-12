@@ -395,16 +395,6 @@ class Parser:
             return ConditionalRequired
 
         self.parser.add_argument(
-            "--root",
-            default=os.getcwd(),
-            help="Input directory with the VTU files (default: current directory).",
-        )
-        self.parser.add_argument(
-            "--output",
-            default=os.getcwd(),
-            help="Output directory (default: current directory).",
-        )
-        self.parser.add_argument(
             "start",
             type=int,
             help="Starting index for the processing files (required).",
@@ -419,6 +409,18 @@ class Parser:
             action=conditional_required("file_name"),
             help="Base file name (e.g., steady_ for steady_00000.vtu) (required for folder).",
         )
+
+        self.parser.add_argument(
+            "--root",
+            default=os.getcwd(),
+            help="Input directory with the VTU files (default: current directory).",
+        )
+        self.parser.add_argument(
+            "--output",
+            default=os.getcwd(),
+            help="Output directory (default: current directory).",
+        )
+
         self.parser.add_argument(
             "--extension",
             type=str,
