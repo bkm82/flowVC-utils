@@ -84,62 +84,6 @@ log_file = os.path.join(project_root, "logs", "flowvcutils.log")
 json_file = os.path.join(project_root, "logs", "flowvcutils.log.jsonl")
 
 
-dict_config = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "stdout": {
-            "class": "logging.StreamHandler",
-            "level": "INFO",
-            "formatter": "simple",
-            "stream": "ext://sys.stdout",
-        },
-        "file": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "level": "DEBUG",
-            "formatter": "detailed",
-            "filename": log_file,
-            "maxBytes": 1000000,
-            "backupCount": 3,
-        },
-        "jsonfile": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "level": "DEBUG",
-            "formatter": "json",
-            "filename": json_file,
-            "maxBytes": 1000000,
-            "backupCount": 3,
-        },
-    },
-    "formatters": {
-        "simple": {
-            "format": "%(levelname)s: %(message)s",
-        },
-        "detailed": {
-            "format": "[%(levelname)s|%(module)s|L%(lineno)d] %(asctime)s: %(message)s",
-            "datefmt": "%Y-%m-%dT%H:%M:%S%z",
-        },
-        "json": {
-            "()": flowvcutilsJSONFormatter,
-            "fmt_keys": {
-                "level": "levelname",
-                "message": "message",
-                "timestamp": "timestamp",
-                "logger": "name",
-                "module": "module",
-                "function": "funcName",
-                "line": "lineno",
-                "thread_name": "threadName",
-            },
-        },
-    },
-    "root": {
-        "level": "DEBUG",
-        "handlers": ["stdout", "file", "jsonfile"],
-    },
-}
-
-
 def settup_logging():
     current_dir = pathlib.Path(__file__).parent
     project_root = current_dir.parent
