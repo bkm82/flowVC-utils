@@ -1,9 +1,13 @@
 import datetime as dt
 import json
 import logging
+import logging.config
 import pathlib
 import argparse
 from typing import Dict, Optional
+from flowvcutils.utils import get_project_root
+import os
+
 
 LOG_RECORD_BUILTIN_ATTRS = {
     "args",
@@ -32,33 +36,11 @@ LOG_RECORD_BUILTIN_ATTRS = {
 }
 
 
-def settup_logging():
-    current_dir = pathlib.Path(__file__).parent
-    project_root = current_dir.parent
-
-    config_file = current_dir / "logging_configs" / "config.json"
-    logs_dir = project_root / "logs"
-    logs_dir.mkdir(exist_ok=True)
-
-    if not config_file.exists():
-        raise FileNotFoundError(f"logging configuration not found:{config_file}")
-
-    with open(config_file) as f_in:
-        config = json.load(f_in)
-
-    #    for handler_name, handler in config["handlers"].items():
-    for handler_name, handler in config["handlers"].items():
-        if "filename" in handler:
-            handler["filename"] = str(logs_dir / pathlib.Path(handler["filename"]).name)
-    logging.config.dictConfig(config)
-
-
 class flowvcutilsJSONFormatter(logging.Formatter):
     def __init__(
         self,
         *,
         fmt_keys: Optional[Dict[str, str]] = None,
-        # fmt_keys: Dict[str, str] | None = None,
     ):
         super().__init__()
         self.fmt_keys = fmt_keys if fmt_keys is not None else {}
@@ -97,6 +79,36 @@ class flowvcutilsJSONFormatter(logging.Formatter):
         return message
 
 
+project_root = get_project_root()
+log_file = os.path.join(project_root, "logs", "flowvcutils.log")
+json_file = os.path.join(project_root, "logs", "flowvcutils.log.jsonl")
+
+
+def settup_logging():
+    current_dir = pathlib.Path(__file__).parent
+    project_root = current_dir.parent
+
+    config_file = current_dir / "logging_configs" / "config.json"
+    logs_dir = project_root / "logs"
+    logs_dir.mkdir(exist_ok=True)
+
+    if not config_file.exists():
+        raise FileNotFoundError(f"logging configuration not found:{config_file}")
+
+    with open(config_file) as f_in:
+        config = json.load(f_in)
+
+    #    for handler_name, handler in config["handlers"].items():
+    for handler_name, handler in config["handlers"].items():
+        if "filename" in handler:
+            handler["filename"] = str(logs_dir / pathlib.Path(handler["filename"]).name)
+
+    # Manually ensure
+    config["formatters"]["json"]["()"] = flowvcutilsJSONFormatter
+
+    logging.config.dictConfig(config)
+
+
 def print_last_logs(num_lines):
     log_file = pathlib.Path("logs/flowvcutils.log.jsonl")
     with open(log_file, "r") as f:
@@ -127,4 +139,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    settup_logging()
