@@ -1,9 +1,12 @@
 import datetime as dt
 import json
 import logging
+import logging.config
 import pathlib
 import argparse
 from typing import Dict, Optional
+from flowvcutils.utils import get_project_root
+import os
 
 LOG_RECORD_BUILTIN_ATTRS = {
     "args",
@@ -31,6 +34,38 @@ LOG_RECORD_BUILTIN_ATTRS = {
     "taskName",
 }
 
+project_root = get_project_root()
+log_file = os.path.join(project_root, "logs", "flowvcutils.log")
+test_config = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "stdout": {
+            "class": "logging.StreamHandler",
+            "level": "INFO",
+            "formatter": "simple",
+            "stream": "ext://sys.stdout",
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "DEBUG",
+            "formatter": "simple",
+            "filename": log_file,
+            "maxBytes": 1000000,
+            "backupCount": 3,
+        },
+    },
+    "formatters": {
+        "simple": {
+            "format": "%(levelname)s: %(message)s",
+        },
+    },
+    "root": {
+        "level": "DEBUG",
+        "handlers": ["stdout", "file"],
+    },
+}
+
 
 def settup_logging():
     current_dir = pathlib.Path(__file__).parent
@@ -50,7 +85,7 @@ def settup_logging():
     for handler_name, handler in config["handlers"].items():
         if "filename" in handler:
             handler["filename"] = str(logs_dir / pathlib.Path(handler["filename"]).name)
-    logging.config.dictConfig(config)
+    logging.config.dictConfig(test_config)
 
 
 class flowvcutilsJSONFormatter(logging.Formatter):
@@ -58,7 +93,6 @@ class flowvcutilsJSONFormatter(logging.Formatter):
         self,
         *,
         fmt_keys: Optional[Dict[str, str]] = None,
-        # fmt_keys: Dict[str, str] | None = None,
     ):
         super().__init__()
         self.fmt_keys = fmt_keys if fmt_keys is not None else {}
