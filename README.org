@@ -1,7 +1,7 @@
 * flowVCUtils
 utilities for the flowVC project
 
-[[https://github.com/bkm82/bragbrag/actions][https://github.com/bkm82/flowVCUtils/actions/workflows/tests.yml/badge.svg]]
+[[https://github.com/bkm82/flowVC-utils/actions][https://github.com/bkm82/flowVC-utils/actions/workflows/tests.yml/badge.svg]]
 ** Installation
 Clone and install the repository
 #+begin_src shell
