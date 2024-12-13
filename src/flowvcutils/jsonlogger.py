@@ -36,6 +36,7 @@ LOG_RECORD_BUILTIN_ATTRS = {
 
 project_root = get_project_root()
 log_file = os.path.join(project_root, "logs", "flowvcutils.log")
+
 test_config = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -49,7 +50,7 @@ test_config = {
         "file": {
             "class": "logging.handlers.RotatingFileHandler",
             "level": "DEBUG",
-            "formatter": "simple",
+            "formatter": "detailed",
             "filename": log_file,
             "maxBytes": 1000000,
             "backupCount": 3,
@@ -58,6 +59,10 @@ test_config = {
     "formatters": {
         "simple": {
             "format": "%(levelname)s: %(message)s",
+        },
+        "detailed": {
+            "format": "[%(levelname)s|%(module)s|L%(lineno)d] %(asctime)s: %(message)s",
+            "datefmt": "%Y-%m-%dT%H:%M:%S%z",
         },
     },
     "root": {
