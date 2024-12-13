@@ -5,8 +5,8 @@ utilities for the flowVC project
 ** Installation
 Clone and install the repository
 #+begin_src shell
-  git clone https://github.com/bkm82/flowVCUtils.git
-  cd flowVCUtils
+  git clone https://github.com/bkm82/flowVC-utils.git
+  cd flowVC-utils
 #+end_src
 
 Install the package (optional add a -e after install for editable mode)
