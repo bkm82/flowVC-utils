@@ -25,6 +25,6 @@ jobs:
     - name: Test with tox
       run: tox
     - name: Upload coverage report to Codecov
-      uses: codecov/codecov-actions@v5
+      uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
