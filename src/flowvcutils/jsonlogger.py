@@ -7,7 +7,7 @@ import argparse
 from typing import Dict, Optional
 from flowvcutils.utils import get_project_root
 import os
-import sys
+
 
 LOG_RECORD_BUILTIN_ATTRS = {
     "args",
@@ -162,9 +162,7 @@ def settup_logging():
     # Manually ensure
     config["formatters"]["json"]["()"] = flowvcutilsJSONFormatter
 
-    logging.config.dictConfig(dict_config)
-
-    print("done")
+    logging.config.dictConfig(config)
 
 
 def print_last_logs(num_lines):
