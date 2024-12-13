@@ -3,7 +3,7 @@ import json
 import logging
 import pathlib
 import argparse
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 
 LOG_RECORD_BUILTIN_ATTRS = {
     "args",
