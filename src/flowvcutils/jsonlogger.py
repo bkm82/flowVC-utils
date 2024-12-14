@@ -110,8 +110,11 @@ def settup_logging():
 
 
 def print_last_logs(num_lines):
-    log_file = pathlib.Path("logs/flowvcutils.log.jsonl")
-    with open(log_file, "r") as f:
+    project_root = get_project_root()
+    json_file_name = "flowvcutils.log.jsonl"
+    json_log_file_path = os.path.join(project_root, "logs", json_file_name)
+    # log_file = pathlib.Path("logs/flowvcutils.log.jsonl")
+    with open(json_log_file_path, "r") as f:
         lines = f.readlines()
         last_n_lines = lines[-num_lines:]
         for line in last_n_lines:
@@ -139,4 +142,4 @@ def main():
 
 
 if __name__ == "__main__":
-    settup_logging()
+    main()
