@@ -57,7 +57,12 @@ def test_logging_integration():
     try:
         raise ValueError(f"Simulated error for {unique_id}")
     except ValueError as e:
-        logger.error(f"Error occured:{e}", extra={"test_key": "test_results"})
+        logger.error(
+            f"Error occured:{e}",
+            exc_info=True,
+            stack_info=True,
+            extra={"test_key": "test_results"},
+        )
     root = get_project_root()
     log_file = os.path.join(root, "logs", "flowvcutils.log")
     json_file = os.path.join(root, "logs", "flowvcutils.log.jsonl")
@@ -78,10 +83,17 @@ def test_logging_integration():
                 log_entry = json.loads(line)
                 if unique_id in log_entry.get("message", ""):
                     found_message_json = True
+                    actual_test_key = log_entry.get("test_key", "")
+                    actual_exe_info = log_entry.get("exc_info", "")
+                    actual_stack_info = log_entry.get("stack_info", "")
                     break
 
             except json.JSONDecodeError:
                 continue
+
+    assert actual_exe_info != "", "exc_info should not be empty but it is"
+    assert actual_stack_info != "", "stack_info should not be empty but it is"
+    assert actual_test_key == "test_results", "test key doesnt match"
     assert found_message_json, "Test message not found in json log file"
 
 
