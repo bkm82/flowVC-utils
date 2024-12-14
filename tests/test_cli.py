@@ -1,8 +1,16 @@
+import logging
+import uuid
 import pytest
+import json
+import sys
 from unittest import mock
 from click.testing import CliRunner
 from unittest.mock import patch
 from flowvcutils.cli import jsonlogger
+from flowvcutils.cli import main as cli_main
+from flowvcutils.jsonlogger import settup_logging
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture
@@ -24,6 +32,27 @@ def test_custom_num_lines(mock_jsonlogger_main, runner):
     result = runner.invoke(jsonlogger, ["20"])
     assert result.exit_code == 0
     mock_jsonlogger_main.assert_called_once_with(20)
+
+
+def test_integration_main_jsonlogger(monkeypatch, capsys):
+    """Integration test ensuring running json logger calls last log."""
+    monkeypatch.setattr(sys, "argv", ["flowvcutils", "jsonlogger", "1"])
+
+    logger = logging.getLogger("test_logging_integration")
+    settup_logging()
+    unique_id = str(uuid.uuid4())
+    test_message = f"Integration Test Log from cli_main. unique ID: {unique_id}"
+    logger.debug(test_message)
+    with pytest.raises(SystemExit):
+        cli_main()
+
+    captured = capsys.readouterr()
+
+    try:
+        log_entry = json.loads(captured.out.strip())
+    except json.JSONDecodeError:
+        pytest.fail("Captured output is not valid json")
+    assert test_message in log_entry.get("message", "")
 
 
 def test_init():
