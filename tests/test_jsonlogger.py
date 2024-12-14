@@ -6,7 +6,6 @@ from unittest.mock import mock_open, patch
 import logging.config
 import logging.handlers
 from flowvcutils.jsonlogger import settup_logging, print_last_logs
-from flowvcutils.jsonlogger import main as jsonlogger_main
 from flowvcutils.utils import get_project_root
 
 
