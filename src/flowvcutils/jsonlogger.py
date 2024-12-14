@@ -85,18 +85,20 @@ log_file = os.path.join(project_root, "logs", "flowvcutils.log")
 json_file = os.path.join(project_root, "logs", "flowvcutils.log.jsonl")
 
 
-def settup_logging():
+def settup_logging(config_file_path=None):
     current_dir = pathlib.Path(__file__).parent
     project_root = current_dir.parent
-
-    config_file = current_dir / "logging_configs" / "config.json"
+    if config_file_path is None:
+        config_file_path = current_dir / "logging_configs" / "config.json"
+    else:
+        config_file_path = pathlib.Path(config_file_path)
     logs_dir = project_root / "logs"
     logs_dir.mkdir(exist_ok=True)
 
-    if not config_file.exists():
-        raise FileNotFoundError(f"logging configuration not found:{config_file}")
+    if not config_file_path.exists():
+        raise FileNotFoundError(f"logging configuration not found:{config_file_path}")
 
-    with open(config_file) as f_in:
+    with open(config_file_path) as f_in:
         config = json.load(f_in)
 
     #    for handler_name, handler in config["handlers"].items():

@@ -48,6 +48,12 @@ def test_print_last_logs_with_error(capfd, mock_log_file):
         assert "Error printing log" in captured.out
 
 
+def test_incorrect_config_file():
+    incorrect_config_path = os.path.join(os.path.curdir, "nonsensefile.json")
+    with pytest.raises(FileNotFoundError):
+        settup_logging(incorrect_config_path)
+
+
 def test_logging_integration():
 
     logger = logging.getLogger("test_logging_integration")
