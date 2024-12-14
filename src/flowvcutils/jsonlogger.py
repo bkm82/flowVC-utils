@@ -3,6 +3,7 @@ import json
 import logging
 import logging.config
 import pathlib
+import sys
 from typing import Dict, Optional
 from flowvcutils.utils import get_project_root
 import os
@@ -125,14 +126,13 @@ def print_last_logs(num_lines):
                 print(f"Error printing log {e}")
 
 
-def scratch(args):
-    settup_logging()
-    logger.debug(f"Reached json logger scratch with args:{args}")
-
-
 def main(num_lines):
     print_last_logs(num_lines)
 
 
-if __name__ == "__main__":
-    main(num_lines=10)
+def init():
+    if __name__ == "__main__":
+        sys.exit(main(num_lines=10))
+
+
+init()

@@ -66,3 +66,13 @@ def test_logging_integration():
     assert found_message, "Test message not found in log file"
 
     assert True
+
+
+def test_init():
+    from flowvcutils import jsonlogger as module
+
+    with patch.object(module, "main", return_value=42):
+        with patch.object(module, "__name__", "__main__"):
+            with patch.object(module.sys, "exit") as mock_exit:
+                module.init()
+                assert mock_exit.call_args[0][0] == 42
