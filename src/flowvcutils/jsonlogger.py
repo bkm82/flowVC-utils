@@ -8,6 +8,7 @@ from typing import Dict, Optional
 from flowvcutils.utils import get_project_root
 import os
 
+logger = logging.getLogger(__name__)
 
 LOG_RECORD_BUILTIN_ATTRS = {
     "args",
@@ -123,6 +124,11 @@ def print_last_logs(num_lines):
                 print(json.dumps(log_entry, indent=4))
             except json.JSONDecodeError as e:
                 print(f"Error printing log {e}")
+
+
+def scratch(args):
+    settup_logging()
+    logger.debug(f"Reached json logger scratch with args:{args}")
 
 
 def main():

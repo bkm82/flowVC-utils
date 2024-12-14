@@ -4,7 +4,7 @@ from flowvcutils.jsonlogger import settup_logging
 import argparse
 import os
 
-logger = logging.getLogger("filerename")
+logger = logging.getLogger(__name__)
 
 
 def rename_files(directory, currentname="all_results_", prefix=None):

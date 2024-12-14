@@ -8,7 +8,7 @@ import argparse
 import os
 import shutil
 
-logger = logging.getLogger("vtu_2_bin")
+logger = logging.getLogger(__name__)
 
 
 def reader_selection(extension):
