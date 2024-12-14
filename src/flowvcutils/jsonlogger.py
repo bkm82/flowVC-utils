@@ -3,7 +3,6 @@ import json
 import logging
 import logging.config
 import pathlib
-import argparse
 from typing import Dict, Optional
 from flowvcutils.utils import get_project_root
 import os
@@ -136,4 +135,4 @@ def main(num_lines):
 
 
 if __name__ == "__main__":
-    main()
+    main(num_lines=10)

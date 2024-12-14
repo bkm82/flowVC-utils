@@ -1,6 +1,5 @@
 import pytest
 from click.testing import CliRunner
-from click.exceptions import BadParameter
 from unittest.mock import patch
 from flowvcutils.cli import jsonlogger
 
