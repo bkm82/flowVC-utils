@@ -1,3 +1,4 @@
+import sys
 import logging
 import click
 from flowvcutils.jsonlogger import settup_logging
@@ -27,5 +28,9 @@ def main():
     cli()
 
 
-if __name__ == "__main__":
-    main()
+def init():
+    if __name__ == "__main__":
+        sys.exit(main())
+
+
+init()
