@@ -131,20 +131,8 @@ def scratch(args):
     logger.debug(f"Reached json logger scratch with args:{args}")
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Print the last n lines form the JSON log file"
-    )
-    parser.add_argument(
-        "num_lines",
-        type=int,
-        nargs="?",
-        default=10,
-        help="The number of logs to print (default 10)",
-    )
-
-    args = parser.parse_args()
-    print_last_logs(args.num_lines)
+def main(num_lines):
+    print_last_logs(num_lines)
 
 
 if __name__ == "__main__":

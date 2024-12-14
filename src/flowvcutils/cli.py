@@ -1,7 +1,7 @@
 import logging
 import click
 from flowvcutils.jsonlogger import settup_logging
-from .jsonlogger import scratch as jsonlogger_scratch
+from .jsonlogger import main as jsonlogger_main
 
 logger = logging.getLogger(__name__)
 
@@ -12,9 +12,14 @@ def cli():
 
 
 @cli.command()
-@click.argument("args")
-def jsonlogger(args):
-    jsonlogger_scratch(args)
+@click.argument("num_lines", default=10, type=int)
+def jsonlogger(num_lines):
+    """
+    Print a specified number of log lines.
+
+    NUM_LINES: the number of logs to print (default 10).
+    """
+    jsonlogger_main(num_lines)
 
 
 def main():
