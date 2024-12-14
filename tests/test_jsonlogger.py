@@ -53,19 +53,36 @@ def test_logging_integration():
     logger = logging.getLogger("test_logging_integration")
     settup_logging()
     unique_id = str(uuid.uuid4())
-    test_message = f"Test Log From test_logging_integration. unique ID: {unique_id}"
-    logger.debug(test_message)
+    # test_message = f"Test Log From test_logging_integration. unique ID: {unique_id}"
+    try:
+        raise ValueError(f"Simulated error for {unique_id}")
+    except ValueError as e:
+        logger.error(f"Error occured:{e}", extra={"test_key": "test_results"})
     root = get_project_root()
     log_file = os.path.join(root, "logs", "flowvcutils.log")
+    json_file = os.path.join(root, "logs", "flowvcutils.log.jsonl")
 
+    # Read the latest log file
     found_message = False
     with open(log_file, "r") as f:
-        if test_message in f.read():
+        if unique_id in f.read():
             found_message = True
 
     assert found_message, "Test message not found in log file"
 
-    assert True
+    # Check json log files
+    found_message_json = False
+    with open(json_file, "r") as f:
+        for line in f:
+            try:
+                log_entry = json.loads(line)
+                if unique_id in log_entry.get("message", ""):
+                    found_message_json = True
+                    break
+
+            except json.JSONDecodeError:
+                continue
+    assert found_message_json, "Test message not found in json log file"
 
 
 def test_init():
