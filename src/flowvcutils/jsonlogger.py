@@ -3,11 +3,12 @@ import json
 import logging
 import logging.config
 import pathlib
-import argparse
+import sys
 from typing import Dict, Optional
 from flowvcutils.utils import get_project_root
 import os
 
+logger = logging.getLogger(__name__)
 
 LOG_RECORD_BUILTIN_ATTRS = {
     "args",
@@ -84,18 +85,20 @@ log_file = os.path.join(project_root, "logs", "flowvcutils.log")
 json_file = os.path.join(project_root, "logs", "flowvcutils.log.jsonl")
 
 
-def settup_logging():
+def settup_logging(config_file_path=None):
     current_dir = pathlib.Path(__file__).parent
     project_root = current_dir.parent
-
-    config_file = current_dir / "logging_configs" / "config.json"
+    if config_file_path is None:
+        config_file_path = current_dir / "logging_configs" / "config.json"
+    else:
+        config_file_path = pathlib.Path(config_file_path)
     logs_dir = project_root / "logs"
     logs_dir.mkdir(exist_ok=True)
 
-    if not config_file.exists():
-        raise FileNotFoundError(f"logging configuration not found:{config_file}")
+    if not config_file_path.exists():
+        raise FileNotFoundError(f"logging configuration not found:{config_file_path}")
 
-    with open(config_file) as f_in:
+    with open(config_file_path) as f_in:
         config = json.load(f_in)
 
     #    for handler_name, handler in config["handlers"].items():
@@ -110,8 +113,11 @@ def settup_logging():
 
 
 def print_last_logs(num_lines):
-    log_file = pathlib.Path("logs/flowvcutils.log.jsonl")
-    with open(log_file, "r") as f:
+    project_root = get_project_root()
+    json_file_name = "flowvcutils.log.jsonl"
+    json_log_file_path = os.path.join(project_root, "logs", json_file_name)
+    # log_file = pathlib.Path("logs/flowvcutils.log.jsonl")
+    with open(json_log_file_path, "r") as f:
         lines = f.readlines()
         last_n_lines = lines[-num_lines:]
         for line in last_n_lines:
@@ -122,21 +128,13 @@ def print_last_logs(num_lines):
                 print(f"Error printing log {e}")
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Print the last n lines form the JSON log file"
-    )
-    parser.add_argument(
-        "num_lines",
-        type=int,
-        nargs="?",
-        default=10,
-        help="The number of logs to print (default 10)",
-    )
-
-    args = parser.parse_args()
-    print_last_logs(args.num_lines)
+def main(num_lines):
+    print_last_logs(num_lines)
 
 
-if __name__ == "__main__":
-    settup_logging()
+def init():
+    if __name__ == "__main__":
+        sys.exit(main(num_lines=10))
+
+
+init()
