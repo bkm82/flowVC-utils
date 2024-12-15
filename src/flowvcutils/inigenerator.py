@@ -5,7 +5,7 @@ from flowvcutils.jsonlogger import settup_logging
 import argparse
 import os
 
-logger = logging.getLogger("inigenerator")
+logger = logging.getLogger(__name__)
 
 
 class directoryHandler:
