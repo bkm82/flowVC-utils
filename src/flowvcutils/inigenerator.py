@@ -4,6 +4,7 @@ import logging.handlers
 from flowvcutils.jsonlogger import settup_logging
 import argparse
 import os
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -94,19 +95,38 @@ class resultsProcessor:
         )
 
 
-def main():
+def prompt_settings(settings, prefix=""):
+    for key, value in settings.items():
+        if isinstance(value, dict):
+            prompt_settings(value, f"{prefix}{key}")  # recurse the dictinary
+        else:
+
+            user_input = input(f"{prefix}{key} (default = {value})")
+            save_prompt = "no"
+            if user_input:  # New value provided
+                settings[key] = user_input
+                save_prompt = (
+                    input("Do you want to save this value? (yes/no): ").strip().lower()
+                )
+
+            if save_prompt == "yes":
+                logger.debug(f"Saving setting:{prefix}{key}, Value: {value}")
+            else:  # No input, keep the default
+                settings[key] = value
+
+
+def set_preferences():
+    # use_case = input("Select use case (FTLE/Trace/VelOut): ")
+    with open("ini_default.json", "r") as file:
+        defaults = json.load(file)
+    prompt_settings(defaults)
+
+
+def main(directory):
     settup_logging()
     logger.info("Starting inigenerator")
 
-    parser = argparse.ArgumentParser(description="Generate ini file from directory")
-    parser.add_argument(
-        "-d",
-        "--directory",
-        default=os.getcwd(),
-        help="Directory containing the .vtu files (default: current dir)",
-    )
-    args = parser.parse_args()
-    directory_handler = directoryHandler(args.directory)
+    directory_handler = directoryHandler(directory)
 
     processor = resultsProcessor(directory_handler)
     x_range, y_range, z_range = processor.find_data_range()
@@ -117,4 +137,16 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    settup_logging()
+    set_preferences()
+    # def print_settings(settings, prefix=''):
+    #     for key, value in settings.items():
+    #         if isinstance(value, dict):
+    #             print_settings(value, prefix + key + '.')
+    #         else:
+    #             print(f"{prefix}{key} = {value}")
+
+    # # Load the JSON settings into a dictionary
+    # with open('ini_default.json', 'r') as file:
+    #     settings = json.load(file)
+    #     print_settings(settings)
