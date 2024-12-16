@@ -6,6 +6,7 @@ import configparser
 from .utils import get_project_root
 import os
 import json
+import inspect
 
 
 logger = logging.getLogger(__name__)
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 class directoryHandler:
     def __init__(self, directory):
         self.directory = directory
-        self.validate_directory()
+        self.__validate_directory(directory)
         self.__set_directory_name()
 
     def __set_directory_name(self):
@@ -31,40 +32,33 @@ class directoryHandler:
         """
         return self.directory_name
 
-    def validate_directory(self):
-        """
-        Validates that the given directory exists.
-
-        Args:
-            directory (str): Directory to validate.
-
-        Returns:
-            bool: True if the directory is valid.
-        """
-        if not os.path.isdir(self.directory):
-
-            logger.error(f"{self.directory} is not a valid directory.")
-            raise FileNotFoundError(f"{self.directory} is not a valid directory")
-
-        return True
-
-    def get_data_path(self, data_dir_name="in_bin"):
+    def get_data_path(self, data_dir_name="input_bin"):
         return self.get_sub_directory_path(data_dir_name)
 
-    def get_sub_directory_path(self, sub_dir_name):
-        """Returns the full path to the subdirectory of interest"""
-        self.validate_sub_directory(sub_dir_name)
-        return os.path.join(self.directory, sub_dir_name)
+    def get_output_path(self, dir_name="output_bin", create_if_missing=True):
+        return self.get_sub_directory_path(dir_name, create_if_missing)
 
-    def validate_sub_directory(self, sub_dir_name):
-        """
-        Validates that the directory has a sub_directory.
-        TODO Ensure that the required files are there
-        """
+    def __validate_directory(self, directory, create_if_missing=False):
+        if not os.path.isdir(directory):
+            if create_if_missing:
+                try:
+                    os.makedirs(directory)
+                except Exception:
+                    logger.error(
+                        f"Failed to create directory {directory}", exc_info=True
+                    )
+                    raise
+
+            else:
+                logger.error(f"{directory} is not a valid directory.")
+                raise FileNotFoundError(f"{directory} is not a valid directory")
+        return True
+
+    def get_sub_directory_path(self, sub_dir_name, create_if_missing=False):
+        """Returns the full path to the subdirectory of interest"""
         sub_directory = os.path.join(self.directory, sub_dir_name)
-        if not os.path.isdir(sub_directory):
-            logger.error(f"{sub_directory} is not a valid directory")
-            raise FileNotFoundError(f"{sub_directory} is not a valid directory")
+        self.__validate_directory(sub_directory, create_if_missing)
+        return os.path.join(self.directory, sub_dir_name)
 
     def find_vtu(self):
         """
@@ -154,6 +148,7 @@ class Config:
     def __init__(self, directory_handler):
         self.directory_handler = directory_handler
         self.data_path = self.directory_handler.get_data_path()
+        self.output_path = self.directory_handler.get_output_path()
         self.directory_name = self.directory_handler.get_directory_name()
         self.load_config()
 
@@ -162,14 +157,44 @@ class Config:
         self.config = configparser.ConfigParser()
         self.config.read_file(open(config_path))
 
-    def write_config_file(self, file_path=None, file_name=None):
-        """
-        Write the configuration to the .in file.
+    def __get_update_dict(self):
+        update_dict = {
+            "Path_Data": self.data_path,
+            "Path_Output": self.output_path,
+            "data_infileprefix": self.directory_name,
+        }
+        return update_dict
 
-        args
-        config: the configuration object
-        file_path: path to save the file
-        file_name: filename to save (default: current_dir_name.in
+    def update_settings(self, updates=None):
+        """Update the configuration settings with a dictionary
+
+        Parameters
+        ----------
+        updates : dict
+            Dictionary containing key value pairs
+
+        """
+        if updates is None:
+            updates = self.__get_update_dict()
+
+        for key, value in updates.items():
+            if key not in self.config["Outputs"]:
+                raise ValueError(
+                    f"The key '{key}' does not exist in the default. Check the spelling"
+                )
+            logger.info(f"Updating {key} with {value}")
+            self.config["Outputs"][key] = value
+
+    def write_config_file(self, file_path=None, file_name=None):
+        """Write the configuration.in file.
+
+        Parameters
+        ----------
+        file_path : string
+            directory to save the file (default current_dir/input_bin)
+        file_name : string
+            filename to save (default current_dir_name.in)
+
         """
         if file_path is None:
             file_path = self.data_path
@@ -205,9 +230,8 @@ def main(directory):
     # logger.info("Done!")
 
     config = Config(directory_handler)
-    # config.directory_handler.validate_sub_directory("in_bin")
-    path = config.directory_handler.get_sub_directory_path("in_bin")
-    config.write_config_file(path)
+    config.update_settings()
+    config.write_config_file()
 
 
 if __name__ == "__main__":
