@@ -2,9 +2,11 @@ import vtk
 import logging.config
 import logging.handlers
 from flowvcutils.jsonlogger import settup_logging
-import argparse
+import configparser
+from .utils import get_project_root
 import os
 import json
+
 
 logger = logging.getLogger(__name__)
 
@@ -115,6 +117,39 @@ def prompt_settings(settings, prefix=""):
                 settings[key] = value
 
 
+def load_config(file_name="config.inigenerator.cfg"):
+    config_path = os.path.join(get_project_root(), "config", file_name)
+    config = configparser.ConfigParser()
+    config.read_file(open(config_path))
+    return config
+
+
+def print_config_outputs(config):
+    for key, value in config.items("Outputs"):
+        print(f"{key} = {value}")
+
+
+def write_config_file(config, file_path=None, file_name=None):
+    """
+    Write the configuration to the .in file.
+
+    args
+    config: the configuration object
+    file_path: path to save the file  (default current directory)
+    file_name: filename to save (default: current_dir_name.in
+    """
+    if file_path == None:
+        file_path = os.getcwd()
+    if file_name == None:
+        directory_name = os.path.basename(os.getcwd())
+        file_name = f"{directory_name}.in"
+
+    full_path = os.path.join(file_path, file_name)
+    logger.info(f"full_path {full_path}")
+    with open(full_path, "w") as configfile:
+        config.write(configfile)
+
+
 def set_preferences():
     # use_case = input("Select use case (FTLE/Trace/VelOut): ")
     with open("ini_default.json", "r") as file:
@@ -138,15 +173,5 @@ def main(directory):
 
 if __name__ == "__main__":
     settup_logging()
-    set_preferences()
-    # def print_settings(settings, prefix=''):
-    #     for key, value in settings.items():
-    #         if isinstance(value, dict):
-    #             print_settings(value, prefix + key + '.')
-    #         else:
-    #             print(f"{prefix}{key} = {value}")
-
-    # # Load the JSON settings into a dictionary
-    # with open('ini_default.json', 'r') as file:
-    #     settings = json.load(file)
-    #     print_settings(settings)
+    config = load_config()
+    write_config_file(config)

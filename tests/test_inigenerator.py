@@ -113,3 +113,42 @@ def test_vtu_file_doesnt_exist():
         dir_handler = directoryHandler(temp_dir)
         with pytest.raises(FileNotFoundError):
             dir_handler.find_vtu()
+
+
+# class TestConfig:
+#     @pytest.fixture
+#     def test_config(self):
+#         return {
+
+#             "Path_Data = /path/to/data"
+#             "Dimensions": 3,
+#             "Fluid_Density": 1.2e-3,
+#             "FTLE_Compute": 1,
+#             "Data_Mesh_Bounds": {"XMin": 0, "XMax": 1, "YMin": 0, "YMax": 1},
+#         }
+
+#     def assert_config_properties(self, config):
+#         """Assert the config matches test_config using dot notation"""
+#         assert isinstance(config, dict)
+#         assert config.Path_Data == "/path/to/data"
+#         assert config.Dimensions == 3
+#         assert config.Fluid_Density == 1.2e-3
+#         assert config.Data_Mesh_Bounds.XMin == 0
+#         assert config.Data_Mesh_Bounds.XMax == 1
+#         assert config.Data_Mesh_Bounds.YMin == 0
+#         assert config.Data_Mesh_Bounds.YMax == 1
+
+#     def test_load_dict(self, test_config):
+#         config = Config.load_dict(test_config)
+#         self.assert_config_properties(config)
+
+#     def test_load_list(self):
+#         data = [1, 2, 3]
+#         result = Config.load_list(data)
+#         assert result == [1, 2, 3]
+
+#     def test_load_json(self, test_config):
+#         mock_data = json.dumps(test_config)
+#         with patch("builtins.open", mock_open(read_data=mock_data)):
+#             config = Config.load_json("dummy_path.json")
+#             self.assert_config_properties(config)
