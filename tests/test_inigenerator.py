@@ -121,6 +121,28 @@ def test_get_bad__directory_path():
             directoryhandler.get_sub_directory_path("nonexistent")
 
 
+def test_get_directory_name_without_trailing_underscore():
+    """
+    Test the get_directory_name method without a trailing underscore.
+    """
+    with TemporaryDirectory() as temp_dir:
+        test_dir = os.path.join(temp_dir, "test_directory")
+        os.mkdir(test_dir)  # Create a real directory
+        handler = directoryHandler(test_dir)
+        assert handler.get_directory_name() == "test_directory"
+
+
+def test_get_directory_name_with_trailing_underscore():
+    """
+    Test the get_directory_name method without a trailing underscore.
+    """
+    with TemporaryDirectory() as temp_dir:
+        test_dir = os.path.join(temp_dir, "test_directory_")
+        os.mkdir(test_dir)  # Create a real directory
+        handler = directoryHandler(test_dir)
+        assert handler.get_directory_name() == "test_directory"
+
+
 def test_vtu_file_exist():
     """
     Test case where the vtu file exists.

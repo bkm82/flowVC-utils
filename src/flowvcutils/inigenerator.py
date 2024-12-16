@@ -16,6 +16,18 @@ class directoryHandler:
         self.directory = directory
         self.validate_directory()
 
+    def get_directory_name(self):
+        """
+        Returns the name of the directory without a trailing underscore.
+
+        Returns:
+        str: The name of the directory.
+        """
+        directory_name = os.path.basename(self.directory)
+        if directory_name.endswith("_"):
+            return directory_name[:-1]  # Remove the trailing underscore
+        return directory_name
+
     def validate_directory(self):
         """
         Validates that the given directory exists.
@@ -152,7 +164,7 @@ class Config:
 
         args
         config: the configuration object
-        file_path: path to save the file  (default current directory)
+        file_path: path to save the file
         file_name: filename to save (default: current_dir_name.in
         """
         if file_path == None:
