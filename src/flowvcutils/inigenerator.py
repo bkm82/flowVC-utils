@@ -15,18 +15,21 @@ class directoryHandler:
     def __init__(self, directory):
         self.directory = directory
         self.validate_directory()
+        self.__set_directory_name()
+
+    def __set_directory_name(self):
+        """
+        Sets directory_name atribute to the directory without trailing underscore.
+        """
+        self.directory_name = os.path.basename(self.directory)
+        if self.directory_name.endswith("_"):
+            self.directory_name = self.directory_name[:-1]
 
     def get_directory_name(self):
         """
-        Returns the name of the directory without a trailing underscore.
-
-        Returns:
-        str: The name of the directory.
+        Returns the directory_name atribute
         """
-        directory_name = os.path.basename(self.directory)
-        if directory_name.endswith("_"):
-            return directory_name[:-1]  # Remove the trailing underscore
-        return directory_name
+        return self.directory_name
 
     def validate_directory(self):
         """
@@ -151,6 +154,7 @@ class Config:
     def __init__(self, directory_handler):
         self.directory_handler = directory_handler
         self.data_path = self.directory_handler.get_data_path()
+        self.directory_name = self.directory_handler.get_directory_name()
         self.load_config()
 
     def load_config(self, file_name="config.inigenerator.cfg"):
@@ -167,11 +171,10 @@ class Config:
         file_path: path to save the file
         file_name: filename to save (default: current_dir_name.in
         """
-        if file_path == None:
+        if file_path is None:
             file_path = self.data_path
-        if file_name == None:
-            directory_name = os.path.basename(os.getcwd())
-            file_name = f"{directory_name}.in"
+        if file_name is None:
+            file_name = f"{self.directory_name}.in"
 
         full_path = os.path.join(file_path, file_name)
         logger.debug(f"full_path {full_path}")
