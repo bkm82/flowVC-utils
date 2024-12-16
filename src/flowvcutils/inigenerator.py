@@ -6,7 +6,6 @@ import configparser
 from .utils import get_project_root
 import os
 import json
-import inspect
 
 
 logger = logging.getLogger(__name__)
