@@ -92,6 +92,35 @@ def test_validate_directory_does_not_exist():
         directoryHandler(non_existent_dir)
 
 
+def test_get_sub_directory_path():
+    """
+    Test case to get a subdirectory
+    """
+    # Create a temporary directory using tempfile
+    with TemporaryDirectory() as temp_dir:
+        subdir_name = "test_subdir"
+        expected = os.path.join(temp_dir, subdir_name)
+        os.mkdir(expected)
+        directoryhandler = directoryHandler(temp_dir)
+        actual = directoryhandler.get_sub_directory_path(subdir_name)
+
+        assert actual == expected
+
+
+def test_get_bad__directory_path():
+    """
+    Test case to get a subdirectory
+    """
+    # Create a temporary directory using tempfile
+    with TemporaryDirectory() as temp_dir:
+        subdir_name = "test_subdir"
+        expected = os.path.join(temp_dir, subdir_name)
+        os.mkdir(expected)
+        directoryhandler = directoryHandler(temp_dir)
+        with pytest.raises(FileNotFoundError):
+            directoryhandler.get_sub_directory_path("nonexistent")
+
+
 def test_vtu_file_exist():
     """
     Test case where the vtu file exists.

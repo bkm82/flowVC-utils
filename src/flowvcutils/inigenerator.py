@@ -33,6 +33,24 @@ class directoryHandler:
 
         return True
 
+    def get_data_path(self, data_dir_name="in_bin"):
+        return self.get_sub_directory_path(data_dir_name)
+
+    def get_sub_directory_path(self, sub_dir_name):
+        """Returns the full path to the subdirectory of interest"""
+        self.validate_sub_directory(sub_dir_name)
+        return os.path.join(self.directory, sub_dir_name)
+
+    def validate_sub_directory(self, sub_dir_name):
+        """
+        Validates that the directory has a sub_directory.
+        TODO Ensure that the required files are there
+        """
+        sub_directory = os.path.join(self.directory, sub_dir_name)
+        if not os.path.isdir(sub_directory):
+            logger.error(f"{sub_directory} is not a valid directory")
+            raise FileNotFoundError(f"{sub_directory} is not a valid directory")
+
     def find_vtu(self):
         """
         Search the current directory and return the first file with a ".vtu" extension.
@@ -117,37 +135,37 @@ def prompt_settings(settings, prefix=""):
                 settings[key] = value
 
 
-def load_config(file_name="config.inigenerator.cfg"):
-    config_path = os.path.join(get_project_root(), "config", file_name)
-    config = configparser.ConfigParser()
-    config.read_file(open(config_path))
-    return config
+class Config:
+    def __init__(self, directory_handler):
+        self.directory_handler = directory_handler
+        self.data_path = self.directory_handler.get_data_path()
+        self.load_config()
 
+    def load_config(self, file_name="config.inigenerator.cfg"):
+        config_path = os.path.join(get_project_root(), "config", file_name)
+        self.config = configparser.ConfigParser()
+        self.config.read_file(open(config_path))
 
-def print_config_outputs(config):
-    for key, value in config.items("Outputs"):
-        print(f"{key} = {value}")
+    def write_config_file(self, file_path=None, file_name=None):
+        """
+        Write the configuration to the .in file.
 
+        args
+        config: the configuration object
+        file_path: path to save the file  (default current directory)
+        file_name: filename to save (default: current_dir_name.in
+        """
+        if file_path == None:
+            file_path = self.data_path
+        if file_name == None:
+            directory_name = os.path.basename(os.getcwd())
+            file_name = f"{directory_name}.in"
 
-def write_config_file(config, file_path=None, file_name=None):
-    """
-    Write the configuration to the .in file.
-
-    args
-    config: the configuration object
-    file_path: path to save the file  (default current directory)
-    file_name: filename to save (default: current_dir_name.in
-    """
-    if file_path == None:
-        file_path = os.getcwd()
-    if file_name == None:
-        directory_name = os.path.basename(os.getcwd())
-        file_name = f"{directory_name}.in"
-
-    full_path = os.path.join(file_path, file_name)
-    logger.info(f"full_path {full_path}")
-    with open(full_path, "w") as configfile:
-        config.write(configfile)
+        full_path = os.path.join(file_path, file_name)
+        logger.debug(f"full_path {full_path}")
+        with open(full_path, "w") as configfile:
+            for key, value in self.config.items("Outputs"):
+                configfile.write(f"{key} = {value} \n")
 
 
 def set_preferences():
@@ -163,15 +181,20 @@ def main(directory):
 
     directory_handler = directoryHandler(directory)
 
-    processor = resultsProcessor(directory_handler)
-    x_range, y_range, z_range = processor.find_data_range()
-    logger.info(f"X Range: {x_range}")
-    logger.info(f"Y Range: {y_range}")
-    logger.info(f"Z Range: {z_range}")
-    logger.info("Done!")
+    # processor = resultsProcessor(directory_handler)
+
+    # x_range, y_range, z_range = processor.find_data_range()
+    # logger.info(f"X Range: {x_range}")
+    # logger.info(f"Y Range: {y_range}")
+    # logger.info(f"Z Range: {z_range}")
+    # logger.info("Done!")
+
+    config = Config(directory_handler)
+    # config.directory_handler.validate_sub_directory("in_bin")
+    path = config.directory_handler.get_sub_directory_path("in_bin")
+    config.write_config_file(path)
 
 
 if __name__ == "__main__":
-    settup_logging()
-    config = load_config()
-    write_config_file(config)
+    directory = os.getcwd()
+    main(directory)
