@@ -207,5 +207,6 @@ def test_Data_Tmax():
         assert not Output_TStart > Data_TMax
 
         assert Int_TimeDirection == -1
+        assert Output_TDelta > 0
         assert not (Output_TEnd > Data_TMax)
         assert not (Output_TEnd < Data_TMin)
