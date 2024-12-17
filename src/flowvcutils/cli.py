@@ -32,11 +32,22 @@ def jsonlogger(num_lines):
     default=os.getcwd(),
     help="Directory to run program (default: current dir)",
 )
-def inigenerator(directory):
+@click.option(
+    "--auto_range",
+    default=True,
+    help=(
+        "Get data and FTLE range(min-max) using a .vtu file?"
+        "Ensure there is at least 1 .vtu file in in a input_vtu dir"
+    ),
+)
+@click.option(
+    "--cell_size", type=float, default=0.001, help="size of FTLE element, default 0.001"
+)
+def inigenerator(directory, auto_range):
     """
     Generate a .ini file for the flow vc.
     """
-    inigenerator_main(directory)
+    inigenerator_main(directory, auto_range)
 
 
 def main():

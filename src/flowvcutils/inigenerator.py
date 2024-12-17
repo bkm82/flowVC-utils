@@ -271,23 +271,17 @@ class Config:
                 configfile.write(f"{key} = {value} \n")
 
 
-def main(directory):
+def main(directory, auto_range, cell_size):
     settup_logging()
     logger.info("Starting inigenerator")
 
     directory_handler = directoryHandler(directory)
 
     processor = resultsProcessor(directory_handler)
-
-    # x_range, y_range, z_range = processor.find_data_range()
-    # logger.info(f"X Range: {x_range}")
-    # logger.info(f"Y Range: {y_range}")
-    # logger.info(f"Z Range: {z_range}")
-    # logger.info("Done!")
-
     config = Config(processor)
     config.set_path_defaults()
-    config.set_data_range_defaults(cell_size=0.001)
+    if auto_range:
+        config.set_data_range_defaults(cell_size)
 
     config.update_settings()
     config.write_config_file()
