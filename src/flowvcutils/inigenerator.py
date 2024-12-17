@@ -68,7 +68,7 @@ class directoryHandler:
         """
         subdir = self.get_sub_directory_path(dir_name, create_if_missing)
         for file in os.listdir(subdir):
-            logger.warning(f"Searching {subdir}")
+            logger.info(f"Searching {subdir} for a vtu file")
             file_path = os.path.join(subdir, file)
             if os.path.isfile(file_path) and file.endswith(".vtu"):
                 return file_path
@@ -78,17 +78,38 @@ class directoryHandler:
 class resultsProcessor:
     def __init__(self, directory_handler):
         self.directory_handler = directory_handler
+        self.x_points = 0
+        self.y_points = 0
+        self.z_points = 0
         self.min_x, self.max_x = float("inf"), float("-inf")
         self.min_y, self.max_y = float("inf"), float("-inf")
         self.min_z, self.max_z = float("inf"), float("-inf")
 
-    def find_data_range(self, file_path=None):
+    def streach_bounds(self, pt_min, pt_max, cell_size):
+        """Slightly increase the data bounds an even number of cells fit. Reutrn new_max and n_pts"""
+        current_point = pt_min
+        n_pts = 0
+        logger.warning(f"Args recieved:ptmin:{pt_min} pt_max:{pt_max}")
+        if current_point >= pt_max:
+            raise ValueError("min must be less than max")
+        if cell_size <= 0:
+            raise ValueError("Cell Size must be >0")
+        while current_point < pt_max:
+            current_point = current_point + cell_size
+            n_pts = n_pts + 1
+        logger.debug(
+            f"Finished expanding from x: {pt_min} - {pt_max} to {pt_min}-{pt_max} for {n_pts} pts"
+        )
+        return (current_point, n_pts)
+
+    def find_data_range(self, file_path=None, streach=False, cell_size=0):
         """
         Find the min and max x, y, and z coordinates in a .vtu file using vtk.
 
         Args:
             file_path (str): Path to the .vtu file.
-
+            streach (bool): Should the range expand to evenly fit cells of size cell_size
+            cell_size (float): Size of cell to ensure evenly divides the data range
         Returns:
             tuple: Min and max ranges for x, y, and z coordinates.
         """
@@ -116,6 +137,16 @@ class resultsProcessor:
             self.min_z = min(self.min_z, z)
             self.max_z = max(self.max_z, z)
 
+        if streach:
+            self.max_x, self.x_points = self.streach_bounds(
+                self.min_x, self.max_x, cell_size
+            )
+            self.max_y, self.y_points = self.streach_bounds(
+                self.min_y, self.max_y, cell_size
+            )
+            self.max_z, self.z_points = self.streach_bounds(
+                self.min_z, self.max_z, cell_size
+            )
         return (
             (self.min_x, self.max_x),
             (self.min_y, self.max_y),
@@ -123,33 +154,49 @@ class resultsProcessor:
         )
 
 
-def prompt_settings(settings, prefix=""):
-    for key, value in settings.items():
-        if isinstance(value, dict):
-            prompt_settings(value, f"{prefix}{key}")  # recurse the dictinary
-        else:
-
-            user_input = input(f"{prefix}{key} (default = {value})")
-            save_prompt = "no"
-            if user_input:  # New value provided
-                settings[key] = user_input
-                save_prompt = (
-                    input("Do you want to save this value? (yes/no): ").strip().lower()
-                )
-
-            if save_prompt == "yes":
-                logger.debug(f"Saving setting:{prefix}{key}, Value: {value}")
-            else:  # No input, keep the default
-                settings[key] = value
-
-
 class Config:
-    def __init__(self, directory_handler):
-        self.directory_handler = directory_handler
+    def __init__(self, results_processor):
+        self.results_processor = results_processor
+        self.directory_handler = results_processor.directory_handler
         self.data_path = self.directory_handler.get_data_path()
         self.output_path = self.directory_handler.get_output_path()
         self.directory_name = self.directory_handler.get_directory_name()
         self.load_config()
+        self.__update_dict = {}
+
+    def set_data_range_defaults(self, cell_size, streach=True):
+        x_range, y_range, z_range = self.results_processor.find_data_range(
+            streach=streach, cell_size=cell_size
+        )
+
+        self.__update_dict.update(
+            {
+                "data_meshbounds.xmin": str(x_range[0]),
+                "data_meshbounds.xmax": str(x_range[1]),
+                "data_meshbounds.ymin": str(y_range[0]),
+                "data_meshbounds.ymax": str(y_range[1]),
+                "data_meshbounds.zmin": str(z_range[0]),
+                "data_meshbounds.zmax": str(z_range[1]),
+                "ftle_meshbounds.xmin": str(x_range[0]),
+                "ftle_meshbounds.xmax": str(x_range[1]),
+                "ftle_meshbounds.ymin": str(y_range[0]),
+                "ftle_meshbounds.ymax": str(y_range[1]),
+                "ftle_meshbounds.zmin": str(z_range[0]),
+                "ftle_meshbounds.zmax": str(z_range[1]),
+                "ftle_meshbounds.xres": str(self.results_processor.x_points),
+                "ftle_meshbounds.yres": str(self.results_processor.y_points),
+                "ftle_meshbounds.zres": str(self.results_processor.z_points),
+            }
+        )
+
+    def set_path_defaults(self):
+        self.__update_dict.update(
+            {
+                "Path_Data": self.data_path,
+                "Path_Output": self.output_path,
+                "data_infileprefix": self.directory_name,
+            }
+        )
 
     def load_config(self, file_name="config.inigenerator.cfg"):
         config_path = os.path.join(get_project_root(), "config", file_name)
@@ -157,12 +204,13 @@ class Config:
         self.config.read_file(open(config_path))
 
     def __get_update_dict(self):
-        update_dict = {
-            "Path_Data": self.data_path,
-            "Path_Output": self.output_path,
-            "data_infileprefix": self.directory_name,
-        }
-        return update_dict
+        # self.__update_dict.update({"Path_Data"})
+        # self.__update_dict.update( {
+        #     "Path_Data": self.data_path,
+        #     "Path_Output": self.output_path,
+        #     "data_infileprefix": self.directory_name,
+        # })
+        return self.__update_dict
 
     def update_settings(self, updates=None):
         """Update the configuration settings with a dictionary
@@ -207,20 +255,13 @@ class Config:
                 configfile.write(f"{key} = {value} \n")
 
 
-def set_preferences():
-    # use_case = input("Select use case (FTLE/Trace/VelOut): ")
-    with open("ini_default.json", "r") as file:
-        defaults = json.load(file)
-    prompt_settings(defaults)
-
-
 def main(directory):
     settup_logging()
     logger.info("Starting inigenerator")
 
     directory_handler = directoryHandler(directory)
 
-    # processor = resultsProcessor(directory_handler)
+    processor = resultsProcessor(directory_handler)
 
     # x_range, y_range, z_range = processor.find_data_range()
     # logger.info(f"X Range: {x_range}")
@@ -228,7 +269,10 @@ def main(directory):
     # logger.info(f"Z Range: {z_range}")
     # logger.info("Done!")
 
-    config = Config(directory_handler)
+    config = Config(processor)
+    config.set_path_defaults()
+    config.set_data_range_defaults(cell_size=0.001)
+
     config.update_settings()
     config.write_config_file()
 
