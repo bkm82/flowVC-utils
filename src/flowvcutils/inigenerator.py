@@ -187,21 +187,21 @@ class Config:
 
         self.__update_dict.update(
             {
-                "data_meshbounds.xmin": str(x_range[0]),
-                "data_meshbounds.xmax": str(x_range[1]),
-                "data_meshbounds.ymin": str(y_range[0]),
-                "data_meshbounds.ymax": str(y_range[1]),
-                "data_meshbounds.zmin": str(z_range[0]),
-                "data_meshbounds.zmax": str(z_range[1]),
-                "ftle_meshbounds.xmin": str(x_range[0]),
-                "ftle_meshbounds.xmax": str(x_range[1]),
-                "ftle_meshbounds.ymin": str(y_range[0]),
-                "ftle_meshbounds.ymax": str(y_range[1]),
-                "ftle_meshbounds.zmin": str(z_range[0]),
-                "ftle_meshbounds.zmax": str(z_range[1]),
-                "ftle_meshbounds.xres": str(self.results_processor.x_points),
-                "ftle_meshbounds.yres": str(self.results_processor.y_points),
-                "ftle_meshbounds.zres": str(self.results_processor.z_points),
+                "Data_MeshBounds.xmin": str(x_range[0]),
+                "Data_MeshBounds.xmax": str(x_range[1]),
+                "Data_MeshBounds.ymin": str(y_range[0]),
+                "Data_MeshBounds.ymax": str(y_range[1]),
+                "Data_MeshBounds.zmin": str(z_range[0]),
+                "Data_MeshBounds.zmax": str(z_range[1]),
+                "FTLE_MeshBounds.xmin": str(x_range[0]),
+                "FTLE_MeshBounds.xmax": str(x_range[1]),
+                "FTLE_MeshBounds.ymin": str(y_range[0]),
+                "FTLE_MeshBounds.ymax": str(y_range[1]),
+                "FTLE_MeshBounds.zmin": str(z_range[0]),
+                "FTLE_MeshBounds.zmax": str(z_range[1]),
+                "FTLE_MeshBounds.xres": str(self.results_processor.x_points),
+                "FTLE_MeshBounds.yres": str(self.results_processor.y_points),
+                "FTLE_MeshBounds.zres": str(self.results_processor.z_points),
             }
         )
 
@@ -210,7 +210,18 @@ class Config:
             {
                 "Path_Data": self.data_path,
                 "Path_Output": self.output_path,
-                "data_infileprefix": self.directory_name,
+                "Data_InFilePrefix": self.directory_name,
+            }
+        )
+
+    def set_forward_defaults(self):
+        pass
+
+    def set_backwards_defaults(self):
+        self.__update_dict.update(
+            {
+                "FTLE_OutFilePrefix": f"{self.directory_name}_backward",
+                "Int_TimeDirection": "-1",
             }
         )
 
@@ -220,12 +231,6 @@ class Config:
         self.config.read_file(open(config_path))
 
     def __get_update_dict(self):
-        # self.__update_dict.update({"Path_Data"})
-        # self.__update_dict.update( {
-        #     "Path_Data": self.data_path,
-        #     "Path_Output": self.output_path,
-        #     "data_infileprefix": self.directory_name,
-        # })
         return self.__update_dict
 
     def update_settings(self, updates=None):
@@ -271,7 +276,7 @@ class Config:
                 configfile.write(f"{key} = {value} \n")
 
 
-def main(directory, auto_range, cell_size):
+def main(directory, auto_range, cell_size, direction):
     settup_logging()
     logger.info("Starting inigenerator")
 
@@ -285,8 +290,3 @@ def main(directory, auto_range, cell_size):
 
     config.update_settings()
     config.write_config_file()
-
-
-if __name__ == "__main__":
-    directory = os.getcwd()
-    main(directory)

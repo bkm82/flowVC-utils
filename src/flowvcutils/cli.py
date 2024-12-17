@@ -43,11 +43,17 @@ def jsonlogger(num_lines):
 @click.option(
     "--cell_size", type=float, default=0.001, help="size of FTLE element, default 0.001"
 )
-def inigenerator(directory, auto_range):
+@click.option(
+    "--direction",
+    type=click.Choice(["forward", "backward"], case_sensitive=False),
+    default="backward",
+    help="forward or backward ftle",
+)
+def inigenerator(directory, auto_range, cell_size, direction):
     """
     Generate a .ini file for the flow vc.
     """
-    inigenerator_main(directory, auto_range)
+    inigenerator_main(directory, auto_range, cell_size, direction)
 
 
 def main():
