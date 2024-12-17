@@ -2,8 +2,13 @@ import pytest
 import vtk
 import os
 from tempfile import TemporaryDirectory
-from flowvcutils.inigenerator import resultsProcessor, directoryHandler
+from flowvcutils.inigenerator import resultsProcessor, directoryHandler, Config
 from unittest.mock import MagicMock
+import logging
+from flowvcutils.jsonlogger import settup_logging
+
+logger = logging.getLogger(__name__)
+settup_logging()
 
 
 @pytest.fixture
@@ -167,6 +172,45 @@ def test_vtu_file_doesnt_exist():
         dir_handler = directoryHandler(temp_dir)
         with pytest.raises(FileNotFoundError):
             dir_handler.find_vtu()
+
+
+def test_Data_Tmax():
+    """
+    Integration test to ensure final config looks good
+    This re-implements the "Data_Tmax" check in parameters.c
+    """
+    with TemporaryDirectory() as temp_dir:
+
+        sub_dir = os.path.join(temp_dir, "input_bin")
+        os.makedirs(sub_dir)
+        directory_handler = directoryHandler(temp_dir)
+        processor = resultsProcessor(directory_handler)
+        config = Config(processor)
+        config.set_backwards_defaults()
+        Data_TMin = float(config.config["Outputs"]["Data_TMin"])
+        Data_TRes = int(config.config["Outputs"]["Data_TRes"])
+        Data_TDelta = float(config.config["Outputs"]["Data_TDelta"])
+        Output_TStart = float(config.config["Outputs"]["Output_TStart"])
+
+        Int_TimeDirection = int(config.config["Outputs"]["Int_TimeDirection"])
+        Output_TRes = int(config.config["Outputs"]["Output_TRes"])
+        Output_TDelta = float(config.config["Outputs"]["Output_TDelta"])
+        Data_TMax = Data_TMin + (Data_TRes - 1) * Data_TDelta
+        Output_TEnd = (
+            Output_TStart + (Output_TRes - 1) * Int_TimeDirection * Output_TDelta
+        )
+        # Assert T_Start is between Data_Tmin and TMax
+        # Note the not is because this condition causes an error in ftle
+        # I want to assert an error condition is not met
+        assert not Output_TStart < Data_TMin
+        assert not Output_TStart > Data_TMax
+
+        logger.info(
+            f"Output_TEnd:{Output_TEnd}, Output_TStart:{Output_TStart}, Output_TRes:{Output_TRes}, Int_TimeDirection:{Int_TimeDirection}, Output_TDelta:{Output_TDelta}"
+        )
+
+        assert not (Output_TEnd > Data_TMax)
+        assert not (Output_TEnd < Data_TMin)
 
 
 # class TestConfig:
