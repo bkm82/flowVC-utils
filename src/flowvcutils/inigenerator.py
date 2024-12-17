@@ -287,6 +287,10 @@ def main(directory, auto_range, cell_size, direction):
     config.set_path_defaults()
     if auto_range:
         config.set_data_range_defaults(cell_size)
+    if direction == "backward":
+        config.set_backwards_defaults()
+    elif direction == "forward":
+        config.set_forward_defaults()
 
     config.update_settings()
     config.write_config_file()
