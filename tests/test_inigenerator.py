@@ -187,6 +187,7 @@ def test_Data_Tmax():
         processor = resultsProcessor(directory_handler)
         config = Config(processor)
         config.set_backwards_defaults()
+        config.update_settings()
         Data_TMin = float(config.config["Outputs"]["Data_TMin"])
         Data_TRes = int(config.config["Outputs"]["Data_TRes"])
         Data_TDelta = float(config.config["Outputs"]["Data_TDelta"])
@@ -205,48 +206,6 @@ def test_Data_Tmax():
         assert not Output_TStart < Data_TMin
         assert not Output_TStart > Data_TMax
 
-        logger.info(
-            f"Output_TEnd:{Output_TEnd}, Output_TStart:{Output_TStart}, Output_TRes:{Output_TRes}, Int_TimeDirection:{Int_TimeDirection}, Output_TDelta:{Output_TDelta}"
-        )
-
+        assert Int_TimeDirection == -1
         assert not (Output_TEnd > Data_TMax)
         assert not (Output_TEnd < Data_TMin)
-
-
-# class TestConfig:
-#     @pytest.fixture
-#     def test_config(self):
-#         return {
-
-#             "Path_Data = /path/to/data"
-#             "Dimensions": 3,
-#             "Fluid_Density": 1.2e-3,
-#             "FTLE_Compute": 1,
-#             "Data_Mesh_Bounds": {"XMin": 0, "XMax": 1, "YMin": 0, "YMax": 1},
-#         }
-
-#     def assert_config_properties(self, config):
-#         """Assert the config matches test_config using dot notation"""
-#         assert isinstance(config, dict)
-#         assert config.Path_Data == "/path/to/data"
-#         assert config.Dimensions == 3
-#         assert config.Fluid_Density == 1.2e-3
-#         assert config.Data_Mesh_Bounds.XMin == 0
-#         assert config.Data_Mesh_Bounds.XMax == 1
-#         assert config.Data_Mesh_Bounds.YMin == 0
-#         assert config.Data_Mesh_Bounds.YMax == 1
-
-#     def test_load_dict(self, test_config):
-#         config = Config.load_dict(test_config)
-#         self.assert_config_properties(config)
-
-#     def test_load_list(self):
-#         data = [1, 2, 3]
-#         result = Config.load_list(data)
-#         assert result == [1, 2, 3]
-
-#     def test_load_json(self, test_config):
-#         mock_data = json.dumps(test_config)
-#         with patch("builtins.open", mock_open(read_data=mock_data)):
-#             config = Config.load_json("dummy_path.json")
-#             self.assert_config_properties(config)
