@@ -148,7 +148,10 @@ def test_vtu_file_exist():
     Test case where the vtu file exists.
     """
     with TemporaryDirectory() as temp_dir:
-        expected = os.path.join(temp_dir, "test_file.vtu")
+        sub_dir = os.path.join(temp_dir, "input_vtu")
+        os.makedirs(sub_dir)
+        expected = os.path.join(sub_dir, "test_file.vtu")
+
         with open(expected, "w") as f:
             f.write("dummy content")
         dir_handler = directoryHandler(temp_dir)

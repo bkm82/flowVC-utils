@@ -59,20 +59,20 @@ class directoryHandler:
         self.__validate_directory(sub_directory, create_if_missing)
         return os.path.join(self.directory, sub_dir_name)
 
-    def find_vtu(self):
+    def find_vtu(self, dir_name="input_vtu", create_if_missing=False):
         """
         Search the current directory and return the first file with a ".vtu" extension.
 
         Returns:
             str: The filepath of the first .vtu file found.
         """
-        for file in os.listdir(self.directory):
-            file_path = os.path.join(self.directory, file)
+        subdir = self.get_sub_directory_path(dir_name, create_if_missing)
+        for file in os.listdir(subdir):
+            logger.warning(f"Searching {subdir}")
+            file_path = os.path.join(subdir, file)
             if os.path.isfile(file_path) and file.endswith(".vtu"):
                 return file_path
-        raise FileNotFoundError(
-            f"No .vtu file found in the directory: {self.directory}"
-        )
+        raise FileNotFoundError(f"No .vtu file found in the directory: {subdir}")
 
 
 class resultsProcessor:
