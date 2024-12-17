@@ -5,7 +5,6 @@ from flowvcutils.jsonlogger import settup_logging
 import configparser
 from .utils import get_project_root
 import os
-import json
 
 
 logger = logging.getLogger(__name__)
@@ -86,7 +85,26 @@ class resultsProcessor:
         self.min_z, self.max_z = float("inf"), float("-inf")
 
     def streach_bounds(self, pt_min, pt_max, cell_size):
-        """Slightly increase the data bounds an even number of cells fit. Reutrn new_max and n_pts"""
+        """Extend data bounds to be evenly divisible.
+
+        Parameters
+        ----------
+        pt_min : float
+            The minimum value of the x, y or z point
+        pt_max : float
+            The maximum value of the x, y or z point
+        cell_size : float
+            the size of cell to evenly divide the domain
+
+        Returns
+        ------
+        (new_max, n_pts)
+        new_max: float
+            The new maximum value of the x, y, or z point.
+        n_points:
+            The number of cells that evenly divide the domain
+
+        """
         current_point = pt_min
         n_pts = 0
         logger.warning(f"Args recieved:ptmin:{pt_min} pt_max:{pt_max}")
@@ -97,18 +115,16 @@ class resultsProcessor:
         while current_point < pt_max:
             current_point = current_point + cell_size
             n_pts = n_pts + 1
-        logger.debug(
-            f"Finished expanding from x: {pt_min} - {pt_max} to {pt_min}-{pt_max} for {n_pts} pts"
-        )
-        return (current_point, n_pts)
+        new_max = current_point
+        return (new_max, n_pts)
 
     def find_data_range(self, file_path=None, streach=False, cell_size=0):
         """
-        Find the min and max x, y, and z coordinates in a .vtu file using vtk.
+        Find the min and max x, y, and z coordinates in a .vtu file.
 
         Args:
             file_path (str): Path to the .vtu file.
-            streach (bool): Should the range expand to evenly fit cells of size cell_size
+            streach (bool): extend data to evenly divide by cell size?
             cell_size (float): Size of cell to ensure evenly divides the data range
         Returns:
             tuple: Min and max ranges for x, y, and z coordinates.
