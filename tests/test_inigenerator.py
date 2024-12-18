@@ -17,8 +17,9 @@ def create_sample_vtu_file():
     Creates a temporary .vtu file with sample data for testing using vtk.
     """
     with TemporaryDirectory() as temp_dir:
-        file_path = os.path.join(temp_dir, "test.vtu")
-
+        sub_dir = os.path.join(temp_dir, "input_vtu")
+        os.makedirs(sub_dir)
+        file_path = os.path.join(sub_dir, "test.vtu")
         # Create points
         points = vtk.vtkPoints()
         points.InsertNextPoint(1.0, 2.0, 3.0)
