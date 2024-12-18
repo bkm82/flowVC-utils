@@ -3,10 +3,12 @@ import uuid
 import pytest
 import json
 import sys
+from tempfile import TemporaryDirectory
 from unittest import mock
 from click.testing import CliRunner
 from unittest.mock import patch
 from flowvcutils.cli import jsonlogger
+from flowvcutils.cli import inigenerator
 from flowvcutils.cli import main as cli_main
 from flowvcutils.jsonlogger import settup_logging
 
@@ -53,6 +55,21 @@ def test_integration_main_jsonlogger(monkeypatch, capsys):
     except json.JSONDecodeError:
         pytest.fail("Captured output is not valid json")
     assert test_message in log_entry.get("message", "")
+
+
+# @mock.patch("flowvcutils.cli.inigenerator_main")
+# def test_inigenerator_called_with_defaults:
+#     """Test that the inigenerator calls inigenerator_main with default arguments."""
+#     inigenerator("test_directory"
+@patch("flowvcutils.cli.inigenerator_main")
+def test_default_ini_generator(mock_ini_generator_main, runner):
+    """Test that the default value of num_lines is passed."""
+    with TemporaryDirectory() as tmp_dir:
+        result = runner.invoke(inigenerator, [f"-d{tmp_dir}"])
+        assert result.exit_code == 0
+        mock_ini_generator_main.assert_called_once_with(
+            tmp_dir, True, 0.001, "backward"
+        )
 
 
 def test_init():
