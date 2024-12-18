@@ -38,6 +38,42 @@ def create_sample_vtu_file():
         yield file_path
 
 
+@pytest.fixture()
+def setup_processor():
+    """Fixture to create a resultsProcessor instance."""
+    directoryHandler = None
+    return resultsProcessor(directoryHandler)
+
+
+# Paramaterize when cell size does and does not evenly divide domain
+@pytest.mark.parametrize(
+    "pt_min, pt_max, cell_size, expected_max, expected_points",
+    [
+        (0.0, 10.0, 2.0, 10.0, 5),  # (10-0)/2 = 5 cells
+        (0.0, 10.0, 3.0, 12.0, 4),  # (12-0)/3 = 4 cells
+    ],
+)
+def test_streach_bounds_normal(
+    setup_processor, pt_min, pt_max, cell_size, expected_max, expected_points
+):
+    processor = setup_processor
+    new_max, points = processor.streach_bounds(pt_min, pt_max, cell_size)
+    assert new_max == expected_max
+    assert points == expected_points
+
+
+def test_streach_bounds_invalid_min_max(setup_processor):
+    processor = setup_processor
+    with pytest.raises(ValueError):
+        processor.streach_bounds(10.0, 0.0, 1.0)
+
+
+def test_streach_bounds_invalid_cell_size(setup_processor):
+    processor = setup_processor
+    with pytest.raises(ValueError, match="Cell Size must be >0"):
+        processor.streach_bounds(0.0, 10.0, 0.0)
+
+
 def test_find_data_range(create_sample_vtu_file):
     """
     Test the find_data_range function.
