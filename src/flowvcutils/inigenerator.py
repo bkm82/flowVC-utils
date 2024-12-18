@@ -222,7 +222,8 @@ class Config:
             {
                 "FTLE_OutFilePrefix": f"{self.directory_name}_backward",
                 "Int_TimeDirection": "-1",
-                "Output_TDelta": "-0.05",
+                "Output_TDelta": "0.05",
+                "Output_TStart": "5.0",
             }
         )
 

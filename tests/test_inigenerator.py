@@ -203,6 +203,7 @@ def test_Data_Tmax():
         # Assert T_Start is between Data_Tmin and TMax
         # Note the not is because this condition causes an error in ftle
         # I want to assert an error condition is not met
+        logger.info(f"Output_TRes: {Output_TRes}")
         assert not Output_TStart < Data_TMin
         assert not Output_TStart > Data_TMax
 
