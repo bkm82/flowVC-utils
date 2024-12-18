@@ -1,8 +1,14 @@
 import pytest
 import vtk
 import os
+from pathlib import Path
 from tempfile import TemporaryDirectory
-from flowvcutils.inigenerator import resultsProcessor, directoryHandler, Config
+from flowvcutils.inigenerator import (
+    resultsProcessor,
+    directoryHandler,
+    Config,
+    main as inigenerator_main,
+)
 from unittest.mock import MagicMock
 import logging
 from flowvcutils.jsonlogger import settup_logging
@@ -248,3 +254,75 @@ def test_Data_Tmax():
         assert Output_TDelta > 0
         assert not (Output_TEnd > Data_TMax)
         assert not (Output_TEnd < Data_TMin)
+
+
+def load_config(file_path, var_list):
+    config_values = {}
+    with open(file_path, "r") as file:
+        for line in file:
+            # Strip whitespace and ignore empty lines
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip()
+
+            logger.info(f"{key}:{value}")
+
+            if key in var_list:
+                config_values[key] = value
+    return config_values
+
+
+def test_integration_full_config(create_sample_vtu_file):
+    """
+    Integration test to ensure final config looks goood
+    This re-implements the "Data_Tmax" check in parameters.c
+    """
+    vtu_file = create_sample_vtu_file  # created in tmp/input_vtu
+    directory = Path(vtu_file).parent.parent
+    bin_directory = os.path.join(directory, "input_bin")
+    directory_name = os.path.basename(directory)
+    os.makedirs(bin_directory)
+    inigenerator_main(directory, auto_range=True, cell_size=0.001, direction="backward")
+    output_bin = os.path.join(directory, "output_bin")
+
+    ## Start by making sure it created the output_bin directory
+    assert os.path.exists(output_bin), f"The path {output_bin} does not exist."
+
+    ##Load the created .in file for data of interest
+    var_list = [
+        "data_tmin",
+        "data_tres",
+        "data_tdelta",
+        "output_tstart",
+        "int_timedirection",
+        "output_tres",
+        "output_tdelta",
+    ]
+    in_file_path = os.path.join(bin_directory, f"{directory_name}.in")
+    config = load_config(in_file_path, var_list)
+
+    Data_TMin = float(config["data_tmin"])
+    Data_TRes = int(config["data_tres"])
+    Data_TDelta = float(config["data_tdelta"])
+    Output_TStart = float(config["output_tstart"])
+
+    Int_TimeDirection = int(config["int_timedirection"])
+    Output_TRes = int(config["output_tres"])
+    Output_TDelta = float(config["output_tdelta"])
+
+    Data_TMax = Data_TMin + (Data_TRes - 1) * Data_TDelta
+    Output_TEnd = Output_TStart + (Output_TRes - 1) * Int_TimeDirection * Output_TDelta
+    # Assert T_Start is between Data_Tmin and TMax
+    # Note the not is because this condition causes an error in ftle
+    # I want to assert an error condition is not met
+    logger.info(f"Output_TRes: {Output_TRes}")
+    assert not Output_TStart < Data_TMin
+    assert not Output_TStart > Data_TMax
+
+    assert Int_TimeDirection == -1
+    assert Output_TDelta > 0
+    assert not (Output_TEnd > Data_TMax)
+    assert not (Output_TEnd < Data_TMin)
