@@ -288,10 +288,10 @@ def test_integration_full_config(create_sample_vtu_file):
     inigenerator_main(directory, auto_range=True, cell_size=0.001, direction="backward")
     output_bin = os.path.join(directory, "output_bin")
 
-    ## Start by making sure it created the output_bin directory
+    # Start by making sure it created the output_bin directory
     assert os.path.exists(output_bin), f"The path {output_bin} does not exist."
 
-    ##Load the created .in file for data of interest
+    # Load the created .in file for data of interest
     var_list = [
         "data_tmin",
         "data_tres",
