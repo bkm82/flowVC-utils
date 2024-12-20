@@ -335,17 +335,18 @@ def process_directory(root, extension, start, stop, increment, num_digits, field
     """
     for sub_directory in os.listdir(root):
         sub_dir_path = os.path.join(root, sub_directory)
+        vtu_path = os.path.join(sub_dir_path, "input_vtu")
         logger.debug(f"sub_directory:{sub_directory}")
         if os.path.isdir(sub_dir_path):
             logger.info(f"Processing Directory {sub_directory}")
-            bin_dir = os.path.join(sub_dir_path, "bin")
+            bin_dir = os.path.join(sub_dir_path, "input_bin")
             if os.path.exists(bin_dir):
                 shutil.rmtree(bin_dir)
 
             os.makedirs(bin_dir)
 
             process_folder(
-                root=sub_dir_path,
+                root=vtu_path,
                 output=bin_dir,
                 file_name=sub_directory,
                 extension=extension,
