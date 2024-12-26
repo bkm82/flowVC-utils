@@ -41,7 +41,7 @@ def process_files(base_dir, exclude_files):
 
             # Step 4: Run the svpre command
             command = "/usr/local/sv/svsovlver/2022-07-22/bin/svpre generic_file.svpre"
-            subprocess.run(command, shell=True, cwd=new_dir_path)
+            subprocess.run(command, shell=True, cwd=new_dir_path, env=os.environ)
 
     logger.info("directorys coppied")
 
