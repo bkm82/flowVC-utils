@@ -1,6 +1,7 @@
 import os
 import shutil
 import logging
+import subprocess
 from flowvcutils.jsonlogger import settup_logging
 
 logger = logging.getLogger(__name__)
@@ -37,6 +38,11 @@ def process_files(base_dir, exclude_files):
             # Step 3: Copy and rename generic_file.sjb
             new_sjb_file = os.path.join(base_dir, f"{file_name_base}.sjb")
             shutil.copy2(generic_file_sjb, new_sjb_file)
+
+            # Step 4: Run the svpre command
+            command = "/usr/local/sv/svsovlver/2022-07-22/bin/svpre generic_file.svpre"
+            subprocess.run(command, shell=True, cwd=new_dir_path)
+
     logger.info("directorys coppied")
 
 
