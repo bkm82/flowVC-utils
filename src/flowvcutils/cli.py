@@ -5,6 +5,7 @@ import os
 from flowvcutils.jsonlogger import settup_logging
 from .jsonlogger import main as jsonlogger_main
 from .inigenerator import main as inigenerator_main
+from .simulationgenerator import main as simulationgenerator_main
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,38 @@ def inigenerator(directory, auto_range, cell_size, direction):
     Generate a .ini file for the flow vc.
     """
     inigenerator_main(directory, auto_range, cell_size, direction)
+
+
+@cli.command()
+@click.argument("num_lines", default=10, type=int)
+def jsonlogger(num_lines):
+    """
+    Print a specified number of log lines.
+
+    NUM_LINES: the number of logs to print (default 10).
+    """
+    jsonlogger_main(num_lines)
+
+
+@cli.command()
+@click.option(
+    "-d",
+    "--directory",
+    default=os.getcwd(),
+    help="Directory to run program (default: current dir)",
+)
+@click.option(
+    "--exclude",
+    type=str,
+    multiple=True,
+    default=[],
+    help="Optional list of file names to exclude (space-separated).",
+)
+def simulationgenerator(directory, exclude):
+    """
+    Generate the simulation directorys.
+    """
+    simulationgenerator_main(directory, exclude)
 
 
 def main():
