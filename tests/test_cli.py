@@ -57,6 +57,10 @@ def test_integration_main_jsonlogger(monkeypatch, capsys):
     assert test_message in log_entry.get("message", "")
 
 
+# @mock.patch("flowvcutils.cli.inigenerator_main")
+# def test_inigenerator_called_with_defaults:
+#     """Test that the inigenerator calls inigenerator_main with default arguments."""
+#     inigenerator("test_directory"
 @patch("flowvcutils.cli.inigenerator_main")
 def test_default_ini_generator(mock_ini_generator_main, runner):
     """Test that the default value of num_lines is passed."""
