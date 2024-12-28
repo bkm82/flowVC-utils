@@ -9,6 +9,7 @@ from click.testing import CliRunner
 from unittest.mock import patch
 from flowvcutils.cli import jsonlogger
 from flowvcutils.cli import inigenerator
+from flowvcutils.cli import simulationgenerator
 from flowvcutils.cli import main as cli_main
 from flowvcutils.jsonlogger import settup_logging
 
@@ -57,10 +58,6 @@ def test_integration_main_jsonlogger(monkeypatch, capsys):
     assert test_message in log_entry.get("message", "")
 
 
-# @mock.patch("flowvcutils.cli.inigenerator_main")
-# def test_inigenerator_called_with_defaults:
-#     """Test that the inigenerator calls inigenerator_main with default arguments."""
-#     inigenerator("test_directory"
 @patch("flowvcutils.cli.inigenerator_main")
 def test_default_ini_generator(mock_ini_generator_main, runner):
     """Test that the default value of num_lines is passed."""
@@ -70,6 +67,15 @@ def test_default_ini_generator(mock_ini_generator_main, runner):
         mock_ini_generator_main.assert_called_once_with(
             tmp_dir, True, 0.001, "backward"
         )
+
+
+@patch("flowvcutils.cli.simulationgenerator_main")
+def test_default_simulationgenerator(mock_simulationgenerator_main, runner):
+    """Test that the default value of num_lines is passed."""
+    with TemporaryDirectory() as tmp_dir:
+        result = runner.invoke(simulationgenerator, [f"-d{tmp_dir}"])
+        assert result.exit_code == 0
+        mock_simulationgenerator_main.assert_called_once_with(tmp_dir, ())
 
 
 def test_init():
