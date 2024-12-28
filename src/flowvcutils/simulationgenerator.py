@@ -34,10 +34,7 @@ def create_directories(base_dir, exclude_files=None):
             shutil.copy2(generic_file_sjb, new_sjb_file)
 
             # Step 4: Create a numstart.dat with a 0 if it does not exist
-            numstart_path = os.path.join(new_dir_path, "numstart.dat")
-            if not os.path.isfile(numstart_path):
-                with open(numstart_path, "w") as numstart_file:
-                    numstart_file.write("0")
+            create_numstart_file(new_dir_path)
 
             # Step 5: Run the svpre command
             command = "/usr/local/sv/svsolver/2022-07-22/bin/svpre generic_file.svpre"
@@ -71,6 +68,22 @@ def get_exclude_files(exclude_file_path, exclude_files=None):
             exclude_files += [line.strip() for line in ef if line.strip()]
 
     return exclude_files
+
+
+def create_numstart_file(new_dir_path):
+    """
+    Creates numstart.dat in the specified directory if it doesn't exist.
+    Writes a 0 to the file.
+
+    Args:
+        new_dir_path (str): The directory where the numstart.dat will be created.
+    """
+    numstart_file_path = os.path.join(new_dir_path, "numstart.dat")
+
+    # Check if the file exists
+    if not os.path.isfile(numstart_file_path):
+        with open(numstart_file_path, "w") as numstart_file:
+            numstart_file.write("0")
 
 
 def run_command(command, path):
