@@ -58,17 +58,6 @@ def inigenerator(directory, auto_range, cell_size, direction):
 
 
 @cli.command()
-@click.argument("num_lines", default=10, type=int)
-def jsonlogger(num_lines):
-    """
-    Print a specified number of log lines.
-
-    NUM_LINES: the number of logs to print (default 10).
-    """
-    jsonlogger_main(num_lines)
-
-
-@cli.command()
 @click.option(
     "-d",
     "--directory",
