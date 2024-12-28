@@ -45,21 +45,27 @@ def test_create_directories_exclude(setup_test_environment):
     assert not os.path.exists(dest)
 
 
-@pytest.mark.skip
-def test_replace_file(setup_test_environment):
-    source_file = setup_test_environment / "source.txt"
-    destination_file = setup_test_environment / "destination.txt"
-    with open(source_file, "w") as f:
-        f.write("Sample text.")
-
-    simulationgenerator.replace_file(source_file, destination_file)
-    with open(destination_file, "r") as f:
-        content = f.read()
-
-    assert content == "Sample text."
+def test_create_sjb_file(setup_test_environment):
+    """Test that the create_dirctorys creates a steady_.sjb file"""
+    src = setup_test_environment
+    dest = os.path.join(setup_test_environment, "steady_.sjb")
+    simulationgenerator.create_directories(src)
+    assert os.path.isfile(dest)
 
 
-@pytest.mark.skip
+def test_create_flow_file(setup_test_environment):
+    """Test that the create_dirctorys creates a catheter.flow file"""
+    src = setup_test_environment
+    dest = os.path.join(setup_test_environment, "steady_", "catheter.flow")
+    expected = "0.0 -4.16e-05\n1.01400006 -4.16e-05\n"
+    simulationgenerator.create_directories(src)
+
+    with open(dest, "r") as f:
+        actual = f.read()
+
+    assert actual == expected
+
+
 @patch("flowvcutils.simulationgenerator.subprocess.run")
 def test_run_command(mock_run):
     simulationgenerator.run_command("echo test", "/path/to/cwd")
