@@ -87,3 +87,15 @@ def test_numstart_dat(setup_test_environment):
         actual = f.read()
 
     assert actual == expected
+
+
+def test_main_valid_directory(setup_test_environment, capsys):
+    import flowvcutils.simulationgenerator as sg
+
+    # Call main with the setup test environment
+    sg.main(str(setup_test_environment), exclude=None)
+
+    # Capture output to check logging/message
+    captured = capsys.readouterr()
+    assert "Creating Simulation Directories" in captured.out
+    assert "Simulation Directories Created" in captured.out
