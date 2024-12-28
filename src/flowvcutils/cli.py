@@ -75,7 +75,7 @@ def simulationgenerator(directory, exclude):
     """
     Generate the simulation directorys.
     """
-    simulationgenerator_main(directory, exclude)
+    simulationgenerator_main(directory, list(exclude))
 
 
 def main():
