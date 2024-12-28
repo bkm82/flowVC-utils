@@ -72,3 +72,18 @@ def test_run_command(mock_run):
     mock_run.assert_called_once_with(
         "echo test", shell=True, cwd="/path/to/cwd", env=os.environ
     )
+
+
+##Regression Test
+# Ensure a numstart.dat file exists
+def test_numstart_dat(setup_test_environment):
+    """Test that the numstart.dat file exists with a 0"""
+    src = setup_test_environment
+    dest = os.path.join(setup_test_environment, "steady_", "numstart.dat")
+    expected = "0"
+    simulationgenerator.create_directories(src)
+
+    with open(dest, "r") as f:
+        actual = f.read()
+
+    assert actual == expected

@@ -33,7 +33,13 @@ def create_directories(base_dir, exclude_files=None):
             new_sjb_file = os.path.join(base_dir, f"{file_name_base}.sjb")
             shutil.copy2(generic_file_sjb, new_sjb_file)
 
-            # Step 4: Run the svpre command
+            # Step 4: Create a numstart.dat with a 0 if it does not exist
+            numstart_path = os.path.join(new_dir_path, "numstart.dat")
+            if not os.path.isfile(numstart_path):
+                with open(numstart_path, "w") as numstart_file:
+                    numstart_file.write("0")
+
+            # Step 5: Run the svpre command
             command = "/usr/local/sv/svsolver/2022-07-22/bin/svpre generic_file.svpre"
             run_command(command=command, path=new_dir_path)
 
