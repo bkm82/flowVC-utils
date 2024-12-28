@@ -74,7 +74,7 @@ def test_run_command(mock_run):
     )
 
 
-##Regression Test
+# Regression Test
 # Ensure a numstart.dat file exists
 def test_numstart_dat(setup_test_environment):
     """Test that the numstart.dat file exists with a 0"""
