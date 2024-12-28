@@ -12,12 +12,8 @@ def create_directories(base_dir):
     generic_dir = os.path.join(base_dir, "generic_file")
 
     # populate an exclude files list
-    exclude_files = []
-    exclude_files_path = os.path.join(inlet_velocity_directory, "exclude.txt")
-    if os.path.isfile(exclude_files_path):
-        with open(exclude_files_path, "r") as exclude:
-            exclude_files = [line.strip() for line in exclude if line.strip()]
-
+    exclude_file_path = os.path.join(inlet_velocity_directory, "exclude.txt")
+    exclude_files = get_exclude_files(exclude_file_path)
     for txt_file in os.listdir(inlet_velocity_directory):
         if txt_file.endswith(".txt") and txt_file not in exclude_files:
             file_name_base = os.path.splitext(txt_file)[0]
@@ -25,6 +21,19 @@ def create_directories(base_dir):
             # Step 1: Copy generic_file and rename it
             new_dir_path = os.path.join(base_dir, file_name_base)
             shutil.copytree(generic_dir, new_dir_path)
+
+
+def get_exclude_files(exclude_file_path):
+    """
+    Reads the exclude.txt file in the inlet_velocity directory
+    and returns a list of files to exclude.
+    """
+    exclude_files = []
+    if os.path.isfile(exclude_file_path):
+        with open(exclude_file_path, "r") as ef:
+            exclude_files = [line.strip() for line in ef if line.strip()]
+
+    return exclude_files
 
 
 def process_files(base_dir, exclude_files):
