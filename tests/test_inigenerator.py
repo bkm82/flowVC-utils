@@ -7,11 +7,13 @@ from flowvcutils.inigenerator import (
     resultsProcessor,
     directoryHandler,
     Config,
+    ConfigBatch,
     main as inigenerator_main,
 )
-from unittest.mock import MagicMock
+from unittest.mock import patch, MagicMock
 import logging
 from flowvcutils.jsonlogger import settup_logging
+
 
 logger = logging.getLogger(__name__)
 settup_logging()
@@ -273,6 +275,68 @@ def load_config(file_path, var_list):
             if key in var_list:
                 config_values[key] = value
     return config_values
+
+
+@pytest.fixture
+def mock_directory(tmp_path):
+    # Create a temporary directory with subdirectories for testing.
+    parent_directory = tmp_path / "parent"
+    parent_directory.mkdir()
+
+    # Create subdirectories
+    (parent_directory / "subdir1").mkdir()
+    (parent_directory / "subdir2").mkdir()
+    (parent_directory / "subdir3").mkdir()
+
+    return str(parent_directory)
+
+
+def test_discover_subdirectories(mock_directory):
+    # Test discover_subdirectories method
+    config_batch = ConfigBatch(mock_directory)
+    subdirs = config_batch.discover_subdirectories()
+    expected_subdirs = [
+        os.path.join(mock_directory, "subdir1"),
+        os.path.join(mock_directory, "subdir2"),
+        os.path.join(mock_directory, "subdir3"),
+    ]
+
+    assert sorted(subdirs) == sorted(expected_subdirs)
+
+
+@patch("flowvcutils.inigenerator.resultsProcessor")
+@patch("flowvcutils.inigenerator.directoryHandler")
+@patch("flowvcutils.inigenerator.Config")
+@patch("flowvcutils.inigenerator.logger")
+def test_process_directory(
+    mock_logger,
+    mock_Config,
+    mock_directoryHandler,
+    mock_resultsProcessor,
+    mock_directory,
+):
+    # Test process_directory method
+    mock_directoryHandler_instance = MagicMock()
+    mock_resultsProcessor_instance = MagicMock()
+    mock_Config_instance = MagicMock()
+
+    mock_directoryHandler.return_value = mock_directoryHandler_instance
+    mock_resultsProcessor.return_value = mock_resultsProcessor_instance
+    mock_Config.return_value = mock_Config_instance
+
+    config_batch = ConfigBatch(mock_directory)
+
+    # Call process_directory with sample arguments
+    config_batch.process_directory(arg1="test", arg2="test")
+
+    # Validate that the logger is called with the expected output
+    mock_logger.info.assert_called()
+
+    # Ensure that the expected methods are called
+    assert mock_directoryHandler.call_count == 3  # One for each subdir
+    assert mock_resultsProcessor.call_count == 3  # One for each subdir
+    assert mock_Config.call_count == 3  # One for each subdir
+    assert mock_Config_instance.process_directory.call_count == 3  # One for each subdir
 
 
 def test_integration_full_config(create_sample_vtu_file):
