@@ -308,16 +308,14 @@ class ConfigBatch:
         ]
         return subdirs
 
-    def process_directory(self, auto_range, cell_size, direction):
+    def process_directory(self, *args, **kwargs):
         subdirs = self.discover_subdirectories()
         for subdir in subdirs:
             logger.info(f"Processing  {subdir}")
             directory_handler = directoryHandler(subdir)
             processor = resultsProcessor(directory_handler)
             config = Config(processor)
-            config.process_directory(
-                auto_range=auto_range, cell_size=cell_size, direction=direction
-            )
+            config.process_directory(*args, **kwargs)
 
 
 def main(directory, auto_range, cell_size, direction, batch=False):
