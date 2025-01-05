@@ -50,11 +50,18 @@ def jsonlogger(num_lines):
     default="backward",
     help="forward or backward ftle",
 )
-def inigenerator(directory, auto_range, cell_size, direction):
+@click.option(
+    "--direction",
+    type=click.Choice(["forward", "backward"], case_sensitive=False),
+    default="backward",
+    help="forward or backward ftle",
+)
+@click.option("--batch", is_flag=True, default=False, help="run for each subdirectory")
+def inigenerator(directory, auto_range, cell_size, direction, batch):
     """
     Generate a .ini file for the flow vc.
     """
-    inigenerator_main(directory, auto_range, cell_size, direction)
+    inigenerator_main(directory, auto_range, cell_size, direction, batch)
 
 
 @cli.command()
