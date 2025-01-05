@@ -107,7 +107,6 @@ class resultsProcessor:
         """
         current_point = pt_min
         n_pts = 0
-        logger.warning(f"Args recieved:ptmin:{pt_min} pt_max:{pt_max}")
         if current_point >= pt_max:
             raise ValueError("min must be less than max")
         if cell_size <= 0:
