@@ -107,7 +107,6 @@ class resultsProcessor:
         """
         current_point = pt_min
         n_pts = 0
-        logger.warning(f"Args recieved:ptmin:{pt_min} pt_max:{pt_max}")
         if current_point >= pt_max:
             raise ValueError("min must be less than max")
         if cell_size <= 0:
@@ -173,10 +172,11 @@ class resultsProcessor:
 class Config:
     def __init__(self, results_processor):
         self.results_processor = results_processor
-        self.directory_handler = results_processor.directory_handler
-        self.data_path = self.directory_handler.get_data_path()
-        self.output_path = self.directory_handler.get_output_path()
-        self.directory_name = self.directory_handler.get_directory_name()
+        self.data_path = self.results_processor.directory_handler.get_data_path()
+        self.output_path = self.results_processor.directory_handler.get_output_path()
+        self.directory_name = (
+            self.results_processor.directory_handler.get_directory_name()
+        )
         self.load_config()
         self.__update_dict = {}
 
@@ -277,22 +277,54 @@ class Config:
             for key, value in self.config.items("Outputs"):
                 configfile.write(f"{key} = {value} \n")
 
+    def process_directory(self, auto_range, cell_size, direction):
+        self.set_path_defaults()
+        if auto_range:
+            self.set_data_range_defaults(cell_size=cell_size)
+        if direction == "backward":
+            self.set_backwards_defaults()
+        elif direction == "forward":
+            self.set_forward_defaults()
+        self.update_settings()
+        self.write_config_file()
 
-def main(directory, auto_range, cell_size, direction):
+
+class ConfigBatch:
+    """Config factory
+    create a config object for each subdirectory in the parent directory
+    """
+
+    def __init__(self, parent_directory):
+        self.parent_directory = parent_directory
+        self.configs = []
+
+    def discover_subdirectories(self):
+
+        subdirs = [
+            os.path.join(self.parent_directory, d)
+            for d in os.listdir(self.parent_directory)
+            if os.path.isdir(os.path.join(self.parent_directory, d))
+        ]
+        return subdirs
+
+    def process_directory(self, *args, **kwargs):
+        subdirs = self.discover_subdirectories()
+        for subdir in subdirs:
+            logger.info(f"Processing  {subdir}")
+            directory_handler = directoryHandler(subdir)
+            processor = resultsProcessor(directory_handler)
+            config = Config(processor)
+            config.process_directory(*args, **kwargs)
+
+
+def main(directory, auto_range, cell_size, direction, batch=False):
     settup_logging()
     logger.info("Starting inigenerator")
-
-    directory_handler = directoryHandler(directory)
-
-    processor = resultsProcessor(directory_handler)
-    config = Config(processor)
-    config.set_path_defaults()
-    if auto_range:
-        config.set_data_range_defaults(cell_size)
-    if direction == "backward":
-        config.set_backwards_defaults()
-    elif direction == "forward":
-        config.set_forward_defaults()
-
-    config.update_settings()
-    config.write_config_file()
+    if batch:
+        batch_config = ConfigBatch(parent_directory=directory)
+        batch_config.process_directory(auto_range, cell_size, direction)
+    else:
+        directory_handler = directoryHandler(directory)
+        processor = resultsProcessor(directory_handler)
+        config = Config(processor)
+        config.process_directory(auto_range, cell_size, direction)

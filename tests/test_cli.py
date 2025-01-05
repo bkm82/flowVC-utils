@@ -65,7 +65,7 @@ def test_default_ini_generator(mock_ini_generator_main, runner):
         result = runner.invoke(inigenerator, [f"-d{tmp_dir}"])
         assert result.exit_code == 0
         mock_ini_generator_main.assert_called_once_with(
-            tmp_dir, True, 0.001, "backward"
+            tmp_dir, True, 0.001, "backward", False
         )
 
 
