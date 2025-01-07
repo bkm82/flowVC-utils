@@ -1,6 +1,7 @@
 import os
 import shutil
 import pytest
+import logging
 from flowvcutils.filerename import rename_files, renumber_files
 from tempfile import TemporaryDirectory
 
@@ -81,6 +82,13 @@ def test_rename_files_with_name(temp_directory):
 
     # Check that the renamed files match the expected output
     assert renamed_files == expected_files
+
+
+def test_directory_doesnt_exist(caplog):
+    bad_directory = "some/directory/thats/not/real"
+    with caplog.at_level(logging.ERROR):
+        rename_files(bad_directory)
+    assert f"Error: Directory '{bad_directory}' does not exist." in caplog.text
 
 
 @pytest.fixture
