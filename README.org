@@ -119,18 +119,13 @@ dir
 
 *** Usage
 #+BEGIN_SRC text
-  usage: filerename.py [-h] [--root ROOT] [--prefix PREFIX]
-                       [--currentname CURRENTNAME]
+  Usage: python -m flowvcutils filerename [OPTIONS]
 
-  Rename the file names in a directory.
-
-  options:
-    -h, --help            show this help message and exit
-    --root ROOT           input directory with the files (default: current
-                          directory).
-    --prefix PREFIX       new file name (default: current directory name).
-    --currentname CURRENTNAME
-                          current file name (default: all_results_).
+  Options:
+    -d, --directory TEXT  Directory to run program (default: current dir)
+    --prefix TEXT         New file name (default:current directory name).
+    --current_name TEXT   Current file name (default:all_results).
+    -h, --help            Show this message and exit.
 #+END_SRC
 
 ** filerenumber

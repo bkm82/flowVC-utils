@@ -90,12 +90,12 @@ def simulationgenerator(directory, exclude):
 @click.option(
     "--prefix",
     default=None,
-    help="new file name (default:current directory name).",
+    help="New file name (default:current directory name).",
 )
 @click.option(
     "--current_name",
     default="all_results_",
-    help="current file name (default:current directory name).",
+    help="Current file name (default:all_results).",
 )
 def filerename(directory, prefix, current_name):
     route = "file_name"
