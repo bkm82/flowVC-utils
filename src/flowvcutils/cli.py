@@ -98,6 +98,22 @@ def simulationgenerator(directory, exclude):
     help="Current file name (default:all_results).",
 )
 def filerename(directory, prefix, current_name):
+    """Rename the files in a directory
+
+    Example\n
+    Take the files in a directory\n
+    -------\n
+    directory \n
+    ├── all_results_00000.vtu \n
+    ├── all_results_00050.vtu \n
+    ├── all_results_00100.vtu \n
+
+    and renames them to \n
+    directory \n
+    ├── directory_00000.vtu \n
+    ├── directory_00050.vtu \n
+    ├── directory_00100.vtu \n
+    """
     route = "file_name"
     filerename_main(
         route=route, directory=directory, prefix=prefix, current_name=current_name
@@ -138,10 +154,6 @@ def filerename(directory, prefix, current_name):
 )
 def filerenumber(directory, prefix, current_start, current_end, new_start, increment):
     """Renumber the files in a directory
-
-    Example
-
-    python -m flowvcutils filerenumber
 
     takes a directory with files
     file_name.0.vtk

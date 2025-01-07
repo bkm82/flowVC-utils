@@ -121,6 +121,32 @@ dir
 #+BEGIN_SRC text
   Usage: python -m flowvcutils filerename [OPTIONS]
 
+    Rename the files in a directory
+
+    Example
+
+    Take the files in a directory
+
+    -------
+
+    directory
+
+    ├── all_results_00000.vtu
+
+    ├── all_results_00050.vtu
+
+    ├── all_results_00100.vtu
+
+    and renames them to
+
+    directory
+
+    ├── directory_00000.vtu
+
+    ├── directory_00050.vtu
+
+    ├── directory_00100.vtu
+
   Options:
     -d, --directory TEXT  Directory to run program (default: current dir)
     --prefix TEXT         New file name (default:current directory name).
