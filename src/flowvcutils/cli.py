@@ -149,7 +149,7 @@ def filerename(directory, prefix, current_name):
 )
 @click.option(
     "--new_start",
-    default=3000,
+    default=3050,
     help="New file numbering start.",
 )
 @click.option(
@@ -176,8 +176,8 @@ def filerenumber(
 
     and renames them to
 
-    file_name.3000.vtk
     file_name.3050.vtk
+    file_name.3100.vtk
     ...
     file_name.5000.vtk
 

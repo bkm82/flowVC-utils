@@ -131,7 +131,7 @@ def test_file_renumber(runner, renumber_directory, file_name):
     # Create a subdirectory
     expected_files = []
     for i in range(40):
-        new_number = 3000 + (i * 50)
+        new_number = 3050 + (i * 50)
         expected_file = f"{file_name}.{new_number}.vtk"
         expected_files.append(expected_file)
     tmp_dir = renumber_directory
