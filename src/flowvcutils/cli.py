@@ -137,6 +137,26 @@ def filerename(directory, prefix, current_name):
     help="Current file number start.",
 )
 def filerenumber(directory, prefix, current_start, current_end, new_start, increment):
+    """Renumber the files in a directory
+
+    Example
+
+    python -m flowvcutils filerenumber
+
+    takes a directory with files
+    file_name.0.vtk
+    file_name.1.vtk
+    ...
+    file_name.39.vtk
+
+    and renames them to
+
+    file_name.3000.vtk
+    file_name.3050.vtk
+    ...
+    file_name.5000.vtk
+
+    """
     route = "file_number"
     filerename_main(
         route=route,
