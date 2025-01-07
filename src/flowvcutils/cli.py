@@ -143,6 +143,11 @@ def filerename(directory, prefix, current_name):
     help="Current file numbering end.",
 )
 @click.option(
+    "--current_increment",
+    default=1,
+    help="Current file increment.",
+)
+@click.option(
     "--new_start",
     default=3000,
     help="New file numbering start.",
@@ -152,7 +157,15 @@ def filerename(directory, prefix, current_name):
     default=50,
     help="New file numbering increment.",
 )
-def filerenumber(directory, prefix, current_start, current_end, new_start, increment):
+def filerenumber(
+    directory,
+    prefix,
+    current_start,
+    current_end,
+    current_increment,
+    new_start,
+    increment,
+):
     """Renumber the files in a directory
 
     takes a directory with files
@@ -176,6 +189,7 @@ def filerenumber(directory, prefix, current_start, current_end, new_start, incre
         prefix=prefix,
         current_start=current_start,
         current_end=current_end,
+        current_increment=current_increment,
         new_start=new_start,
         increment=increment,
     )

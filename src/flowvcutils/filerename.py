@@ -47,6 +47,7 @@ def renumber_files(
     prefix=None,
     current_start=0,
     current_end=39,
+    current_increment=1,
     new_start=3000,
     increment=50,
 ):
@@ -55,7 +56,7 @@ def renumber_files(
             if filename.endswith(".vtk"):
                 prefix = filename.rsplit(".", 2)[0]  # remove last 2 dots
                 break  # Exit after finding the first .vtk file
-    for i in range(current_start, current_end + 1):
+    for i in range(current_start, current_end + 1, current_increment):
         old_filename = f"{prefix}.{i}.vtk"
         new_number = new_start + (i * increment)
         new_filename = f"{prefix}.{new_number}.vtk"
