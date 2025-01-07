@@ -86,7 +86,8 @@ def test_rename_files_with_name(temp_directory):
 @pytest.fixture
 def renumber_directory(file_name):
     """
-    pytest fixture to create a temp directory populated with enumaerated files starting from 0
+    pytest fixture to create a temp directory
+    directory populated with enumaerated files starting from 0
 
     files:
       file_name.0.vtk
