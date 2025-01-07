@@ -3,6 +3,7 @@ import uuid
 import pytest
 import json
 import sys
+import os
 from tempfile import TemporaryDirectory
 from unittest import mock
 from click.testing import CliRunner
@@ -10,6 +11,7 @@ from unittest.mock import patch
 from flowvcutils.cli import jsonlogger
 from flowvcutils.cli import inigenerator
 from flowvcutils.cli import simulationgenerator
+from flowvcutils.cli import filerename
 from flowvcutils.cli import main as cli_main
 from flowvcutils.jsonlogger import settup_logging
 
@@ -77,6 +79,26 @@ def test_default_simulationgenerator(mock_simulationgenerator_main, runner):
         result = runner.invoke(simulationgenerator, [f"-d{tmp_dir}"])
         assert result.exit_code == 0
         mock_simulationgenerator_main.assert_called_once_with(tmp_dir, [])
+
+
+def test_file_rename(runner):
+    """Integration Test that the file rename works."""
+    with TemporaryDirectory() as tmp_dir:
+        # Create a subdirectory
+        directory_name = os.path.basename(tmp_dir)
+        expected_files = []
+        for i in range(3):
+            test_file = f"all_results_000{i}.vtu"
+            with open(os.path.join(tmp_dir, test_file), "w") as f:
+                f.write("sample data")
+            expected_file = f"{directory_name}_000{i}.vtu"
+            expected_files.append(expected_file)
+        expected_file_set = set(expected_files)
+        result = runner.invoke(filerename, [f"-d{tmp_dir}"])
+        actual_files_set = set(os.listdir(tmp_dir))
+
+        assert result.exit_code == 0
+        assert actual_files_set == expected_file_set
 
 
 def test_init():
