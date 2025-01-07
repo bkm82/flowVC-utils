@@ -365,7 +365,10 @@ def test_integration_full_config(create_sample_vtu_file):
         "output_tres",
         "output_tdelta",
     ]
-    in_file_path = os.path.join(bin_directory, f"{directory_name}.in")
+    if directory_name.endswith("_"):
+        in_file_path = os.path.join(bin_directory, f"{directory_name[:-1]}.in")
+    else:
+        in_file_path = os.path.join(bin_directory, f"{directory_name}.in")
     config = load_config(in_file_path, var_list)
 
     Data_TMin = float(config["data_tmin"])
