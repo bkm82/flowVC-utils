@@ -86,7 +86,10 @@ def test_file_rename(runner):
     """Integration Test that the file rename works."""
     with TemporaryDirectory() as tmp_dir:
         # Create a subdirectory
+
         directory_name = os.path.basename(tmp_dir)
+        if directory_name.endswith("_"):
+            directory_name = directory_name[:-1]
         expected_files = []
         for i in range(3):
             test_file = f"all_results_000{i}.vtu"
