@@ -74,28 +74,3 @@ def main(route, directory, prefix, current_name):
         logger.info("Starting file renaming")
         rename_files(directory=directory, prefix=prefix, current_name=current_name)
         logger.info("Done!")
-
-
-if __name__ == "__main__":
-    settup_logging()
-    # Parse a CLI flag to enable setting the log level from the CLI
-    parser = argparse.ArgumentParser(description="Process VTU files to a .bin format.")
-    parser.add_argument(
-        "--root",
-        default=os.getcwd(),
-        help="input directory with the files (default: current directory).",
-    )
-    parser.add_argument(
-        "--prefix",
-        default=None,
-        help="new file name (default: current directory name).",
-    )
-    parser.add_argument(
-        "--currentname",
-        default="all_results_",
-        help="current file name (default: all_results_).",
-    )
-
-    args = parser.parse_args()
-
-    main(args.root, args.prefix, args.currentname)
