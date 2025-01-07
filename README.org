@@ -15,6 +15,20 @@ Install the package (optional add a -e after install for editable mode)
   pip install .
 #+end_src
 
+#+BEGIN_SRC text
+  Usage: python -m flowvcutils [OPTIONS] COMMAND [ARGS]...
+
+  Options:
+    -h, --help  Show this message and exit.
+
+  Commands:
+    filerename           Rename the files in a directory
+    filerenumber         Renumber the files in a directory
+    inigenerator         Generate a .ini file for the flow vc.
+    jsonlogger           Print a specified number of log lines.
+    simulationgenerator  Generate the simulation directorys.
+#+END_SRC
+
 ** vtu_2bin.py
 Convert a file file from a vtu file format to a .bin file that can be read and utilized by the flowVC code
 
@@ -168,8 +182,8 @@ For example From:
 To
 #+BEGIN_SRC text
   dir
-  ├── file_name.3000.vtk
   ├── file_name.3050.vtk
+  ├── file_name.3100.vtk
   ├── ...
   ├── file_name.5000.vtk
 
