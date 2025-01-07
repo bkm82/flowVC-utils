@@ -1,7 +1,6 @@
 import logging.config
 import logging.handlers
 from flowvcutils.jsonlogger import settup_logging
-import argparse
 import os
 
 logger = logging.getLogger(__name__)
@@ -24,7 +23,7 @@ def rename_files(directory, prefix=None, current_name="all_results_"):
 
     # Ensure the directory exists
     if not os.path.isdir(directory):
-        print(f"Error: Directory '{directory}' does not exist.")
+        logger.error(f"Error: Directory '{directory}' does not exist.")
         return
 
     # Process each file
@@ -40,7 +39,7 @@ def rename_files(directory, prefix=None, current_name="all_results_"):
             old_path = os.path.join(directory, filename)
             new_path = os.path.join(directory, new_name)
             os.rename(old_path, new_path)
-            print(f"Renamed: {filename} -> {new_name}")
+            logger.info(f"Renamed: {filename} -> {new_name}")
 
 
 def renumber_files(
