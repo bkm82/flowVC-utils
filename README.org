@@ -15,6 +15,20 @@ Install the package (optional add a -e after install for editable mode)
   pip install .
 #+end_src
 
+#+BEGIN_SRC text
+  Usage: python -m flowvcutils [OPTIONS] COMMAND [ARGS]...
+
+  Options:
+    -h, --help  Show this message and exit.
+
+  Commands:
+    filerename           Rename the files in a directory
+    filerenumber         Renumber the files in a directory
+    inigenerator         Generate a .ini file for the flow vc.
+    jsonlogger           Print a specified number of log lines.
+    simulationgenerator  Generate the simulation directorys.
+#+END_SRC
+
 ** vtu_2bin.py
 Convert a file file from a vtu file format to a .bin file that can be read and utilized by the flowVC code
 
@@ -119,16 +133,84 @@ dir
 
 *** Usage
 #+BEGIN_SRC text
-  usage: filerename.py [-h] [--root ROOT] [--prefix PREFIX]
-                       [--currentname CURRENTNAME]
+  Usage: python -m flowvcutils filerename [OPTIONS]
 
-  Rename the file names in a directory.
+    Rename the files in a directory
 
-  options:
-    -h, --help            show this help message and exit
-    --root ROOT           input directory with the files (default: current
-                          directory).
-    --prefix PREFIX       new file name (default: current directory name).
-    --currentname CURRENTNAME
-                          current file name (default: all_results_).
+    Example
+
+    Take the files in a directory
+
+    -------
+
+    directory
+
+    ├── all_results_00000.vtu
+
+    ├── all_results_00050.vtu
+
+    ├── all_results_00100.vtu
+
+    and renames them to
+
+    directory
+
+    ├── directory_00000.vtu
+
+    ├── directory_00050.vtu
+
+    ├── directory_00100.vtu
+
+  Options:
+    -d, --directory TEXT  Directory to run program (default: current dir)
+    --prefix TEXT         New file name (default:current directory name).
+    --current_name TEXT   Current file name (default:all_results).
+    -h, --help            Show this message and exit.
+#+END_SRC
+
+** filerenumber
+Renumber the files in a directory.
+For example From:
+#+BEGIN_SRC text
+  dir
+  ├── file_name.0.vtk
+  ├── file_name.1.vtk
+  ├── ...
+  ├── file_name.39.vtk
+#+END_SRC
+
+To
+#+BEGIN_SRC text
+  dir
+  ├── file_name.3050.vtk
+  ├── file_name.3100.vtk
+  ├── ...
+  ├── file_name.5000.vtk
+
+#+END_SRC
+*** Usage
+#+BEGIN_SRC text
+  Usage: python -m flowvcutils filerenumber [OPTIONS]
+
+    Renumber the files in a directory
+
+    Example
+
+    python -m flowvcutils filerenumber
+
+    takes a directory with files file_name.0.vtk file_name.1.vtk ...
+    file_name.39.vtk
+
+    and renames them to
+
+    file_name.3000.vtk file_name.3050.vtk ... file_name.5000.vtk
+
+  Options:
+    -d, --directory TEXT     Directory to run program (default: current dir)
+    --prefix TEXT            new file name (default:current directory name).
+    --current_start INTEGER  Current file number start.
+    --current_end INTEGER    Current file number start.
+    --new_start INTEGER      Current file number start.
+    --increment INTEGER      Current file number start.
+    -h, --help               Show this message and exit.
 #+END_SRC

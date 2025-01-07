@@ -6,6 +6,7 @@ from flowvcutils.jsonlogger import settup_logging
 from .jsonlogger import main as jsonlogger_main
 from .inigenerator import main as inigenerator_main
 from .simulationgenerator import main as simulationgenerator_main
+from .filerename import main as filerename_main
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +78,121 @@ def simulationgenerator(directory, exclude):
     Generate the simulation directorys.
     """
     simulationgenerator_main(directory, list(exclude))
+
+
+@cli.command()
+@click.option(
+    "-d",
+    "--directory",
+    default=os.getcwd(),
+    help="Directory to run program (default: current dir)",
+)
+@click.option(
+    "--prefix",
+    default=None,
+    help="New file name (default:current directory name).",
+)
+@click.option(
+    "--current_name",
+    default="all_results_",
+    help="Current file name (default:all_results).",
+)
+def filerename(directory, prefix, current_name):
+    """Rename the files in a directory
+
+    Example\n
+    Take the files in a directory\n
+    -------\n
+    directory \n
+    ├── all_results_00000.vtu \n
+    ├── all_results_00050.vtu \n
+    ├── all_results_00100.vtu \n
+
+    and renames them to \n
+    directory \n
+    ├── directory_00000.vtu \n
+    ├── directory_00050.vtu \n
+    ├── directory_00100.vtu \n
+    """
+    route = "file_name"
+    filerename_main(
+        route=route, directory=directory, prefix=prefix, current_name=current_name
+    )
+
+
+@cli.command()
+@click.option(
+    "-d",
+    "--directory",
+    default=os.getcwd(),
+    help="Directory to run program (default: current dir)",
+)
+@click.option(
+    "--prefix",
+    default=None,
+    help="new file name (default:current directory name).",
+)
+@click.option(
+    "--current_start",
+    default=0,
+    help="Current file numbering start.",
+)
+@click.option(
+    "--current_end",
+    default=39,
+    help="Current file numbering end.",
+)
+@click.option(
+    "--current_increment",
+    default=1,
+    help="Current file increment.",
+)
+@click.option(
+    "--new_start",
+    default=3050,
+    help="New file numbering start.",
+)
+@click.option(
+    "--increment",
+    default=50,
+    help="New file numbering increment.",
+)
+def filerenumber(
+    directory,
+    prefix,
+    current_start,
+    current_end,
+    current_increment,
+    new_start,
+    increment,
+):
+    """Renumber the files in a directory
+
+    takes a directory with files
+    file_name.0.vtk
+    file_name.1.vtk
+    ...
+    file_name.39.vtk
+
+    and renames them to
+
+    file_name.3050.vtk
+    file_name.3100.vtk
+    ...
+    file_name.5000.vtk
+
+    """
+    route = "file_number"
+    filerename_main(
+        route=route,
+        directory=directory,
+        prefix=prefix,
+        current_start=current_start,
+        current_end=current_end,
+        current_increment=current_increment,
+        new_start=new_start,
+        increment=increment,
+    )
 
 
 def main():

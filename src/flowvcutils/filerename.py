@@ -1,13 +1,13 @@
 import logging.config
 import logging.handlers
 from flowvcutils.jsonlogger import settup_logging
-import argparse
+from shutil import move
 import os
 
 logger = logging.getLogger(__name__)
 
 
-def rename_files(directory, currentname="all_results_", prefix=None):
+def rename_files(directory, prefix=None, current_name="all_results_"):
     """
     Rename all .vtu files in the specified directory.
 
@@ -16,20 +16,20 @@ def rename_files(directory, currentname="all_results_", prefix=None):
         prefix (str): Optional prefix for renaming. Defaults to directory name.
     """
     # Get the directory name for default prefix
-    default_prefix = os.path.basename(os.path.abspath(directory))
-    prefix = prefix or default_prefix
+    if prefix is None:
+        prefix = os.path.basename(os.path.abspath(directory))
 
     if prefix.endswith("_"):
         prefix = prefix[:-1]
 
     # Ensure the directory exists
     if not os.path.isdir(directory):
-        print(f"Error: Directory '{directory}' does not exist.")
+        logger.error(f"Error: Directory '{directory}' does not exist.")
         return
 
     # Process each file
     for filename in os.listdir(directory):
-        if filename.startswith(currentname) and filename.endswith(".vtu"):
+        if filename.startswith(current_name) and filename.endswith(".vtu"):
             # Extract the unique identifier from the filename
             identifier = filename.split("_")[-1].replace(".vtu", "")
 
@@ -40,35 +40,69 @@ def rename_files(directory, currentname="all_results_", prefix=None):
             old_path = os.path.join(directory, filename)
             new_path = os.path.join(directory, new_name)
             os.rename(old_path, new_path)
-            print(f"Renamed: {filename} -> {new_name}")
+            logger.info(f"Renamed: {filename} -> {new_name}")
 
 
-def main(root, filename, prefix):
-    logger.info("Starting file renaming")
-    rename_files(root, prefix, filename)
-    logger.info("Done!")
+def create_rename_map(
+    current_start, current_end, current_increment, new_start, increment
+):
+    """
+    Create a map of old_number :new_number
+    """
+    mapping = {}
+    current_numbers = range(current_start, current_end + 1, current_increment)
+    for current in current_numbers:
+        new = new_start + ((current - current_start) // current_increment) * increment
+        mapping[current] = new
+    return mapping
 
 
-if __name__ == "__main__":
+def renumber_files(
+    directory,
+    prefix=None,
+    current_start=0,
+    current_end=39,
+    current_increment=1,
+    new_start=3000,
+    increment=50,
+):
+    if prefix is None:
+        for filename in os.listdir(directory):
+            if filename.endswith(".vtk"):
+                prefix = filename.rsplit(".", 2)[0]  # remove last 2 dots
+                break  # Exit after finding the first .vtk file
+
+    mapping = create_rename_map(
+        current_start=current_start,
+        current_end=current_end,
+        current_increment=current_increment,
+        new_start=new_start,
+        increment=increment,
+    )
+    temp_suffix = ".tmp"
+    for old in mapping:
+        old_file = os.path.join(directory, f"{prefix}.{old}.vtk")
+        temp_file = os.path.join(directory, f"{prefix}.{old}{temp_suffix}.vtk")
+        if os.path.exists(old_file):
+            logger.debug(f"Temporaraly renaming: {old_file} -> {temp_file}")
+            move(str(old_file), str(temp_file))
+
+    for old, new in mapping.items():
+        temp_file = os.path.join(directory, f"{prefix}.{old}{temp_suffix}.vtk")
+        new_file = os.path.join(directory, f"{prefix}.{new}.vtk")
+        if os.path.exists(temp_file):
+            logger.debug(f"Renaming: {temp_file} -> {new_file}")
+            logger.info(f"Renaming: {old} -> {new}")
+            move(str(temp_file), str(new_file))
+
+
+def main(route, **kwags):
     settup_logging()
-    # Parse a CLI flag to enable setting the log level from the CLI
-    parser = argparse.ArgumentParser(description="Process VTU files to a .bin format.")
-    parser.add_argument(
-        "--root",
-        default=os.getcwd(),
-        help="input directory with the files (default: current directory).",
-    )
-    parser.add_argument(
-        "--prefix",
-        default=None,
-        help="new file name (default: current directory name).",
-    )
-    parser.add_argument(
-        "--currentname",
-        default="all_results_",
-        help="current file name (default: all_results_).",
-    )
-
-    args = parser.parse_args()
-
-    main(args.root, args.prefix, args.currentname)
+    if route == "file_name":
+        logger.info("Starting file renaming")
+        rename_files(**kwags)
+        logger.info("Done!")
+    if route == "file_number":
+        logger.info("Starting File Renumbering")
+        renumber_files(**kwags)
+        logger.info("Files Renumbered")
