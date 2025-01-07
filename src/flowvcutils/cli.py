@@ -97,14 +97,55 @@ def simulationgenerator(directory, exclude):
     default="all_results_",
     help="current file name (default:current directory name).",
 )
-@click.option(
-    "--route",
-    default="file_name",
-    help="Update file name [file_name] or numbering scheme [file_number].",
-)
-def filerename(route, directory, prefix, current_name):
+def filerename(directory, prefix, current_name):
+    route = "file_name"
     filerename_main(
         route=route, directory=directory, prefix=prefix, current_name=current_name
+    )
+
+
+@cli.command()
+@click.option(
+    "-d",
+    "--directory",
+    default=os.getcwd(),
+    help="Directory to run program (default: current dir)",
+)
+@click.option(
+    "--prefix",
+    default=None,
+    help="new file name (default:current directory name).",
+)
+@click.option(
+    "--current_start",
+    default=0,
+    help="Current file number start.",
+)
+@click.option(
+    "--current_end",
+    default=39,
+    help="Current file number start.",
+)
+@click.option(
+    "--new_start",
+    default=3000,
+    help="Current file number start.",
+)
+@click.option(
+    "--increment",
+    default=50,
+    help="Current file number start.",
+)
+def filerenumber(directory, prefix, current_start, current_end, new_start, increment):
+    route = "file_number"
+    filerename_main(
+        route=route,
+        directory=directory,
+        prefix=prefix,
+        current_start=current_start,
+        current_end=current_end,
+        new_start=new_start,
+        increment=increment,
     )
 
 

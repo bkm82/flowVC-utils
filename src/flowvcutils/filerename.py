@@ -67,9 +67,13 @@ def renumber_files(
             os.rename(old_filepath, new_filepath)
 
 
-def main(route, directory, prefix, current_name):
+def main(route, **kwags):
     settup_logging()
     if route == "file_name":
         logger.info("Starting file renaming")
-        rename_files(directory=directory, prefix=prefix, current_name=current_name)
+        rename_files(**kwags)
         logger.info("Done!")
+    if route == "file_number":
+        logger.info("Starting File Renumbering")
+        renumber_files(**kwags)
+        logger.info("Files Renumbered")

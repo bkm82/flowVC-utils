@@ -12,6 +12,7 @@ from flowvcutils.cli import jsonlogger
 from flowvcutils.cli import inigenerator
 from flowvcutils.cli import simulationgenerator
 from flowvcutils.cli import filerename
+from flowvcutils.cli import filerenumber
 from flowvcutils.cli import main as cli_main
 from flowvcutils.jsonlogger import settup_logging
 
@@ -99,6 +100,47 @@ def test_file_rename(runner):
 
         assert result.exit_code == 0
         assert actual_files_set == expected_file_set
+
+
+@pytest.fixture
+def renumber_directory(file_name):
+    """
+    pytest fixture to create a temp directory
+    directory populated with enumaerated files starting from 0
+
+    files:
+      file_name.0.vtk
+      file_name.1.vtk
+      ...
+      file_name.39.vtk
+    """
+    with TemporaryDirectory() as tmp_dir:
+        for i in range(40):
+            test_file = f"{file_name}.{i}.vtk"
+            with open(os.path.join(tmp_dir, test_file), "w") as f:
+                f.write("sample data")
+        yield tmp_dir
+
+
+@pytest.mark.parametrize(
+    "file_name",
+    ["A_0.000131_T_0.507_peak_0.76_backward", "A_0.000131_T_0.507_peak_0.51_backward"],
+)
+def test_file_renumber(runner, renumber_directory, file_name):
+    """Integration Test that the file renumber works."""
+    # Create a subdirectory
+    expected_files = []
+    for i in range(40):
+        new_number = 3000 + (i * 50)
+        expected_file = f"{file_name}.{new_number}.vtk"
+        expected_files.append(expected_file)
+    tmp_dir = renumber_directory
+    expected_file_set = set(expected_files)
+    result = runner.invoke(filerenumber, [f"-d{tmp_dir}"])
+    actual_files_set = set(os.listdir(tmp_dir))
+
+    assert result.exit_code == 0
+    assert actual_files_set == expected_file_set
 
 
 def test_init():
