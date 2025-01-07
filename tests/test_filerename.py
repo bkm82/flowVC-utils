@@ -83,23 +83,56 @@ def test_rename_files_with_name(temp_directory):
     assert renamed_files == expected_files
 
 
+@pytest.fixture
+def renumber_directory(file_name):
+    """
+    pytest fixture to create a temp directory populated with enumaerated files starting from 0
+
+    files:
+      file_name.0.vtk
+      file_name.1.vtk
+      ...
+      file_name.39.vtk
+    """
+    with TemporaryDirectory() as tmp_dir:
+        for i in range(40):
+            test_file = f"{file_name}.{i}.vtk"
+            with open(os.path.join(tmp_dir, test_file), "w") as f:
+                f.write("sample data")
+        yield tmp_dir
+
+
 @pytest.mark.parametrize(
     "file_name",
     ["A_0.000131_T_0.507_peak_0.76_backward", "A_0.000131_T_0.507_peak_0.51_backward"],
 )
-def test_renumber_files(file_name):
-    with TemporaryDirectory() as tmp_dir:
-        expected_files = []
-        for i in range(40):
+def test_renumber_files(renumber_directory, file_name):
 
-            test_file = f"{file_name}.{i}.vtk"
-            with open(os.path.join(tmp_dir, test_file), "w") as f:
-                f.write("sample data")
-            new_number = 3000 + (i * 50)
-            expected_file = f"{file_name}.{new_number}.vtk"
-            expected_files.append(expected_file)
+    expected_files = []
+    for i in range(40):
+        new_number = 3000 + (i * 50)
+        expected_file = f"{file_name}.{new_number}.vtk"
+        expected_files.append(expected_file)
+    tmp_dir = renumber_directory
+    renumber_files(tmp_dir, file_name)
+    expected_file_set = set(expected_files)
+    actual_files_set = set(os.listdir(tmp_dir))
+    assert actual_files_set == expected_file_set
 
-        renumber_files(tmp_dir, file_name)
-        expected_file_set = set(expected_files)
-        actual_files_set = set(os.listdir(tmp_dir))
-        assert actual_files_set == expected_file_set
+
+@pytest.mark.parametrize(
+    "file_name",
+    ["A_0.000131_T_0.507_peak_0.76_backward", "A_0.000131_T_0.507_peak_0.51_backward"],
+)
+def test_renumber_files_without_file_name(renumber_directory, file_name):
+
+    expected_files = []
+    for i in range(40):
+        new_number = 3000 + (i * 50)
+        expected_file = f"{file_name}.{new_number}.vtk"
+        expected_files.append(expected_file)
+    tmp_dir = renumber_directory
+    renumber_files(tmp_dir)
+    expected_file_set = set(expected_files)
+    actual_files_set = set(os.listdir(tmp_dir))
+    assert actual_files_set == expected_file_set

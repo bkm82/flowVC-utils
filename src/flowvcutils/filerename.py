@@ -44,8 +44,18 @@ def rename_files(directory, currentname="all_results_", prefix=None):
 
 
 def renumber_files(
-    directory, prefix, current_start=0, current_end=39, new_start=3000, increment=50
+    directory,
+    prefix=None,
+    current_start=0,
+    current_end=39,
+    new_start=3000,
+    increment=50,
 ):
+    if prefix is None:
+        for filename in os.listdir(directory):
+            if filename.endswith(".vtk"):
+                prefix = filename.rsplit(".", 2)[0]  # remove last 2 dots
+                break  # Exit after finding the first .vtk file
     for i in range(current_start, current_end + 1):
         old_filename = f"{prefix}.{i}.vtk"
         new_number = new_start + (i * increment)
