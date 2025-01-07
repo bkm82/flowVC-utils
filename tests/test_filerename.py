@@ -99,7 +99,7 @@ def test_renumber_files(file_name):
             expected_file = f"{file_name}.{new_number}.vtk"
             expected_files.append(expected_file)
 
-        renumber_files(tmp_dir)
+        renumber_files(tmp_dir, file_name)
         expected_file_set = set(expected_files)
         actual_files_set = set(os.listdir(tmp_dir))
         assert actual_files_set == expected_file_set

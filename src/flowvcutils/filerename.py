@@ -43,11 +43,13 @@ def rename_files(directory, currentname="all_results_", prefix=None):
             print(f"Renamed: {filename} -> {new_name}")
 
 
-def renumber_files(directory, start=3000, increment=50, end=5000):
-    for i in range(0, (end - start) // increment + 1):
-        old_filename = f"A_0.000131_T_0.507_peak_0.76_backward.{i}.vtk"
-        new_number = start + (i * increment)
-        new_filename = f"A_0.000131_T_0.507_peak_0.76_backward.{new_number}.vtk"
+def renumber_files(
+    directory, prefix, current_start=0, current_end=39, new_start=3000, increment=50
+):
+    for i in range(current_start, current_end + 1):
+        old_filename = f"{prefix}.{i}.vtk"
+        new_number = new_start + (i * increment)
+        new_filename = f"{prefix}.{new_number}.vtk"
 
         old_filepath = os.path.join(directory, old_filename)
         new_filepath = os.path.join(directory, new_filename)
