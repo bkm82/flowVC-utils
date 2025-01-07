@@ -1,7 +1,8 @@
 import os
 import shutil
 import pytest
-from flowvcutils.filerename import rename_files
+from flowvcutils.filerename import rename_files, renumber_files
+from tempfile import TemporaryDirectory
 
 
 @pytest.fixture
@@ -80,3 +81,22 @@ def test_rename_files_with_name(temp_directory):
 
     # Check that the renamed files match the expected output
     assert renamed_files == expected_files
+
+
+@pytest.mark.parametrize("file_name", ["A_0.000131_T_0.507_peak_0.76_backward"])
+def test_renumber_files(file_name):
+    with TemporaryDirectory() as tmp_dir:
+        expected_files = []
+        for i in range(40):
+
+            test_file = f"{file_name}.{i}.vtk"
+            with open(os.path.join(tmp_dir, test_file), "w") as f:
+                f.write("sample data")
+            new_number = 3000 + (i * 50)
+            expected_file = f"{file_name}.{new_number}.vtk"
+            expected_files.append(expected_file)
+
+        renumber_files(tmp_dir)
+        expected_file_set = set(expected_files)
+        actual_files_set = set(os.listdir(tmp_dir))
+        assert actual_files_set == expected_file_set

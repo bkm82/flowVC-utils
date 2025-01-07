@@ -43,6 +43,19 @@ def rename_files(directory, currentname="all_results_", prefix=None):
             print(f"Renamed: {filename} -> {new_name}")
 
 
+def renumber_files(directory, start=3000, increment=50, end=5000):
+    for i in range(0, (end - start) // increment + 1):
+        old_filename = f"A_0.000131_T_0.507_peak_0.76_backward.{i}.vtk"
+        new_number = start + (i * increment)
+        new_filename = f"A_0.000131_T_0.507_peak_0.76_backward.{new_number}.vtk"
+
+        old_filepath = os.path.join(directory, old_filename)
+        new_filepath = os.path.join(directory, new_filename)
+
+        if os.path.exists(old_filepath):
+            os.rename(old_filepath, new_filepath)
+
+
 def main(root, filename, prefix):
     logger.info("Starting file renaming")
     rename_files(root, prefix, filename)
