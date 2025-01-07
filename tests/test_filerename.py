@@ -68,7 +68,7 @@ def test_rename_files_with_prefex(temp_directory):
 
 def test_rename_files_with_name(temp_directory):
 
-    rename_files(temp_directory, prefix="steady", currentname="new_name")
+    rename_files(temp_directory, prefix="steady", current_name="new_name")
 
     # Get the renamed files
     renamed_files = sorted(os.listdir(temp_directory))

@@ -7,7 +7,7 @@ import os
 logger = logging.getLogger(__name__)
 
 
-def rename_files(directory, currentname="all_results_", prefix=None):
+def rename_files(directory, prefix=None, current_name="all_results_"):
     """
     Rename all .vtu files in the specified directory.
 
@@ -16,8 +16,8 @@ def rename_files(directory, currentname="all_results_", prefix=None):
         prefix (str): Optional prefix for renaming. Defaults to directory name.
     """
     # Get the directory name for default prefix
-    default_prefix = os.path.basename(os.path.abspath(directory))
-    prefix = prefix or default_prefix
+    if prefix is None:
+        prefix = os.path.basename(os.path.abspath(directory))
 
     if prefix.endswith("_"):
         prefix = prefix[:-1]
@@ -29,7 +29,7 @@ def rename_files(directory, currentname="all_results_", prefix=None):
 
     # Process each file
     for filename in os.listdir(directory):
-        if filename.startswith(currentname) and filename.endswith(".vtu"):
+        if filename.startswith(current_name) and filename.endswith(".vtu"):
             # Extract the unique identifier from the filename
             identifier = filename.split("_")[-1].replace(".vtu", "")
 
@@ -68,10 +68,12 @@ def renumber_files(
             os.rename(old_filepath, new_filepath)
 
 
-def main(root, filename, prefix):
-    logger.info("Starting file renaming")
-    rename_files(root, prefix, filename)
-    logger.info("Done!")
+def main(route, directory, prefix, current_name):
+    settup_logging()
+    if route == "file_name":
+        logger.info("Starting file renaming")
+        rename_files(directory=directory, prefix=prefix, current_name=current_name)
+        logger.info("Done!")
 
 
 if __name__ == "__main__":

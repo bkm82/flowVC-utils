@@ -6,6 +6,7 @@ from flowvcutils.jsonlogger import settup_logging
 from .jsonlogger import main as jsonlogger_main
 from .inigenerator import main as inigenerator_main
 from .simulationgenerator import main as simulationgenerator_main
+from .filerename import main as filerename_main
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +78,34 @@ def simulationgenerator(directory, exclude):
     Generate the simulation directorys.
     """
     simulationgenerator_main(directory, list(exclude))
+
+
+@cli.command()
+@click.option(
+    "-d",
+    "--directory",
+    default=os.getcwd(),
+    help="Directory to run program (default: current dir)",
+)
+@click.option(
+    "--prefix",
+    default=None,
+    help="new file name (default:current directory name).",
+)
+@click.option(
+    "--current_name",
+    default="all_results_",
+    help="current file name (default:current directory name).",
+)
+@click.option(
+    "--route",
+    default="file_name",
+    help="Update file name [file_name] or numbering scheme [file_number].",
+)
+def filerename(route, directory, prefix, current_name):
+    filerename_main(
+        route=route, directory=directory, prefix=prefix, current_name=current_name
+    )
 
 
 def main():
