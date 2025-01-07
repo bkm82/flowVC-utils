@@ -1,6 +1,7 @@
 import logging.config
 import logging.handlers
 from flowvcutils.jsonlogger import settup_logging
+from shutil import move
 import os
 
 logger = logging.getLogger(__name__)
@@ -42,6 +43,20 @@ def rename_files(directory, prefix=None, current_name="all_results_"):
             logger.info(f"Renamed: {filename} -> {new_name}")
 
 
+def create_rename_map(
+    current_start, current_end, current_increment, new_start, increment
+):
+    """
+    Create a map of old_number :new_number
+    """
+    mapping = {}
+    current_numbers = range(current_start, current_end + 1, current_increment)
+    for current in current_numbers:
+        new = new_start + ((current - current_start) // current_increment) * increment
+        mapping[current] = new
+    return mapping
+
+
 def renumber_files(
     directory,
     prefix=None,
@@ -56,16 +71,29 @@ def renumber_files(
             if filename.endswith(".vtk"):
                 prefix = filename.rsplit(".", 2)[0]  # remove last 2 dots
                 break  # Exit after finding the first .vtk file
-    for i in range(current_start, current_end + 1, current_increment):
-        old_filename = f"{prefix}.{i}.vtk"
-        new_number = new_start + (i * increment)
-        new_filename = f"{prefix}.{new_number}.vtk"
 
-        old_filepath = os.path.join(directory, old_filename)
-        new_filepath = os.path.join(directory, new_filename)
+    mapping = create_rename_map(
+        current_start=current_start,
+        current_end=current_end,
+        current_increment=current_increment,
+        new_start=new_start,
+        increment=increment,
+    )
+    temp_suffix = ".tmp"
+    for old in mapping:
+        old_file = os.path.join(directory, f"{prefix}.{old}.vtk")
+        temp_file = os.path.join(directory, f"{prefix}.{old}{temp_suffix}.vtk")
+        if os.path.exists(old_file):
+            logger.debug(f"Temporaraly renaming: {old_file} -> {temp_file}")
+            move(str(old_file), str(temp_file))
 
-        if os.path.exists(old_filepath):
-            os.rename(old_filepath, new_filepath)
+    for old, new in mapping.items():
+        temp_file = os.path.join(directory, f"{prefix}.{old}{temp_suffix}.vtk")
+        new_file = os.path.join(directory, f"{prefix}.{new}.vtk")
+        if os.path.exists(temp_file):
+            logger.debug(f"Renaming: {temp_file} -> {new_file}")
+            logger.info(f"Renaming: {old} -> {new}")
+            move(str(temp_file), str(new_file))
 
 
 def main(route, **kwags):
