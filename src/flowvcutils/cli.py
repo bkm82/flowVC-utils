@@ -119,22 +119,22 @@ def filerename(directory, prefix, current_name):
 @click.option(
     "--current_start",
     default=0,
-    help="Current file number start.",
+    help="Current file numbering start.",
 )
 @click.option(
     "--current_end",
     default=39,
-    help="Current file number start.",
+    help="Current file numbering end.",
 )
 @click.option(
     "--new_start",
     default=3000,
-    help="Current file number start.",
+    help="New file numbering start.",
 )
 @click.option(
     "--increment",
     default=50,
-    help="Current file number start.",
+    help="New file numbering increment.",
 )
 def filerenumber(directory, prefix, current_start, current_end, new_start, increment):
     """Renumber the files in a directory
