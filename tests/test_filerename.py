@@ -83,7 +83,10 @@ def test_rename_files_with_name(temp_directory):
     assert renamed_files == expected_files
 
 
-@pytest.mark.parametrize("file_name", ["A_0.000131_T_0.507_peak_0.76_backward"])
+@pytest.mark.parametrize(
+    "file_name",
+    ["A_0.000131_T_0.507_peak_0.76_backward", "A_0.000131_T_0.507_peak_0.51_backward"],
+)
 def test_renumber_files(file_name):
     with TemporaryDirectory() as tmp_dir:
         expected_files = []
