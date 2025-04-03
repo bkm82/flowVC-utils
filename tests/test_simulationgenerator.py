@@ -77,8 +77,9 @@ def test_run_command(mock_run):
 def test_main_valid_directory(setup_test_environment, capsys):
     import flowvcutils.simulationgenerator as sg
 
+    svpre_exe = "/usr/local/sv/svsolver/2022-07-22/bin/svpre generic_file.svpre"
     # Call main with the setup test environment
-    sg.main(str(setup_test_environment), exclude=None)
+    sg.main(str(setup_test_environment), exclude=None, svpre_exe=svpre_exe)
 
     # Capture output to check logging/message
     captured = capsys.readouterr()
