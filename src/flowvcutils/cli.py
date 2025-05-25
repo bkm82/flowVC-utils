@@ -67,17 +67,23 @@ def inigenerator(directory, auto_range, cell_size, direction, batch):
     help="Directory to run program (default: current dir)",
 )
 @click.option(
+    "--svpre_exe",
+    type=str,
+    default="/usr/local/sv/svsolver/2022-07-22/bin/svpre generic_file.svpre",
+    help="Path to the svpre executable.",
+)
+@click.option(
     "--exclude",
     type=str,
     multiple=True,
     default=[],
     help="Optional list of file names to exclude (space-separated).",
 )
-def simulationgenerator(directory, exclude):
+def simulationgenerator(directory, exclude, svpre_exe):
     """
     Generate the simulation directorys.
     """
-    simulationgenerator_main(directory, list(exclude))
+    simulationgenerator_main(directory, list(exclude), svpre_exe)
 
 
 @cli.command()

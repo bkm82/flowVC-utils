@@ -79,7 +79,11 @@ def test_default_simulationgenerator(mock_simulationgenerator_main, runner):
     with TemporaryDirectory() as tmp_dir:
         result = runner.invoke(simulationgenerator, [f"-d{tmp_dir}"])
         assert result.exit_code == 0
-        mock_simulationgenerator_main.assert_called_once_with(tmp_dir, [])
+        mock_simulationgenerator_main.assert_called_once_with(
+            tmp_dir,
+            [],
+            "/usr/local/sv/svsolver/2022-07-22/bin/svpre generic_file.svpre",
+        )
 
 
 def test_file_rename(runner):

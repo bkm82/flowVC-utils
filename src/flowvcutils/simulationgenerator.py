@@ -7,7 +7,11 @@ from flowvcutils.jsonlogger import settup_logging
 logger = logging.getLogger(__name__)
 
 
-def create_directories(base_dir, exclude_files=None):
+def create_directories(
+    base_dir,
+    exclude_files=None,
+    svpre_exe="/usr/local/sv/svsolver/2022-07-22/bin/svpre generic_file.svpre",
+):
     inlet_velocity_directory = os.path.join(base_dir, "inlet_velocity")
     generic_dir = os.path.join(base_dir, "generic_file")
 
@@ -37,8 +41,7 @@ def create_directories(base_dir, exclude_files=None):
             create_numstart_file(new_dir_path)
 
             # Step 5: Run the svpre command
-            command = "/usr/local/sv/svsolver/2022-07-22/bin/svpre generic_file.svpre"
-            run_command(command=command, path=new_dir_path)
+            run_command(command=svpre_exe, path=new_dir_path)
 
 
 def replace_file(source, destination):
@@ -90,8 +93,8 @@ def run_command(command, path):
     subprocess.run(command, shell=True, cwd=path, env=os.environ)
 
 
-def main(directory, exclude):
+def main(directory, exclude, svpre_exe):
     settup_logging()
     logger.info("Creating Simulation Directories")
-    create_directories(base_dir=directory, exclude_files=exclude)
+    create_directories(base_dir=directory, exclude_files=exclude, svpre_exe=svpre_exe)
     logger.info("Simulation Directories Created")
