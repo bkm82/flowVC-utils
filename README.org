@@ -1,8 +1,15 @@
 * flowVCUtils
-utilities for the flowVC project
 
 [[https://github.com/bkm82/flowVC-utils/actions][https://github.com/bkm82/flowVC-utils/actions/workflows/tests.yml/badge.svg]]
 [[https://codecov.io/gh/bkm82/flowVC-utils][https://codecov.io/gh/bkm82/flowVC-utils/graph/badge.svg?token=WFC6ZW61XD]]
+
+utilities for the flowVC project
+
+#+begin_quote
+[!TIP]
+Check out the [[https://bkm82.github.io/flowVC-utils/][Docs]
+#+end_quote
+
 ** Installation
 Clone and install the repository
 #+begin_src shell

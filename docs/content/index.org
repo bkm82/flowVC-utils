@@ -1,4 +1,5 @@
 #+SETUPFILE: ../org-themes/theme-readtheorg.setup
+* Navigation Bar
 #+INCLUDE: "./header.org"
 * Welcome
 Welcome to the flowVC-utils documentation this utility project provides documentation and tooling to assist in utilizing the flowVC software for computing Finite Time Lyoponove Exponents
@@ -6,6 +7,7 @@ Welcome to the flowVC-utils documentation this utility project provides document
 * Project Organization
 It is recomended that before starting your project is organized into the following directory structure, with a subdirectory being created for each of the simulation cases. Note the trailing "_" in the subdirectory names, this is necissary for the code to to generate and identify file names throughout the process.
 
+#+begin_src shell
 └── project_root
     ├── case1_
     │   ├── input_bin
@@ -23,14 +25,16 @@ It is recomended that before starting your project is organized into the followi
         │   └── case2_00100.vtu
         ├── output_bin
         └── output_vtk
-
+#+end_src
 The input_vtu stores the input data files in a ".vtu" file format. This would often be the velocity data from a CFD simulation that you wish to generate FTLE fields for.
 
 * Step 1: Create Binary Files using
- FlowVC requires the velocity data be converted into binary files prior to exectution. These binary files contain the velocity data as well as the coordinate and connectivity information of your dataset. For more information regarding the anticipated file format, refer to the flowVC documentation [[https://bkm82.github.io/flowVC/][flowVC Documenation]].
+#+INCLUDE: "./vtu_2bin.org::vtu2bin"
 
- To generate the binary files use the vtu2bin argument [[./vtu_2bin.org][vtu2bin]]
-
+[[./vtu_2bin.org][More Detail]]
 
 
 * Step 2: Create the input settings (.in) file
+#+INCLUDE: "./inigenerator.org::Inigenerator"
+
+[[./inigenerator.org][More Detail]]
