@@ -52,19 +52,25 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgef6df56">Data Format</a>
+<li><a href="#org6c6be5e">Data Format</a>
 <ul>
-<li><a href="#org5c605ad">Velocity</a></li>
-<li><a href="#org1e9daa3">Cartesian Mesh</a></li>
-<li><a href="#orgaf67a42">Unstructured Mesh</a>
+<li><a href="#org44678e0">Velocity</a></li>
+<li><a href="#org18101b1">Cartesian Mesh</a></li>
+<li><a href="#org43bfa38">Unstructured Mesh</a>
 <ul>
-<li><a href="#orge487cee">Cordinates File</a></li>
-<li><a href="#orgc9ecbfb">Connectivity</a></li>
-<li><a href="#org4c635a8">Adjacency</a></li>
+<li><a href="#orgd839ec8">Cordinates File</a></li>
+<li><a href="#orgf21da91">Connectivity</a></li>
+<li><a href="#org43a992b">Adjacency</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li><a href="#orgaa0451f">vtu2bin</a>
+<ul>
+<li><a href="#org9f6eaa1">Project Organization</a></li>
+</ul>
+</li>
+<li><a href="#orgde56f25">Options</a></li>
 </ul>
 </div>
 </div>
@@ -86,18 +92,18 @@
 
 
 
-<div id="outline-container-orgef6df56" class="outline-2">
-<h2 id="orgef6df56">Data Format</h2>
-<div class="outline-text-2" id="text-orgef6df56">
+<div id="outline-container-org6c6be5e" class="outline-2">
+<h2 id="org6c6be5e">Data Format</h2>
+<div class="outline-text-2" id="text-org6c6be5e">
 <p>
 To use flowVC, you'll need to supply velocity data in binary format. The velocity data typically requires separate files for the velocity field at each time point. A single (Cartesian) or  multiple (Unstructured) files define the mesh. These files all share a common prefix, which can be any name you choose and is referred to here as InFilePrefix.
 </p>
 </div>
 
 
-<div id="outline-container-org5c605ad" class="outline-3">
-<h3 id="org5c605ad">Velocity</h3>
-<div class="outline-text-3" id="text-org5c605ad">
+<div id="outline-container-org44678e0" class="outline-3">
+<h3 id="org44678e0">Velocity</h3>
+<div class="outline-text-3" id="text-org44678e0">
 <p>
 If the velocity is defined discretely in time, each time instant should have its own separate file. The velocity data must be equally spaced in time. File names should follow the format InFilePrefix_vel.#.bin, where # is a unique index for each time instant. The difference between successive file time points must be consistent
 </p>
@@ -145,10 +151,9 @@ t_s \; \underbrace{u_0\; v_0\; w_0}_{\text{node 0}} \underbrace{u_1\;  v_1 \; w_
 </div>
 
 
-
-<div id="outline-container-org1e9daa3" class="outline-3">
-<h3 id="org1e9daa3">Cartesian Mesh</h3>
-<div class="outline-text-3" id="text-org1e9daa3">
+<div id="outline-container-org18101b1" class="outline-3">
+<h3 id="org18101b1">Cartesian Mesh</h3>
+<div class="outline-text-3" id="text-org18101b1">
 <p>
 To define a cartesian mesh, the mesh bounds and resolution needs to be defined.
 </p>
@@ -190,9 +195,9 @@ To define a cartesian mesh, the mesh bounds and resolution needs to be defined.
 </div>
 </div>
 
-<div id="outline-container-orgaf67a42" class="outline-3">
-<h3 id="orgaf67a42">Unstructured Mesh</h3>
-<div class="outline-text-3" id="text-orgaf67a42">
+<div id="outline-container-org43bfa38" class="outline-3">
+<h3 id="org43bfa38">Unstructured Mesh</h3>
+<div class="outline-text-3" id="text-org43bfa38">
 <p>
 The unstructured mesh is defined by three files:
 </p>
@@ -203,9 +208,9 @@ The unstructured mesh is defined by three files:
 </ul>
 </div>
 
-<div id="outline-container-orge487cee" class="outline-4">
-<h4 id="orge487cee">Cordinates File</h4>
-<div class="outline-text-4" id="text-orge487cee">
+<div id="outline-container-orgd839ec8" class="outline-4">
+<h4 id="orgd839ec8">Cordinates File</h4>
+<div class="outline-text-4" id="text-orgd839ec8">
 \begin{equation}
 n \; \underbrace{x_0\; y_0\; z_0}_{\text{node 0}} \underbrace{x_1\;  y_1 \; z_1}_{\text{node 1}} ....\; \underbrace{x_{n-1} \; y_{n-1}\; z_{n-1}}_{\text{node n-1}}
 \end{equation}
@@ -245,9 +250,9 @@ n \; \underbrace{x_0\; y_0\; z_0}_{\text{node 0}} \underbrace{x_1\;  y_1 \; z_1}
 </table>
 </div>
 </div>
-<div id="outline-container-orgc9ecbfb" class="outline-4">
-<h4 id="orgc9ecbfb">Connectivity</h4>
-<div class="outline-text-4" id="text-orgc9ecbfb">
+<div id="outline-container-orgf21da91" class="outline-4">
+<h4 id="orgf21da91">Connectivity</h4>
+<div class="outline-text-4" id="text-orgf21da91">
 <p>
 The connectivity specifies the indices of the 4 nodes that make up each element. The index of each node is based on coordinates file ordering counting from 0.
 </p>
@@ -292,9 +297,9 @@ The connectivity specifies the indices of the 4 nodes that make up each element.
 </div>
 
 
-<div id="outline-container-org4c635a8" class="outline-4">
-<h4 id="org4c635a8">Adjacency</h4>
-<div class="outline-text-4" id="text-org4c635a8">
+<div id="outline-container-org43a992b" class="outline-4">
+<h4 id="org43a992b">Adjacency</h4>
+<div class="outline-text-4" id="text-org43a992b">
 <p>
 The adjacency file contains the indices of the adacent elements that share a face with the current element. The index of each element is based on the order of the connectivity file.
 </p>
@@ -310,8 +315,8 @@ The adjacency file contains the indices of the adacent elements that share a fac
 </ul>
 </div>
 <ul class="org-ul">
-<li><a id="org0a8c0b1"></a>Data Type<br />
-<div class="outline-text-5" id="text-org0a8c0b1">
+<li><a id="orgcfd3369"></a>Data Type<br />
+<div class="outline-text-5" id="text-orgcfd3369">
 <p>
 e(int): The number of elements in the data set
 \(e_i^j\) (int): The index of the element that shares the j'th face for the ith element in the dataset. Note if the element face is not shared with another element (i.e. on the edge this is a -1)
@@ -319,6 +324,89 @@ e(int): The number of elements in the data set
 </div>
 </li>
 </ul>
+</div>
+</div>
+</div>
+<div id="outline-container-orgaa0451f" class="outline-2">
+<h2 id="orgaa0451f">vtu2bin</h2>
+<div class="outline-text-2" id="text-orgaa0451f">
+<p>
+The vtu2bin utility can be utilized to generate the binary files from a
+.vtu dataset. To use it run:
+</p>
+<div class="org-src-container">
+<pre class="src src-shell">python -m flowvcutils vtu2bin START STOP
+</pre>
+</div>
+
+<p>
+where START is the starting index of your velocity data and STOP is the stopping index of your velocity data
+</p>
+</div>
+
+<div id="outline-container-org9f6eaa1" class="outline-3">
+<h3 id="org9f6eaa1">Project Organization</h3>
+<div class="outline-text-3" id="text-org9f6eaa1">
+<p>
+To utilize the flowVC-Utils
+</p>
+
+<p>
+The recomended way to use this utility is in &#x2013;batch mode, which will create the binary files for multiple cases all at once. In order to do this structure your simulation results into the following format. The "project_root" can be any name, but
+</p>
+
+<p>
+project_root
+├── case1
+│   ├── input_bin
+│   ├── input_vtu
+│   └── output_bin
+└── case2
+    ├── input_bin
+    ├── input_vtu
+    └── output_bin
+</p>
+</div>
+</div>
+</div>
+
+
+
+<div id="outline-container-orgde56f25" class="outline-2">
+<h2 id="orgde56f25">Options</h2>
+<div class="outline-text-2" id="text-orgde56f25">
+<div class="org-src-container">
+<pre class="src src-text">python -m flowvcutils vtu2bin --help
+Usage: python -m flowvcutils vtu2bin [OPTIONS] START STOP
+
+  Convert .vtu files into .bin format for FlowVC.
+
+  START: Starting index for the processing (positional argument). STOP :
+  Stopping index for the processing (positional argument).
+
+Options:
+  --root TEXT           Directory with the VTU files (default: current
+                        directory).In batch mode ensure vtu files are in
+                        root/subdir/input_vtu/
+  --output TEXT         Output directory target to store bin files (default:
+                        current directory).In batch mode this will be
+                        root/subdir/input_bin/
+  --file_name TEXT      Base file name (e.g., steady_ for steady_00000.vtu)
+                        (default: current directory name).Note: In batch
+                        mode this will be the subdirectory namesensure files
+                        are named
+                        root/subdirname/input_vtu/subdirname_xxxxx.vtu
+  --batch               Process subdirectories (directory mode) if set
+                        otherwise process a single folder.
+  --extension TEXT      File extension (default: '.vtu').
+  --increment INTEGER   Increment between each vtu file (default: 50).
+  --num_digits INTEGER  Digits in file name (e.g., 5 for test_00100.vtu).
+                        (default: 5).
+  --field_name TEXT     Field name for velocity data within the .vtu files
+                        (default: 'velocity').
+  -h, --help            Show this message and exit.
+
+</pre>
 </div>
 </div>
 </div>

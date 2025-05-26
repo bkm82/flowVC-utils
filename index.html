@@ -20,7 +20,10 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgcd3c957">Welcome</a></li>
+<li><a href="#orgcc02bfd">Welcome</a></li>
+<li><a href="#org199d40a">Project Organization</a></li>
+<li><a href="#org8d83a83">Step 1: Create Binary Files using</a></li>
+<li><a href="#org950b450">Step 2: Create the input settings (.in) file</a></li>
 </ul>
 </div>
 </div>
@@ -39,13 +42,65 @@
 </tr>
 </tbody>
 </table>
-<div id="outline-container-orgcd3c957" class="outline-2">
-<h2 id="orgcd3c957">Welcome</h2>
-<div class="outline-text-2" id="text-orgcd3c957">
+<div id="outline-container-orgcc02bfd" class="outline-2">
+<h2 id="orgcc02bfd">Welcome</h2>
+<div class="outline-text-2" id="text-orgcc02bfd">
 <p>
-Welcome to the flowVC-utils documentation
+Welcome to the flowVC-utils documentation this utility project provides documentation and tooling to assist in utilizing the flowVC software for computing Finite Time Lyoponove Exponents
 </p>
 </div>
+</div>
+
+<div id="outline-container-org199d40a" class="outline-2">
+<h2 id="org199d40a">Project Organization</h2>
+<div class="outline-text-2" id="text-org199d40a">
+<p>
+It is recomended that before starting your project is organized into the following directory structure, with a subdirectory being created for each of the simulation cases. Note the trailing "_" in the subdirectory names, this is necissary for the code to to generate and identify file names throughout the process.
+</p>
+
+<p>
+└── project_root
+    ├── case1_
+    │   ├── input_bin
+    │   ├── input_vtu
+    │   │   ├── case1_00000.vtu
+    │   │   ├── case1_00050.vtu
+    │   │   └── case2_00100.vtu
+    │   ├── output_bin
+    │   └── output_vtk
+    └── case2_
+        ├── input_bin
+        ├── input_vtu
+        │   ├── case2_00000.vtu
+        │   ├── case2_00050.vtu
+        │   └── case2_00100.vtu
+        ├── output_bin
+        └── output_vtk
+</p>
+
+<p>
+The input_vtu stores the input data files in a ".vtu" file format. This would often be the velocity data from a CFD simulation that you wish to generate FTLE fields for.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8d83a83" class="outline-2">
+<h2 id="org8d83a83">Step 1: Create Binary Files using</h2>
+<div class="outline-text-2" id="text-org8d83a83">
+<p>
+FlowVC requires the velocity data be converted into binary files prior to exectution. These binary files contain the velocity data as well as the coordinate and connectivity information of your dataset. For more information regarding the anticipated file format, refer to the flowVC documentation <a href="https://bkm82.github.io/flowVC/">flowVC Documenation</a>.
+</p>
+
+<p>
+To generate the binary files use the vtu2bin argument <a href="./vtu_2bin.html">vtu2bin</a>
+</p>
+</div>
+</div>
+
+
+
+<div id="outline-container-org950b450" class="outline-2">
+<h2 id="org950b450">Step 2: Create the input settings (.in) file</h2>
 </div>
 </div>
 <div id="postamble" class="status">
