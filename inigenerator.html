@@ -20,25 +20,25 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org91b1d96">Navigation Bar</a></li>
-<li><a href="#orgf1f682c">Inigenerator</a></li>
-<li><a href="#org24f6496">Options</a>
+<li><a href="#org240fc10">Navigation Bar</a></li>
+<li><a href="#org044a471">Inigenerator</a></li>
+<li><a href="#orgd277ecb">Options</a>
 <ul>
-<li><a href="#org06d7143">-d, &#x2013;directory</a></li>
-<li><a href="#org28b9dac">&#x2013;autorange:</a></li>
-<li><a href="#orgf8988d7">&#x2013;cell_size</a></li>
-<li><a href="#orgd82ea21">&#x2013;manual_bounds:</a></li>
-<li><a href="#orgfa30965">&#x2013;direction:</a></li>
-<li><a href="#org875deed">&#x2013;batch:</a></li>
+<li><a href="#org1b456aa">-d, &#x2013;directory</a></li>
+<li><a href="#org7f0e748">&#x2013;autorange:</a></li>
+<li><a href="#orgb7c98ea">&#x2013;cell_size</a></li>
+<li><a href="#orgec9f007">&#x2013;manual_bounds:</a></li>
+<li><a href="#orgdc81fd8">&#x2013;direction:</a></li>
+<li><a href="#org82a60a6">&#x2013;batch:</a></li>
 </ul>
 </li>
-<li><a href="#orgce2afa9">Examples</a></li>
+<li><a href="#orgdb985de">Examples</a></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org91b1d96" class="outline-2">
-<h2 id="org91b1d96">Navigation Bar</h2>
-<div class="outline-text-2" id="text-org91b1d96">
+<div id="outline-container-org240fc10" class="outline-2">
+<h2 id="org240fc10">Navigation Bar</h2>
+<div class="outline-text-2" id="text-org240fc10">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -59,9 +59,9 @@
 </table>
 </div>
 </div>
-<div id="outline-container-orgf1f682c" class="outline-2">
-<h2 id="orgf1f682c">Inigenerator</h2>
-<div class="outline-text-2" id="text-orgf1f682c">
+<div id="outline-container-org044a471" class="outline-2">
+<h2 id="org044a471">Inigenerator</h2>
+<div class="outline-text-2" id="text-org044a471">
 <p>
 The inigenerator utility is utilized to create the flowVC input files for multiple simulations. The inigenerator utility helps managing the following settings:
 </p>
@@ -90,7 +90,7 @@ As the inigenerator creates absolute file paths, it is recomeded that this utili
 </p>
 
 <p>
-If you are using the <a href="./index.html#org24b8c74">recomended layout</a> the best way to use this is from the project_root direcory running the following command with the &#x2013;batch flag enabled.
+If you are using the <a href="./index.html#org76eda93">recomended layout</a> the best way to use this is from the project_root direcory running the following command with the &#x2013;batch flag enabled.
 </p>
 
 <div class="org-src-container">
@@ -101,57 +101,57 @@ If you are using the <a href="./index.html#org24b8c74">recomended layout</a> the
 </div>
 
 
-<div id="outline-container-org24f6496" class="outline-2">
-<h2 id="org24f6496">Options</h2>
-<div class="outline-text-2" id="text-org24f6496">
+<div id="outline-container-orgd277ecb" class="outline-2">
+<h2 id="orgd277ecb">Options</h2>
+<div class="outline-text-2" id="text-orgd277ecb">
 </div>
-<div id="outline-container-org06d7143" class="outline-3">
-<h3 id="org06d7143">-d, &#x2013;directory</h3>
-<div class="outline-text-3" id="text-org06d7143">
+<div id="outline-container-org1b456aa" class="outline-3">
+<h3 id="org1b456aa">-d, &#x2013;directory</h3>
+<div class="outline-text-3" id="text-org1b456aa">
 <p>
 This specifies where to run the tool from, with a default being the current directory you are in.
 </p>
 </div>
 </div>
-<div id="outline-container-org28b9dac" class="outline-3">
-<h3 id="org28b9dac">&#x2013;autorange:</h3>
-<div class="outline-text-3" id="text-org28b9dac">
+<div id="outline-container-org7f0e748" class="outline-3">
+<h3 id="org7f0e748">&#x2013;autorange:</h3>
+<div class="outline-text-3" id="text-org7f0e748">
 <p>
 This flag can be utilized to have the tool read the mesh bounds for the DataMesh and FTLEMesh from the simulation results data. To use this flag ensure there is at least one .vtu file in the input_vtu directory. If it is not set whatever is in the configuration file will be utilized.
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgf8988d7" class="outline-3">
-<h3 id="orgf8988d7">&#x2013;cell_size</h3>
-<div class="outline-text-3" id="text-orgf8988d7">
+<div id="outline-container-orgb7c98ea" class="outline-3">
+<h3 id="orgb7c98ea">&#x2013;cell_size</h3>
+<div class="outline-text-3" id="text-orgb7c98ea">
 <p>
 The cell size for the FTLE mesh with a default of 0.001
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgd82ea21" class="outline-3">
-<h3 id="orgd82ea21">&#x2013;manual_bounds:</h3>
-<div class="outline-text-3" id="text-orgd82ea21">
+<div id="outline-container-orgec9f007" class="outline-3">
+<h3 id="orgec9f007">&#x2013;manual_bounds:</h3>
+<div class="outline-text-3" id="text-orgec9f007">
 <p>
 This can be utilized to set the min_x, min_y, min_z, max_x, max_y, and max_z for the FTLE mesh. This is useful when attempting to compute the ftle field on a smaller subset (i.e. slice) of the result domain.
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgfa30965" class="outline-3">
-<h3 id="orgfa30965">&#x2013;direction:</h3>
-<div class="outline-text-3" id="text-orgfa30965">
+<div id="outline-container-orgdc81fd8" class="outline-3">
+<h3 id="orgdc81fd8">&#x2013;direction:</h3>
+<div class="outline-text-3" id="text-orgdc81fd8">
 <p>
 This can be utilized to specify the computation of an attracting (backward) or repeling (forward) FTLE field.
 </p>
 </div>
 </div>
 
-<div id="outline-container-org875deed" class="outline-3">
-<h3 id="org875deed">&#x2013;batch:</h3>
-<div class="outline-text-3" id="text-org875deed">
+<div id="outline-container-org82a60a6" class="outline-3">
+<h3 id="org82a60a6">&#x2013;batch:</h3>
+<div class="outline-text-3" id="text-org82a60a6">
 <p>
 This creates input files for multiple simulation result cases at once. To utilize this ensure your project is organized using the recomended layout
 </p>
@@ -181,9 +181,9 @@ This creates input files for multiple simulation result cases at once. To utiliz
 </div>
 
 
-<div id="outline-container-orgce2afa9" class="outline-2">
-<h2 id="orgce2afa9">Examples</h2>
-<div class="outline-text-2" id="text-orgce2afa9">
+<div id="outline-container-orgdb985de" class="outline-2">
+<h2 id="orgdb985de">Examples</h2>
+<div class="outline-text-2" id="text-orgdb985de">
 <p>
 To generate the FTLE mesh over the entire computation domain for multiple simulation results you can run:
 </p>
