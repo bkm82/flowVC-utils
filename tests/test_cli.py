@@ -69,8 +69,49 @@ def test_default_ini_generator(mock_ini_generator_main, runner):
         result = runner.invoke(inigenerator, [f"-d{tmp_dir}"])
         assert result.exit_code == 0
         mock_ini_generator_main.assert_called_once_with(
-            tmp_dir, True, 0.001, "backward", False
+            tmp_dir, True, 0.001, "backward", False, None
         )
+
+
+@patch("flowvcutils.cli.inigenerator_main")
+def test_inigenerator_cli_manual_bounds(mock_inigenerator_main, runner):
+    """
+    Test that calling 'flowvcutils inigenerator' with --manual_bounds properly
+    passes the argument tuple to inigenerator_main and does not raise errors.
+    """
+    with TemporaryDirectory() as tmp_dir:
+        result = runner.invoke(
+            inigenerator,
+            [
+                "--directory",
+                f"{tmp_dir}",  # your desired directory
+                "--manual_bounds",  # we specify six floats here
+                "0.0",
+                "0.0",
+                "0.0",
+                "1.0",
+                "1.0",
+                "1.0",
+                "--auto_range",
+                "True",
+                "--cell_size",
+                "0.1",
+                "--direction",
+                "backward",
+                "--batch",  # passing this sets batch=True
+            ],
+        )
+    assert result.exit_code == 0, f"CLI exited with an error: {result.output}"
+
+    # Verify we called inigenerator_main with the tuple of manual bounds
+    mock_inigenerator_main.assert_called_once_with(
+        tmp_dir,  # directory
+        True,  # auto_range
+        0.1,  # cell_size
+        "backward",  # direction
+        True,  # batch
+        ((0.0, 0.0, 0.0), (1.0, 1.0, 1.0)),  # manual_bounds
+    )
 
 
 @patch("flowvcutils.cli.simulationgenerator_main")
