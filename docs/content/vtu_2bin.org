@@ -28,7 +28,6 @@ t_s \; \underbrace{u_0\; v_0\; w_0}_{\text{node 0}} \underbrace{u_1\;  v_1 \; w_
 | u,v,w | double    |
 
 
-
 ** Cartesian Mesh
 To define a cartesian mesh, the mesh bounds and resolution needs to be defined.
 
@@ -98,3 +97,63 @@ The adjacency file contains the indices of the adacent elements that share a fac
 **** Data Type
 e(int): The number of elements in the data set
 $e_i^j$ (int): The index of the element that shares the j'th face for the ith element in the dataset. Note if the element face is not shared with another element (i.e. on the edge this is a -1)
+* vtu2bin
+
+The vtu2bin utility can be utilized to generate the binary files from a
+.vtu dataset. To use it run:
+#+begin_src shell
+python -m flowvcutils vtu2bin START STOP
+#+end_src
+
+where START is the starting index of your velocity data and STOP is the stopping index of your velocity data
+
+** Project Organization
+To utilize the flowVC-Utils
+
+The recomended way to use this utility is in --batch mode, which will create the binary files for multiple cases all at once. In order to do this structure your simulation results into the following format. The "project_root" can be any name, but
+
+project_root
+├── case1
+│   ├── input_bin
+│   ├── input_vtu
+│   └── output_bin
+└── case2
+    ├── input_bin
+    ├── input_vtu
+    └── output_bin
+
+
+
+* Options
+#+Begin_SRC text
+python -m flowvcutils vtu2bin --help
+Usage: python -m flowvcutils vtu2bin [OPTIONS] START STOP
+
+  Convert .vtu files into .bin format for FlowVC.
+
+  START: Starting index for the processing (positional argument). STOP :
+  Stopping index for the processing (positional argument).
+
+Options:
+  --root TEXT           Directory with the VTU files (default: current
+                        directory).In batch mode ensure vtu files are in
+                        root/subdir/input_vtu/
+  --output TEXT         Output directory target to store bin files (default:
+                        current directory).In batch mode this will be
+                        root/subdir/input_bin/
+  --file_name TEXT      Base file name (e.g., steady_ for steady_00000.vtu)
+                        (default: current directory name).Note: In batch
+                        mode this will be the subdirectory namesensure files
+                        are named
+                        root/subdirname/input_vtu/subdirname_xxxxx.vtu
+  --batch               Process subdirectories (directory mode) if set
+                        otherwise process a single folder.
+  --extension TEXT      File extension (default: '.vtu').
+  --increment INTEGER   Increment between each vtu file (default: 50).
+  --num_digits INTEGER  Digits in file name (e.g., 5 for test_00100.vtu).
+                        (default: 5).
+  --field_name TEXT     Field name for velocity data within the .vtu files
+                        (default: 'velocity').
+  -h, --help            Show this message and exit.
+
+  #+End_SRC

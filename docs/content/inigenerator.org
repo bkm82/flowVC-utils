@@ -28,24 +28,6 @@ The defaults for the .in settings can be found and changed in the flowVC_utils/s
       └── output_bin
 #+End_SRC
 
-#+Begin_SRC text
-Usage: python -m flowvcutils inigenerator [OPTIONS]
-
-  Generate a .ini file for the flow vc.
-
-Options:
-  -d, --directory TEXT            Directory to run program (default: current
-                                  dir)
-  --auto_range BOOLEAN            Get data and FTLE range(min-max) using a
-                                  .vtu file?Ensure there is at least 1 .vtu
-                                  file in in a input_vtu dir
-  --cell_size FLOAT               size of FTLE element, default 0.001
-  --direction [forward|backward]  forward or backward ftle
-  --batch                         run for each subdirectory
-  --manual_bounds FLOAT...        Manually specify [min_x min_y min_z max_x
-                                  max_y max_z].
-  -h, --help                      Show this message and exit.
-#+End_SRC
 
 *** Options
 **** -d, --directory
