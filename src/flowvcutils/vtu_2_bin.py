@@ -4,7 +4,6 @@ import sys
 import logging.config
 import logging.handlers
 from flowvcutils.jsonlogger import settup_logging
-import argparse
 import os
 
 logger = logging.getLogger(__name__)
