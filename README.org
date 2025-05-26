@@ -7,7 +7,7 @@ utilities for the flowVC project
 
 #+begin_quote
 [!TIP]
-Check out the [[https://bkm82.github.io/flowVC-utils/][Docs]
+Check out the [[https://bkm82.github.io/flowVC-utils/][Docs]]
 #+end_quote
 
 ** Installation
