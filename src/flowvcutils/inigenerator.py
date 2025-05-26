@@ -223,7 +223,7 @@ class Config:
         """
 
         def _update_bounds(prefix, x_range, y_range, z_range):
-            """Update __update_dict with mesh bounds for prefix (e.g. 'Data_MeshBounds')."""
+            """Update __update_dict with mesh bounds for prefix')."""
             self.__update_dict.update(
                 {
                     f"{prefix}.xmin": str(x_range[0]),
