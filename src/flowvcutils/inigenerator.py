@@ -106,7 +106,6 @@ class resultsProcessor:
 
         """
         current_point = pt_min
-        n_pts = 0
         if current_point >= pt_max:
             raise ValueError("min must be less than max")
         if cell_size <= 0:
@@ -119,8 +118,7 @@ class resultsProcessor:
         # compute the new max
         new_max = pt_min + n_cells * cell_size
 
-        # Optional rounding to reduce floating-point artifacts
-        # e.g. round to 7 or 8 decimal places as needed
+        # Rounding to 8 decimal places to reduce floating-point artifacts
         new_max = round(new_max, 8)
 
         return (new_max, n_cells)
@@ -269,39 +267,6 @@ class Config:
         elif auto_range:
             _update_bounds("FTLE_MeshBounds", x_range, y_range, z_range)
             _update_res("FTLE_MeshBounds")
-
-        # if manual_bounds:
-
-        #     (x_range, y_range, z_range) = self.results_processor.set_data_range_manual(
-        #         manual_bounds[0],  # (min_x, min_y, min_z)
-        #         manual_bounds[1],  # (max_x, max_y, max_z)
-        #         streach,
-        #         cell_size,
-        #     )
-        # else:
-        #     x_range, y_range, z_range = self.results_processor.find_data_range(
-        #         streach=streach, cell_size=cell_size
-        #     )
-
-        # self.__update_dict.update(
-        #     {
-        #         "Data_MeshBounds.xmin": str(x_range[0]),
-        #         "Data_MeshBounds.xmax": str(x_range[1]),
-        #         "Data_MeshBounds.ymin": str(y_range[0]),
-        #         "Data_MeshBounds.ymax": str(y_range[1]),
-        #         "Data_MeshBounds.zmin": str(z_range[0]),
-        #         "Data_MeshBounds.zmax": str(z_range[1]),
-        #         "FTLE_MeshBounds.xmin": str(x_range[0]),
-        #         "FTLE_MeshBounds.xmax": str(x_range[1]),
-        #         "FTLE_MeshBounds.ymin": str(y_range[0]),
-        #         "FTLE_MeshBounds.ymax": str(y_range[1]),
-        #         "FTLE_MeshBounds.zmin": str(z_range[0]),
-        #         "FTLE_MeshBounds.zmax": str(z_range[1]),
-        #         "FTLE_MeshBounds.xres": str(self.results_processor.x_points),
-        #         "FTLE_MeshBounds.yres": str(self.results_processor.y_points),
-        #         "FTLE_MeshBounds.zres": str(self.results_processor.z_points),
-        #     }
-        # )
 
     def set_path_defaults(self):
         self.__update_dict.update(
