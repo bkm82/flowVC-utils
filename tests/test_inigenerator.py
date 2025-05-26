@@ -396,71 +396,100 @@ def test_integration_full_config(create_sample_vtu_file):
     assert not (Output_TEnd < Data_TMin)
 
 
-def test_integration_manual_bounds():
+def test_integration_manual_bounds(create_sample_vtu_file):
     """
-    Test that manual bounds are set correctly and the .in file picks them up,
-    rather than reading from a .vtu file.
+    Test that if auto_range is True, the Data_MeshBounds come from the .vtu file,
+    but the FTLE_MeshBounds and mesh resolution are driven by manual_bounds.
     """
-    # Arbitrary example bounds: x in [0.0,1.0], y in [2.0,3.0], z in [4.0,4.2]
+    # Our sample_vtu has points at (1,2,3), (4,5,6), and (-1,-2,-3),
+    # so we expect Data_MeshBounds to be:
+    #   X in [-1.0, 4.0]
+    #   Y in [-2.0, 5.0]
+    #   Z in [-3.0, 6.0]
+    # Meanwhile, the FTLE_MeshBounds should match the manual bounds.
+    vtu_file = create_sample_vtu_file
+    directory = Path(vtu_file).parent.parent
+    (directory / "input_bin").mkdir()
+
+    # Manual bounds for FTLE: X in [0..1], Y in [2..3], Z in [4..4.2]
     # with cell_size=0.1 => xres=10, yres=10, zres=2
     manual_bounds = ((0.0, 2.0, 4.0), (0.95, 3.0, 4.16))
     cell_size = 0.1
 
-    with TemporaryDirectory() as temp_dir:
-        os.mkdir(os.path.join(temp_dir, "input_bin"))
-        # Call the generator, passing our manual bounds
-        inigenerator_main(
-            directory=temp_dir,
-            auto_range=True,  # "auto" sizing, but overridden by manual_bounds
-            cell_size=cell_size,
-            direction="backward",
-            batch=False,
-            manual_bounds=manual_bounds,
-        )
+    # Call inigenerator with auto_range=True and the manual bounds
+    inigenerator_main(
+        directory=str(directory),
+        auto_range=True,
+        cell_size=cell_size,
+        direction="backward",
+        batch=False,
+        manual_bounds=manual_bounds,
+    )
 
-        # The generator should produce an .in file named after the directory
-        dir_name = os.path.basename(temp_dir)
-        in_file_name = (
-            f"{dir_name}.in" if not dir_name.endswith("_") else f"{dir_name[:-1]}.in"
-        )
-        in_file = Path(temp_dir) / "input_bin" / in_file_name
+    # The generator should produce an .in file named after the directory
+    dir_name = directory.name
+    in_file_name = dir_name[:-1] + ".in" if dir_name.endswith("_") else f"{dir_name}.in"
+    in_file = directory / "input_bin" / in_file_name
 
-        # Ensure file was created
-        assert in_file.exists(), f"{in_file} was not created."
+    # Ensure file was created
+    assert in_file.exists(), f"{in_file} was not created."
 
-        # Read certain fields from the .in file
-        var_list = [
-            "data_meshbounds.xmin",
-            "data_meshbounds.xmax",
-            "data_meshbounds.ymin",
-            "data_meshbounds.ymax",
-            "data_meshbounds.zmin",
-            "data_meshbounds.zmax",
-            "ftle_meshbounds.xres",
-            "ftle_meshbounds.yres",
-            "ftle_meshbounds.zres",
-        ]
-        config_values = load_config(str(in_file), var_list)
+    # Read certain fields from the .in file
+    var_list = [
+        "data_meshbounds.xmin",
+        "data_meshbounds.xmax",
+        "data_meshbounds.ymin",
+        "data_meshbounds.ymax",
+        "data_meshbounds.zmin",
+        "data_meshbounds.zmax",
+        "ftle_meshbounds.xmin",
+        "ftle_meshbounds.xmax",
+        "ftle_meshbounds.ymin",
+        "ftle_meshbounds.ymax",
+        "ftle_meshbounds.zmin",
+        "ftle_meshbounds.zmax",
+        "ftle_meshbounds.xres",
+        "ftle_meshbounds.yres",
+        "ftle_meshbounds.zres",
+    ]
+    config_values = load_config(str(in_file), var_list)
 
-        # Convert to float/int as appropriate
-        xmin = float(config_values["data_meshbounds.xmin"])
-        xmax = float(config_values["data_meshbounds.xmax"])
-        ymin = float(config_values["data_meshbounds.ymin"])
-        ymax = float(config_values["data_meshbounds.ymax"])
-        zmin = float(config_values["data_meshbounds.zmin"])
-        zmax = float(config_values["data_meshbounds.zmax"])
-        xres = int(config_values["ftle_meshbounds.xres"])
-        yres = int(config_values["ftle_meshbounds.yres"])
-        zres = int(config_values["ftle_meshbounds.zres"])
+    # Convert to float/int as appropriate
+    data_xmin = float(config_values["data_meshbounds.xmin"])
+    data_xmax = float(config_values["data_meshbounds.xmax"])
+    data_ymin = float(config_values["data_meshbounds.ymin"])
+    data_ymax = float(config_values["data_meshbounds.ymax"])
+    data_zmin = float(config_values["data_meshbounds.zmin"])
+    data_zmax = float(config_values["data_meshbounds.zmax"])
 
-        # Check bounding box: cell_size=0.1 => expected domain [0..1], [2..3], [4..4.2]
-        # => xres=10, yres=10, zres=2
-        assert math.isclose(xmin, 0.0), f"Expected 0.0, got {xmin}"
-        assert math.isclose(xmax, 1.0), f"Expected 1.0, got {xmax}"
-        assert math.isclose(ymin, 2.0), f"Expected 2.0, got {ymin}"
-        assert math.isclose(ymax, 3.0), f"Expected 3.0, got {ymax}"
-        assert math.isclose(zmin, 4.0), f"Expected 4.0, got {zmin}"
-        assert math.isclose(zmax, 4.2), f"Expected 4.2, got {zmax}"
-        assert xres == 10, f"Expected xres=10, got {xres}"
-        assert yres == 10, f"Expected yres=10, got {yres}"
-        assert zres == 2, f"Expected zres=2, got {zres}"
+    ftle_xmin = float(config_values["ftle_meshbounds.xmin"])
+    ftle_xmax = float(config_values["ftle_meshbounds.xmax"])
+    ftle_ymin = float(config_values["ftle_meshbounds.ymin"])
+    ftle_ymax = float(config_values["ftle_meshbounds.ymax"])
+    ftle_zmin = float(config_values["ftle_meshbounds.zmin"])
+    ftle_zmax = float(config_values["ftle_meshbounds.zmax"])
+
+    ftle_xres = int(config_values["ftle_meshbounds.xres"])
+    ftle_yres = int(config_values["ftle_meshbounds.yres"])
+    ftle_zres = int(config_values["ftle_meshbounds.zres"])
+
+    # Confirm Data_MeshBounds came from the sample_vtu_file
+    assert math.isclose(data_xmin, -1.0), f"Expected Data X-min = -1.0, got {data_xmin}"
+    assert math.isclose(data_xmax, 4.0), f"Expected Data X-max = 4.0, got {data_xmax}"
+    assert math.isclose(data_ymin, -2.0), f"Expected Data Y-min = -2.0, got {data_ymin}"
+    assert math.isclose(data_ymax, 5.0), f"Expected Data Y-max = 5.0, got {data_ymax}"
+    assert math.isclose(data_zmin, -3.0), f"Expected Data Z-min = -3.0, got {data_zmin}"
+    assert math.isclose(data_zmax, 6.0), f"Expected Data Z-max = 6.0, got {data_zmax}"
+
+    # Confirm FTLE_MeshBounds came from manual_bounds
+    # We specified (0.0..~1.0), (2.0..3.0), (4.0..4.2) with cell_size=0.1 => xres=10, yres=10, zres=2
+    assert math.isclose(ftle_xmin, 0.0), f"Expected FTLE X-min = 0.0, got {ftle_xmin}"
+    assert math.isclose(ftle_xmax, 1.0), f"Expected FTLE X-max ~ 1.0, got {ftle_xmax}"
+    assert math.isclose(ftle_ymin, 2.0), f"Expected FTLE Y-min = 2.0, got {ftle_ymin}"
+    assert math.isclose(ftle_ymax, 3.0), f"Expected FTLE Y-max = 3.0, got {ftle_ymax}"
+    assert math.isclose(ftle_zmin, 4.0), f"Expected FTLE Z-min = 4.0, got {ftle_zmin}"
+    assert math.isclose(ftle_zmax, 4.2), f"Expected FTLE Z-max = 4.2, got {ftle_zmax}"
+
+    assert ftle_xres == 10, f"Expected FTLE xres=10, got {ftle_xres}"
+    assert ftle_yres == 10, f"Expected FTLE yres=10, got {ftle_yres}"
+    assert ftle_zres == 2, f"Expected FTLE zres=2, got {ftle_zres}"
