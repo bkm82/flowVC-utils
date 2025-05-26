@@ -1,11 +1,12 @@
 #+SETUPFILE: ../org-themes/theme-readtheorg.setup
+* Navigation Bar
 #+INCLUDE: "./header.org"
-** Inigenerator
-The inigenerator utility is utilized to create the flowVC input files for multiple simulations. The utility reads a configuration file wich can be used to set default paramaters (config.inigenerator.cfg) and adjusts input/output paths for each case.The utility can also be used to determines 3D coordinate bounds, streaching them slighly to meet the flowVC requirement of having cubic cells. Essentially the utility helps manage
+* Inigenerator
+The inigenerator utility is utilized to create the flowVC input files for multiple simulations. The inigenerator utility helps managing the following settings:
 
 - Directory paths (where input data is stored, where outputs go, etc.)
 
-- Mesh bounds for the data (e.g., xmin, xmax, ymin, ymax, zmin, zmax).
+- Mesh bounds for the data (e.g., xmin, xmax, ymin, ymax, zmin, zmax), streaching the mesh slighly to ensure cubic cells as required by flowVC
 
 - Resolution in each dimension (xres, yres, zres) based on the cell size.
 
@@ -13,54 +14,59 @@ The inigenerator utility is utilized to create the flowVC input files for multip
 
 - Name prefixes and other run-time details that go into the final configuration so the output FTLE files are identifiable for each simulation case.
 
-*** Usage
+- All of the other settings can be set by updating the [[./FTLE_example.org][configuration file]] located:
+  #+BEGIN_SRC Text
+  /src/config/config.inigenerator.cfg
+  #+END_SRC
+As the inigenerator creates absolute file paths, it is recomeded that this utility is ran from the directory and computer/server that will be executing the flowVC calculations. If the folder is moved re-run the generator to update filepaths.
+
+If you are using the [[./index.org::Project Organization][recomended layout]] the best way to use this is from the project_root direcory running the following command with the --batch flag enabled.
+
 #+begin_src shell
-python -m flowvcutils inigenerator
+  python -m flowvcutils inigenerator --batch
 #+end_src
 
-The defaults for the .in settings can be found and changed in the flowVC_utils/src/config directory. The tool assumes that the results of the simulation are organized in the following folder structure, where "project_root" and "case1" can be any name, but the "input_bin" "input_vtu" and "output_bin" directory names are exactly as shown:
 
-#+Begin_SRC text
-  project_root
-  └── case1
-      ├── input_bin
-      ├── input_vtu
-      └── output_bin
-#+End_SRC
-
-
-*** Options
-**** -d, --directory
+* Options
+** -d, --directory
 This specifies where to run the tool from, with a default being the current directory you are in.
-**** --autorange:
+** --autorange:
 This flag can be utilized to have the tool read the mesh bounds for the DataMesh and FTLEMesh from the simulation results data. To use this flag ensure there is at least one .vtu file in the input_vtu directory. If it is not set whatever is in the configuration file will be utilized.
 
-**** --cell_size
+** --cell_size
 The cell size for the FTLE mesh with a default of 0.001
 
-**** --manual_bounds:
+** --manual_bounds:
 This can be utilized to set the min_x, min_y, min_z, max_x, max_y, and max_z for the FTLE mesh. This is useful when attempting to compute the ftle field on a smaller subset (i.e. slice) of the result domain.
 
-**** --direction:
+** --direction:
 This can be utilized to specify the computation of an attracting (backward) or repeling (forward) FTLE field.
 
-**** --batch:
-This creates input files for multiple simulation result cases at once. To utilize this ensure your project is organized as follows
+** --batch:
+This creates input files for multiple simulation result cases at once. To utilize this ensure your project is organized using the recomended layout
 
-#+Begin_SRC text
--project_directory
-project_root
-├── case1
-│   ├── input_bin
-│   ├── input_vtu
-│   └── output_bin
-└── case2
-    ├── input_bin
-    ├── input_vtu
-    └── output_bin
-#+End_SRC
+#+begin_src text
+└── project_root
+    ├── case1_
+    │   ├── input_bin
+    │   ├── input_vtu
+    │   │   ├── case1_00000.vtu
+    │   │   ├── case1_00050.vtu
+    │   │   └── case2_00100.vtu
+    │   ├── output_bin
+    │   └── output_vtk
+    └── case2_
+        ├── input_bin
+        ├── input_vtu
+        │   ├── case2_00000.vtu
+        │   ├── case2_00050.vtu
+        │   └── case2_00100.vtu
+        ├── output_bin
+        └── output_vtk
+#+end_src
 
-*** Examples
+
+* Examples
 To generate the FTLE mesh over the entire computation domain for multiple simulation results you can run:
 #+begin_src shell
   python -m flowvcutils inigenerator --auto_range True --batch

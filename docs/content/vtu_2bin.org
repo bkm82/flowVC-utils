@@ -2,12 +2,60 @@
 #+OPTIONS: ^:nil
 
 #+INCLUDE: "./header.org"
+* vtu2bin
+FlowVC requires the velocity data be converted into binary files prior to exectution. These binary files contain the velocity data as well as the coordinate and connectivity information of your dataset and can be created using the vtu2bin command.
+
+If you are using the [[./index.org::Project Organization][recomended layout]] the best way to use this is from the project_root direcory running the following command with the --batch flag enabled.
+
+#+begin_src shell
+python -m flowvcutils vtu2bin START STOP --batch
+#+end_src
+
+Where START and STOP is the starting and stopping timestep for your data set. This will generate the binary files for all of the simulation cases that you have with a single command.
+
+* Options
+
+** --root Text
+
+In batch mode this is the root to the project directory. Ensure the .vtu files are located in the path root/case_/input_vtu/case_xxxxxx.vtu
+
+If batch mode is not used, this is the directory where the .vtu files are located, with the default being the current dirctory.
 
 
+** --output TEXT
+Output directory target to store bin files.
 
-* Data Format
-To use flowVC, you'll need to supply velocity data in binary format. The velocity data typically requires separate files for the velocity field at each time point. A single (Cartesian) or  multiple (Unstructured) files define the mesh. These files all share a common prefix, which can be any name you choose and is referred to here as InFilePrefix.
+Batch Mode: This will be set to root/case_input_bin/
+Non Batch Mode: Default = current working directory
 
+** --file_name TEXT
+The base file name, used to locate the velocity files. (e.g., case1_ if the ".vtu" files are named case1_00000.vtu).
+
+Batch Mode: This will be set to the subdirectory name.
+Non Batch Mode: default = current directory name
+
+** --batch
+Flag to set the operating mode into Batch Mode to process all subdirectorys in the project. Otherwise it will process a single folder.
+
+
+**  --extension TEXT
+File extension of the data files. The default is '.vtu'. File formats ".vtp", ".vtk" and ".pvtu" file formats might work, but they have not been tested.
+
+**  --increment INTEGER
+The increment between each vtu file (default: 50).
+
+**  --num_digits INTEGER
+The number of digits in file name, (e.g., 5 for case1_00100.vtu) with the default being 5
+
+** --field_name TEXT
+Field name for velocity data within the .vtu files. The default is 'velocity' and this is the only field name that was tested.
+
+** -h, --help
+Show the help message with a description of all the options.
+
+
+* Binary File Data Format
+FlowVC requires velocity files, and for an unstructured mesh requires a cordinates file, connectivity file, and an adjacency file to define the mesh. These files all share a common prefix, which can be any name you choose and is refered to here as InFilePrefix.
 
 ** Velocity
 If the velocity is defined discretely in time, each time instant should have its own separate file. The velocity data must be equally spaced in time. File names should follow the format InFilePrefix_vel.#.bin, where # is a unique index for each time instant. The difference between successive file time points must be consistent
@@ -27,24 +75,6 @@ t_s \; \underbrace{u_0\; v_0\; w_0}_{\text{node 0}} \underbrace{u_1\;  v_1 \; w_
 | t     | double    |
 | u,v,w | double    |
 
-
-** Cartesian Mesh
-To define a cartesian mesh, the mesh bounds and resolution needs to be defined.
-
- \begin{equation}
-    x_{min} \;\; x_{max} \;\; x_{res} \;\; y_{min} \;\; y_{max}\;\; y_{res} \;\; z_{min} \;\; z_{max} \; \; z_{res}
- \end{equation}
-
-- Resolution: Number of *nodes* in each direction (not intervals)
-- 2D: Set $z_{min} = z_{max} = 0.0$ and $z_{res}=1$
-#+Latex: \hfill
-#+ATTR_HTML: :width 100%
-|   <c>   |  <c>   |
-|  Value  |  Type  |
-|---------+--------|
-| min/max | double |
-|   res   | int    |
-
 ** Unstructured Mesh
 The unstructured mesh is defined by three files:
 - Coordinates File : InFilePrefix_coordinates.bin
@@ -58,7 +88,6 @@ n \; \underbrace{x_0\; y_0\; z_0}_{\text{node 0}} \underbrace{x_1\;  y_1 \; z_1}
 
 - n: The the number of points in the data set
 - $x_i \; y_i \; z_i$: The cordinates of each node
-- 2D: set $z_i = 0$
 
 
 #+ATTR_HTML: :width 100%
@@ -75,14 +104,13 @@ The connectivity specifies the indices of the 4 nodes that make up each element.
 
  - e: The number of elements in the data set
  - $i_i^j$: The index of the j'th node making i'th element in the dataset
- - 2D: $n_i^3 = -1$
+
 
  #+ATTR_HTML: :width 100%
 | Value   | Data Type |
 |---------+-----------|
 | e       | int       |
 | $i_i^j$ | int       |
-
 
 *** Adjacency
 The adjacency file contains the indices of the adacent elements that share a face with the current element. The index of each element is based on the order of the connectivity file.
@@ -92,68 +120,7 @@ The adjacency file contains the indices of the adacent elements that share a fac
  \end{equation}
 
  - Boundary Elements: For faces not shared with other elements set $e=-1$
- - 2D: $e_i^3=-1$
- - Ordering:
+
 **** Data Type
 e(int): The number of elements in the data set
 $e_i^j$ (int): The index of the element that shares the j'th face for the ith element in the dataset. Note if the element face is not shared with another element (i.e. on the edge this is a -1)
-* vtu2bin
-
-The vtu2bin utility can be utilized to generate the binary files from a
-.vtu dataset. To use it run:
-#+begin_src shell
-python -m flowvcutils vtu2bin START STOP
-#+end_src
-
-where START is the starting index of your velocity data and STOP is the stopping index of your velocity data
-
-** Project Organization
-To utilize the flowVC-Utils
-
-The recomended way to use this utility is in --batch mode, which will create the binary files for multiple cases all at once. In order to do this structure your simulation results into the following format. The "project_root" can be any name, but
-
-project_root
-├── case1
-│   ├── input_bin
-│   ├── input_vtu
-│   └── output_bin
-└── case2
-    ├── input_bin
-    ├── input_vtu
-    └── output_bin
-
-
-
-* Options
-#+Begin_SRC text
-python -m flowvcutils vtu2bin --help
-Usage: python -m flowvcutils vtu2bin [OPTIONS] START STOP
-
-  Convert .vtu files into .bin format for FlowVC.
-
-  START: Starting index for the processing (positional argument). STOP :
-  Stopping index for the processing (positional argument).
-
-Options:
-  --root TEXT           Directory with the VTU files (default: current
-                        directory).In batch mode ensure vtu files are in
-                        root/subdir/input_vtu/
-  --output TEXT         Output directory target to store bin files (default:
-                        current directory).In batch mode this will be
-                        root/subdir/input_bin/
-  --file_name TEXT      Base file name (e.g., steady_ for steady_00000.vtu)
-                        (default: current directory name).Note: In batch
-                        mode this will be the subdirectory namesensure files
-                        are named
-                        root/subdirname/input_vtu/subdirname_xxxxx.vtu
-  --batch               Process subdirectories (directory mode) if set
-                        otherwise process a single folder.
-  --extension TEXT      File extension (default: '.vtu').
-  --increment INTEGER   Increment between each vtu file (default: 50).
-  --num_digits INTEGER  Digits in file name (e.g., 5 for test_00100.vtu).
-                        (default: 5).
-  --field_name TEXT     Field name for velocity data within the .vtu files
-                        (default: 'velocity').
-  -h, --help            Show this message and exit.
-
-  #+End_SRC
