@@ -236,7 +236,7 @@ class Config:
             )
 
         def _update_res(prefix):
-            """Update __update_dict with xres, yres, zres for prefix (e.g. 'FTLE_MeshBounds')."""
+            """Update __update_dict with xres, yres, zres for prefix)."""
             self.__update_dict.update(
                 {
                     f"{prefix}.xres": str(self.results_processor.x_points),

@@ -482,7 +482,8 @@ def test_integration_manual_bounds(create_sample_vtu_file):
     assert math.isclose(data_zmax, 6.0), f"Expected Data Z-max = 6.0, got {data_zmax}"
 
     # Confirm FTLE_MeshBounds came from manual_bounds
-    # We specified (0.0..~1.0), (2.0..3.0), (4.0..4.2) with cell_size=0.1 => xres=10, yres=10, zres=2
+    # We specified (0.0..~1.0), (2.0..3.0), (4.0..4.2)
+    # with cell_size=0.1 => xres=10, yres=10, zres=2
     assert math.isclose(ftle_xmin, 0.0), f"Expected FTLE X-min = 0.0, got {ftle_xmin}"
     assert math.isclose(ftle_xmax, 1.0), f"Expected FTLE X-max ~ 1.0, got {ftle_xmax}"
     assert math.isclose(ftle_ymin, 2.0), f"Expected FTLE Y-min = 2.0, got {ftle_ymin}"
