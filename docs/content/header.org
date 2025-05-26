@@ -1,0 +1,2 @@
+#+OPTIONS: ^:nil
+| [[./index.org][Home]] | [[./inigenerator.org][inigenerator]] |
