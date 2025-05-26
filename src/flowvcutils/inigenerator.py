@@ -124,8 +124,6 @@ class resultsProcessor:
         new_max = round(new_max, 8)
 
         return (new_max, n_cells)
-        new_max = current_point
-        return (new_max, n_pts)
 
     def set_data_range_manual(self, min_xyz, max_xyz, streach=False, cell_size=0):
         # Manually set
