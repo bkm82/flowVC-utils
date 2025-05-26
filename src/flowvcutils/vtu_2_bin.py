@@ -4,9 +4,7 @@ import sys
 import logging.config
 import logging.handlers
 from flowvcutils.jsonlogger import settup_logging
-import argparse
 import os
-import shutil
 
 logger = logging.getLogger(__name__)
 
@@ -297,6 +295,7 @@ def process_folder(
 
     Reference https://shaddenlab.berkeley.edu/uploads/releasenotes.pdf
     """
+    settup_logging()
     vtk_to_connectivity_and_coordinates(
         input_root=root,
         output_root=output,
@@ -331,8 +330,8 @@ def process_directory(root, extension, start, stop, increment, num_digits, field
     Runns process folder with the arguments
        file_name = subdirectory_name
        output = subdir/bin
-    #WARNING: This removes the current subdirectory/bin folder if it exists
     """
+    settup_logging()
     for sub_directory in os.listdir(root):
         sub_dir_path = os.path.join(root, sub_directory)
         vtu_path = os.path.join(sub_dir_path, "input_vtu")
@@ -340,10 +339,8 @@ def process_directory(root, extension, start, stop, increment, num_digits, field
         if os.path.isdir(sub_dir_path):
             logger.info(f"Processing Directory {sub_directory}")
             bin_dir = os.path.join(sub_dir_path, "input_bin")
-            if os.path.exists(bin_dir):
-                shutil.rmtree(bin_dir)
 
-            os.makedirs(bin_dir)
+            os.makedirs(bin_dir, exist_ok=True)
 
             process_folder(
                 root=vtu_path,
@@ -356,139 +353,3 @@ def process_directory(root, extension, start, stop, increment, num_digits, field
                 num_digits=num_digits,
                 field_name=field_name,
             )
-
-
-class Parser:
-    """Handles CLI argument parsing."""
-
-    def __init__(self):
-        self.parser = argparse.ArgumentParser(
-            description="Process VTU files to a .bin format."
-        )
-        self._setup_arguments()
-
-    def _setup_arguments(self):
-        """Define CLI arguments."""
-        self.parser.add_argument(
-            "--process",
-            choices=["folder", "directory"],
-            default="folder",
-            help=(
-                "Processing mode: 'folder' for a single folder or 'directory'"
-                "to process subdirectories (default: 'folder')."
-            ),
-        )
-
-        self.parser.add_argument(
-            "start",
-            type=int,
-            help="Starting index for the processing files (required).",
-        )
-        self.parser.add_argument(
-            "stop",
-            type=int,
-            help=("Stopping index for the processing files (required)."),
-        )
-
-        self.parser.add_argument(
-            "--root",
-            default=os.getcwd(),
-            help="Input directory with the VTU files (default: current directory).",
-        )
-        self.parser.add_argument(
-            "--output",
-            default=os.getcwd(),
-            help="Output directory (default: current directory).",
-        )
-
-        self.parser.add_argument(
-            "--file_name",
-            type=str,
-            default=os.path.basename(os.getcwd()),
-            help=(
-                "Base file name (e.g., steady_ for steady_00000.vtu)"
-                "(default= directory name)."
-            ),
-        )
-
-        self.parser.add_argument(
-            "--extension",
-            type=str,
-            default=".vtu",
-            help="File extension (default: '.vtu').",
-        )
-
-        self.parser.add_argument(
-            "--increment",
-            type=int,
-            default=50,
-            help="Increment between each vtu file (default = 50).",
-        )
-        self.parser.add_argument(
-            "--num_digits",
-            default=5,
-            type=int,
-            help="Digits in file name (e.g., 5 for test_00100.vtu). (default: 5).",
-        )
-        self.parser.add_argument(
-            "--field_name",
-            default="velocity",
-            help="Field name for velocity data (default: 'velocity').",
-        )
-
-    def parse_arguments(self, args=None):
-        """Parse the CLI arguments."""
-        return self.parser.parse_args(args)
-
-
-class Router:
-    """Routes the execution based on CLI arguments."""
-
-    def __init__(self, args):
-        self.args = args
-
-    def route(self):
-        """Route to the appropriate processing function."""
-        if self.args.process == "folder":
-            process_folder(
-                root=self.args.root,
-                output=self.args.output,
-                file_name=self.args.file_name,
-                extension=self.args.extension,
-                start=self.args.start,
-                stop=self.args.stop,
-                increment=self.args.increment,
-                num_digits=self.args.num_digits,
-                field_name=self.args.field_name,
-            )
-        elif self.args.process == "directory":
-            process_directory(
-                root=self.args.root,
-                # output=self.args.output,
-                # file_name=self.args.file_name,
-                extension=self.args.extension,
-                start=self.args.start,
-                stop=self.args.stop,
-                increment=self.args.increment,
-                num_digits=self.args.num_digits,
-                field_name=self.args.field_name,
-            )
-        else:
-            raise ValueError("Invalid process type specified.")
-
-
-def main():
-    """Create binary files from vtu files for FlowVC.
-
-    Reference https://shaddenlab.berkeley.edu/uploads/releasenotes.pdf
-    """
-    settup_logging()
-    # Parse a CLI flag to enable setting the log level from the CLI
-    parser = Parser()
-    args = parser.parse_arguments()
-    router = Router(args)
-    router.route()
-
-
-if __name__ == "__main__":
-    main()

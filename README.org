@@ -109,8 +109,75 @@ filename_cordinates.bin will have a file format in the following form
    i_0:(4 ints)  the 4 elements that share a common face with the element
  #+END_SRC
 
+** Inigenerator
+#+end_src
+The inigenerator utility is utilized to create the flowVC input files for multiple simulations. The utility reads a configuration file wich can be used to set default paramaters (config.inigenerator.cfg) and adjusts input/output paths for each case.The utility can also be used to determines 3D coordinate bounds, streaching them slighly to meet the flowVC requirement of having cubic cells. Essentially the utility helps manage
+
+- Directory paths (where input data is stored, where outputs go, etc.)
+
+- Mesh bounds for the data (e.g., xmin, xmax, ymin, ymax, zmin, zmax).
+
+- Resolution in each dimension (xres, yres, zres) based on the cell size.
+
+- Time direction settings (forward or backward) for the FTLE-related output.
+
+- Name prefixes and other run-time details that go into the final configuration so the output FTLE files are identifiable for each simulation case.
+
+*** Usage
+To view the help menu run:
+#+begin_src shell
+python -m flowvcutils inigenerator --help
+#+end_src
+
+The defaults for the .in settings can be found and changed in the flowVC_utils/src/config directory. The tool assumes that the results of the simulation are organized in the following folder structure, where "project_root" and "case1" can be any name, but the "input_bin" "input_vtu" and "output_bin" directory names are exactly as shown:
+
+#+Begin_SRC text
+project_root
+└── case1
+    ├── input_bin
+    ├── input_vtu
+    └── output_bin
+#+End_SRC
 
 
+Optional flags include
+-d, --directory: This specifies where to run the tool from, with a default being the current directory you are in.
+
+--autorange: This flag can be utilized to have the tool read the mesh bounds for the DataMesh and FTLEMesh from the simulation results data. To use this flag ensure there is at least one .vtu file in the input_vtu directory. If it is not set whatever is in the configuration file will be utilized.
+
+--cell_size: The cell size for the FTLE mesh with a default of 0.001
+
+--manual_bounds: This can be utilized to set the min_x, min_y, min_z, max_x, max_y, and max_z for the FTLE mesh. This is useful when attempting to compute the ftle field on a smaller subset (i.e. slice) of the result domain.
+
+--direction: This can be utilized to specify the computation of an attracting (backward) or repeling (forward) FTLE field.
+
+--batch: This creates input files for multiple simulation result cases at once. To utilize this ensure your project is organized as follows
+
+#+Begin_SRC text
+-project_directory
+project_root
+├── case1
+│   ├── input_bin
+│   ├── input_vtu
+│   └── output_bin
+└── case2
+    ├── input_bin
+    ├── input_vtu
+    └── output_bin
+#+End_SRC
+
+*** Example
+To generate the FTLE mesh over the entire computation domain for multiple simulation results you can run:
+#+begin_src shell
+  python -m flowvcutils inigenerator --auto_range True --batch
+#+end_src
+
+To generate an FTLE field for a slice of the domain at a higher resolution you can run:
+#+begin_src shell
+  python -m flowvcutils inigenerator -cell_size 0.0001 --auto_range True --manual_bounds -0.000976751 0.145677 0.12361 -0.00095 0.203633 0.236885 --batch
+#+end_src
+
+It is not critical that the range is perfectly divisible by the cell_size, the tool will increase the mesh bounds max slightly ensuring the cell size remains constant. However notice how in this case the x_min and x_max are far enough apart to generate at least 2 cells in the x-direction. This creates a pseudo-2D ftle mesh slice out of the domain, as the flowVC tool requires 2 cells every direction when a 3D mesh is utilized.
 
 ** filerename.py
 Rename the files in a directory.
@@ -214,3 +281,32 @@ To
     --increment INTEGER      Current file number start.
     -h, --help               Show this message and exit.
 #+END_SRC
+* flowVC-utils
+** Installation on Monsoon NAUs Cluster Computer
+
+On Monsoon, NAU's computer cluster, the flowVC-utils can be installed into a conda enviroment.
+
+First the mamaforge module is loaded using the following command
+
+#+begin_src shell
+  module load mambaforge
+  conda env list
+#+end_src
+
+Once conda is loaded, a new anaconda enviroment can be created and activated.
+#+begin_src shell
+  conda env create flowvcutils
+  conda activate flowvcutils
+#+end_src
+
+Once inside a conda enviroment, the flowVC-utils project can be cloned from the github source code located https://github.com/bkm82/flowVC-utils. It is installed via editable mode.
+#+begin_src shell
+  git clone https://github.com/bkm82/flowVC-utils.git
+  cd flowVC-utils
+  pip install -e .
+#+end_src
+Installing it in editable (-e) mode allows for changes to the source code if needed without needing to reinstall. To update the code to the  latest version on github run.
+
+#+begin_src shell
+  git checkout main
+  git pull

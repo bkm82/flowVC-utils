@@ -4,6 +4,7 @@ import click
 import os
 from flowvcutils.jsonlogger import settup_logging
 from .jsonlogger import main as jsonlogger_main
+from .vtu_2_bin import process_folder, process_directory
 from .inigenerator import main as inigenerator_main
 from .simulationgenerator import main as simulationgenerator_main
 from .filerename import main as filerename_main
@@ -25,6 +26,113 @@ def jsonlogger(num_lines):
     NUM_LINES: the number of logs to print (default 10).
     """
     jsonlogger_main(num_lines)
+
+
+@cli.command()
+@click.argument("start", type=int)
+@click.argument("stop", type=int)
+@click.option(
+    "--root",
+    default=os.getcwd(),
+    help=(
+        "Directory with the VTU files (default: current directory)."
+        "In batch mode ensure vtu files are in root/subdir/input_vtu/"
+    ),
+)
+@click.option(
+    "--output",
+    default=os.getcwd(),
+    help=(
+        "Output directory target to store bin files (default: current directory)."
+        "In batch mode this will be root/subdir/input_bin/"
+    ),
+)
+@click.option(
+    "--file_name",
+    default=os.path.basename(os.getcwd()),
+    help=(
+        "Base file name (e.g., steady_ for steady_00000.vtu) "
+        "(default: current directory name)."
+        "Note: In batch mode this will be the subdirectory names"
+        "ensure files are named root/subdirname/input_vtu/subdirname_xxxxx.vtu"
+    ),
+)
+@click.option(
+    "--batch",
+    is_flag=True,
+    default=False,
+    help=(
+        "Process subdirectories (directory mode) if set "
+        "otherwise process a single folder."
+    ),
+)
+@click.option(
+    "--extension",
+    default=".vtu",
+    help="File extension (default: '.vtu').",
+)
+@click.option(
+    "--increment",
+    default=50,
+    type=int,
+    help="Increment between each vtu file (default: 50).",
+)
+@click.option(
+    "--num_digits",
+    default=5,
+    type=int,
+    help="Digits in file name (e.g., 5 for test_00100.vtu). (default: 5).",
+)
+@click.option(
+    "--field_name",
+    default="velocity",
+    help="Field name for velocity data within the .vtu files (default: 'velocity').",
+)
+def vtu2bin(
+    start,
+    stop,
+    batch,
+    root,
+    output,
+    file_name,
+    extension,
+    increment,
+    num_digits,
+    field_name,
+):
+    """
+    Convert .vtu files into .bin format for FlowVC.
+
+    START: Starting index for the processing (positional argument).
+    STOP : Stopping index for the processing (positional argument).
+    """
+    # If file_name was None, we can do the same fallback:
+    if not file_name:
+        file_name = os.path.basename(os.path.normpath(root))
+
+    if batch:
+        process_directory(
+            root=root,
+            extension=extension,
+            start=start,
+            stop=stop,
+            increment=increment,
+            num_digits=num_digits,
+            field_name=field_name,
+        )
+
+    else:
+        process_folder(
+            root=root,
+            output=output,
+            file_name=file_name,
+            extension=extension,
+            start=start,
+            stop=stop,
+            increment=increment,
+            num_digits=num_digits,
+            field_name=field_name,
+        )
 
 
 @cli.command()
