@@ -20,25 +20,25 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org485005f">Inigenerator</a>
+<li><a href="#org91b1d96">Navigation Bar</a></li>
+<li><a href="#orgf1f682c">Inigenerator</a></li>
+<li><a href="#org24f6496">Options</a>
 <ul>
-<li><a href="#org94e1e52">Usage</a></li>
-<li><a href="#orgb94a5db">Options</a>
-<ul>
-<li><a href="#orgf35319a">-d, &#x2013;directory</a></li>
-<li><a href="#org0b5f5bf">&#x2013;autorange:</a></li>
-<li><a href="#org7924b82">&#x2013;cell_size</a></li>
-<li><a href="#org031c221">&#x2013;manual_bounds:</a></li>
-<li><a href="#org5f90933">&#x2013;direction:</a></li>
-<li><a href="#org05d1710">&#x2013;batch:</a></li>
+<li><a href="#org06d7143">-d, &#x2013;directory</a></li>
+<li><a href="#org28b9dac">&#x2013;autorange:</a></li>
+<li><a href="#orgf8988d7">&#x2013;cell_size</a></li>
+<li><a href="#orgd82ea21">&#x2013;manual_bounds:</a></li>
+<li><a href="#orgfa30965">&#x2013;direction:</a></li>
+<li><a href="#org875deed">&#x2013;batch:</a></li>
 </ul>
 </li>
-<li><a href="#org82e7e61">Examples</a></li>
-</ul>
-</li>
+<li><a href="#orgce2afa9">Examples</a></li>
 </ul>
 </div>
 </div>
+<div id="outline-container-org91b1d96" class="outline-2">
+<h2 id="org91b1d96">Navigation Bar</h2>
+<div class="outline-text-2" id="text-org91b1d96">
 <table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
 
 
@@ -46,133 +46,144 @@
 <col  class="org-left" />
 
 <col  class="org-left" />
+
+<col  class="org-left" />
 </colgroup>
 <tbody>
 <tr>
 <td class="org-left"><a href="./index.html">Home</a></td>
+<td class="org-left"><a href="./vtu_2bin.html">vtu2bin</a></td>
 <td class="org-left"><a href="./inigenerator.html">inigenerator</a></td>
 </tr>
 </tbody>
 </table>
-<div id="outline-container-org485005f" class="outline-2">
-<h2 id="org485005f">Inigenerator</h2>
-<div class="outline-text-2" id="text-org485005f">
+</div>
+</div>
+<div id="outline-container-orgf1f682c" class="outline-2">
+<h2 id="orgf1f682c">Inigenerator</h2>
+<div class="outline-text-2" id="text-orgf1f682c">
 <p>
-The inigenerator utility is utilized to create the flowVC input files for multiple simulations. The utility reads a configuration file wich can be used to set default paramaters (config.inigenerator.cfg) and adjusts input/output paths for each case.The utility can also be used to determines 3D coordinate bounds, streaching them slighly to meet the flowVC requirement of having cubic cells. Essentially the utility helps manage
+The inigenerator utility is utilized to create the flowVC input files for multiple simulations. The inigenerator utility helps managing the following settings:
 </p>
 
 <ul class="org-ul">
 <li>Directory paths (where input data is stored, where outputs go, etc.)</li>
 
-<li>Mesh bounds for the data (e.g., xmin, xmax, ymin, ymax, zmin, zmax).</li>
+<li>Mesh bounds for the data (e.g., xmin, xmax, ymin, ymax, zmin, zmax), streaching the mesh slighly to ensure cubic cells as required by flowVC</li>
 
 <li>Resolution in each dimension (xres, yres, zres) based on the cell size.</li>
 
 <li>Time direction settings (forward or backward) for the FTLE-related output.</li>
 
 <li>Name prefixes and other run-time details that go into the final configuration so the output FTLE files are identifiable for each simulation case.</li>
-</ul>
-</div>
 
-<div id="outline-container-org94e1e52" class="outline-3">
-<h3 id="org94e1e52">Usage</h3>
-<div class="outline-text-3" id="text-org94e1e52">
+<li><p>
+All of the other settings can be set by updating the <a href="./FTLE_example.html">configuration file</a> located:
+</p>
 <div class="org-src-container">
-<pre class="src src-shell">python -m flowvcutils inigenerator
+<pre class="src src-Text">/src/config/config.inigenerator.cfg
 </pre>
-</div>
+</div></li>
+</ul>
+<p>
+As the inigenerator creates absolute file paths, it is recomeded that this utility is ran from the directory and computer/server that will be executing the flowVC calculations. If the folder is moved re-run the generator to update filepaths.
+</p>
 
 <p>
-The defaults for the .in settings can be found and changed in the flowVC_utils/src/config directory. The tool assumes that the results of the simulation are organized in the following folder structure, where "project_root" and "case1" can be any name, but the "input_bin" "input_vtu" and "output_bin" directory names are exactly as shown:
+If you are using the <a href="./index.html#org24b8c74">recomended layout</a> the best way to use this is from the project_root direcory running the following command with the &#x2013;batch flag enabled.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-text">project_root
-&#9492;&#9472;&#9472; case1
-    &#9500;&#9472;&#9472; input_bin
-    &#9500;&#9472;&#9472; input_vtu
-    &#9492;&#9472;&#9472; output_bin
+<pre class="src src-shell">python -m flowvcutils inigenerator --batch
 </pre>
 </div>
 </div>
 </div>
 
 
-<div id="outline-container-orgb94a5db" class="outline-3">
-<h3 id="orgb94a5db">Options</h3>
-<div class="outline-text-3" id="text-orgb94a5db">
+<div id="outline-container-org24f6496" class="outline-2">
+<h2 id="org24f6496">Options</h2>
+<div class="outline-text-2" id="text-org24f6496">
 </div>
-<div id="outline-container-orgf35319a" class="outline-4">
-<h4 id="orgf35319a">-d, &#x2013;directory</h4>
-<div class="outline-text-4" id="text-orgf35319a">
+<div id="outline-container-org06d7143" class="outline-3">
+<h3 id="org06d7143">-d, &#x2013;directory</h3>
+<div class="outline-text-3" id="text-org06d7143">
 <p>
 This specifies where to run the tool from, with a default being the current directory you are in.
 </p>
 </div>
 </div>
-<div id="outline-container-org0b5f5bf" class="outline-4">
-<h4 id="org0b5f5bf">&#x2013;autorange:</h4>
-<div class="outline-text-4" id="text-org0b5f5bf">
+<div id="outline-container-org28b9dac" class="outline-3">
+<h3 id="org28b9dac">&#x2013;autorange:</h3>
+<div class="outline-text-3" id="text-org28b9dac">
 <p>
 This flag can be utilized to have the tool read the mesh bounds for the DataMesh and FTLEMesh from the simulation results data. To use this flag ensure there is at least one .vtu file in the input_vtu directory. If it is not set whatever is in the configuration file will be utilized.
 </p>
 </div>
 </div>
 
-<div id="outline-container-org7924b82" class="outline-4">
-<h4 id="org7924b82">&#x2013;cell_size</h4>
-<div class="outline-text-4" id="text-org7924b82">
+<div id="outline-container-orgf8988d7" class="outline-3">
+<h3 id="orgf8988d7">&#x2013;cell_size</h3>
+<div class="outline-text-3" id="text-orgf8988d7">
 <p>
 The cell size for the FTLE mesh with a default of 0.001
 </p>
 </div>
 </div>
 
-<div id="outline-container-org031c221" class="outline-4">
-<h4 id="org031c221">&#x2013;manual_bounds:</h4>
-<div class="outline-text-4" id="text-org031c221">
+<div id="outline-container-orgd82ea21" class="outline-3">
+<h3 id="orgd82ea21">&#x2013;manual_bounds:</h3>
+<div class="outline-text-3" id="text-orgd82ea21">
 <p>
 This can be utilized to set the min_x, min_y, min_z, max_x, max_y, and max_z for the FTLE mesh. This is useful when attempting to compute the ftle field on a smaller subset (i.e. slice) of the result domain.
 </p>
 </div>
 </div>
 
-<div id="outline-container-org5f90933" class="outline-4">
-<h4 id="org5f90933">&#x2013;direction:</h4>
-<div class="outline-text-4" id="text-org5f90933">
+<div id="outline-container-orgfa30965" class="outline-3">
+<h3 id="orgfa30965">&#x2013;direction:</h3>
+<div class="outline-text-3" id="text-orgfa30965">
 <p>
 This can be utilized to specify the computation of an attracting (backward) or repeling (forward) FTLE field.
 </p>
 </div>
 </div>
 
-<div id="outline-container-org05d1710" class="outline-4">
-<h4 id="org05d1710">&#x2013;batch:</h4>
-<div class="outline-text-4" id="text-org05d1710">
+<div id="outline-container-org875deed" class="outline-3">
+<h3 id="org875deed">&#x2013;batch:</h3>
+<div class="outline-text-3" id="text-org875deed">
 <p>
-This creates input files for multiple simulation result cases at once. To utilize this ensure your project is organized as follows
+This creates input files for multiple simulation result cases at once. To utilize this ensure your project is organized using the recomended layout
 </p>
 
 <div class="org-src-container">
-<pre class="src src-text">-project_directory
-project_root
-&#9500;&#9472;&#9472; case1
-&#9474;&#160;&#160; &#9500;&#9472;&#9472; input_bin
-&#9474;&#160;&#160; &#9500;&#9472;&#9472; input_vtu
-&#9474;&#160;&#160; &#9492;&#9472;&#9472; output_bin
-&#9492;&#9472;&#9472; case2
-    &#9500;&#9472;&#9472; input_bin
-    &#9500;&#9472;&#9472; input_vtu
-    &#9492;&#9472;&#9472; output_bin
+<pre class="src src-text">&#9492;&#9472;&#9472; project_root
+    &#9500;&#9472;&#9472; case1_
+    &#9474;&#160;&#160; &#9500;&#9472;&#9472; input_bin
+    &#9474;&#160;&#160; &#9500;&#9472;&#9472; input_vtu
+    &#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; case1_00000.vtu
+    &#9474;&#160;&#160; &#9474;&#160;&#160; &#9500;&#9472;&#9472; case1_00050.vtu
+    &#9474;&#160;&#160; &#9474;&#160;&#160; &#9492;&#9472;&#9472; case2_00100.vtu
+    &#9474;&#160;&#160; &#9500;&#9472;&#9472; output_bin
+    &#9474;&#160;&#160; &#9492;&#9472;&#9472; output_vtk
+    &#9492;&#9472;&#9472; case2_
+        &#9500;&#9472;&#9472; input_bin
+        &#9500;&#9472;&#9472; input_vtu
+        &#9474;&#160;&#160; &#9500;&#9472;&#9472; case2_00000.vtu
+        &#9474;&#160;&#160; &#9500;&#9472;&#9472; case2_00050.vtu
+        &#9474;&#160;&#160; &#9492;&#9472;&#9472; case2_00100.vtu
+        &#9500;&#9472;&#9472; output_bin
+        &#9492;&#9472;&#9472; output_vtk
 </pre>
 </div>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org82e7e61" class="outline-3">
-<h3 id="org82e7e61">Examples</h3>
-<div class="outline-text-3" id="text-org82e7e61">
+
+<div id="outline-container-orgce2afa9" class="outline-2">
+<h2 id="orgce2afa9">Examples</h2>
+<div class="outline-text-2" id="text-orgce2afa9">
 <p>
 To generate the FTLE mesh over the entire computation domain for multiple simulation results you can run:
 </p>
@@ -192,7 +203,6 @@ To generate an FTLE field for a slice of the domain at a higher resolution you c
 <p>
 It is not critical that the range is perfectly divisible by the cell_size, the tool will increase the mesh bounds max slightly ensuring the cell size remains constant. However notice how in this case the x_min and x_max are far enough apart to generate at least 2 cells in the x-direction. This creates a pseudo-2D ftle mesh slice out of the domain, as the flowVC tool requires 2 cells every direction when a 3D mesh is utilized.
 </p>
-</div>
 </div>
 </div>
 </div>
