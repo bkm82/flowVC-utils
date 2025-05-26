@@ -5,7 +5,7 @@ from flowvcutils.jsonlogger import settup_logging
 import configparser
 from .utils import get_project_root
 import os
-
+import math
 
 logger = logging.getLogger(__name__)
 
@@ -106,16 +106,22 @@ class resultsProcessor:
 
         """
         current_point = pt_min
-        n_pts = 0
         if current_point >= pt_max:
             raise ValueError("min must be less than max")
         if cell_size <= 0:
             raise ValueError("Cell Size must be >0")
-        while current_point < pt_max:
-            current_point = current_point + cell_size
-            n_pts = n_pts + 1
-        new_max = current_point
-        return (new_max, n_pts)
+
+        domain = pt_max - pt_min
+        # ceil the domain / cell_size to find how many cells needed to cover the domain:
+        n_cells = math.ceil(domain / cell_size)
+
+        # compute the new max
+        new_max = pt_min + n_cells * cell_size
+
+        # Rounding to 8 decimal places to reduce floating-point artifacts
+        new_max = round(new_max, 8)
+
+        return (new_max, n_cells)
 
     def set_data_range_manual(self, min_xyz, max_xyz, streach=False, cell_size=0):
         # Manually set
@@ -205,39 +211,62 @@ class Config:
         self.load_config()
         self.__update_dict = {}
 
-    def set_data_range_defaults(self, cell_size, streach=True, manual_bounds=None):
-        if manual_bounds:
+    def set_data_range_defaults(
+        self, auto_range, cell_size, manual_bounds=None, streach=False
+    ):
+        """
+        1. If auto_range is True, compute Data_MeshBounds from .vtu.
+           Otherwise, leave Data_MeshBounds unchanged.
+        2. If manual_bounds is provided, update FTLE_MeshBounds from it.
+           Otherwise, if auto_range is True, copy from Data_MeshBounds.
+           Otherwise, do not overwrite FTLE_MeshBounds.
+        """
 
-            (x_range, y_range, z_range) = self.results_processor.set_data_range_manual(
-                manual_bounds[0],  # (min_x, min_y, min_z)
-                manual_bounds[1],  # (max_x, max_y, max_z)
-                streach,
-                cell_size,
+        def _update_bounds(prefix, x_range, y_range, z_range):
+            """Update __update_dict with mesh bounds for prefix')."""
+            self.__update_dict.update(
+                {
+                    f"{prefix}.xmin": str(x_range[0]),
+                    f"{prefix}.xmax": str(x_range[1]),
+                    f"{prefix}.ymin": str(y_range[0]),
+                    f"{prefix}.ymax": str(y_range[1]),
+                    f"{prefix}.zmin": str(z_range[0]),
+                    f"{prefix}.zmax": str(z_range[1]),
+                }
             )
-        else:
+
+        def _update_res(prefix):
+            """Update __update_dict with xres, yres, zres for prefix)."""
+            self.__update_dict.update(
+                {
+                    f"{prefix}.xres": str(self.results_processor.x_points),
+                    f"{prefix}.yres": str(self.results_processor.y_points),
+                    f"{prefix}.zres": str(self.results_processor.z_points),
+                }
+            )
+
+        # 1) If auto_range => pull Data_MeshBounds from .vtu
+        if auto_range:
             x_range, y_range, z_range = self.results_processor.find_data_range(
                 streach=streach, cell_size=cell_size
             )
+            _update_bounds("Data_MeshBounds", x_range, y_range, z_range)
 
-        self.__update_dict.update(
-            {
-                "Data_MeshBounds.xmin": str(x_range[0]),
-                "Data_MeshBounds.xmax": str(x_range[1]),
-                "Data_MeshBounds.ymin": str(y_range[0]),
-                "Data_MeshBounds.ymax": str(y_range[1]),
-                "Data_MeshBounds.zmin": str(z_range[0]),
-                "Data_MeshBounds.zmax": str(z_range[1]),
-                "FTLE_MeshBounds.xmin": str(x_range[0]),
-                "FTLE_MeshBounds.xmax": str(x_range[1]),
-                "FTLE_MeshBounds.ymin": str(y_range[0]),
-                "FTLE_MeshBounds.ymax": str(y_range[1]),
-                "FTLE_MeshBounds.zmin": str(z_range[0]),
-                "FTLE_MeshBounds.zmax": str(z_range[1]),
-                "FTLE_MeshBounds.xres": str(self.results_processor.x_points),
-                "FTLE_MeshBounds.yres": str(self.results_processor.y_points),
-                "FTLE_MeshBounds.zres": str(self.results_processor.z_points),
-            }
-        )
+        # 2) If manual_bounds => use it for FTLE_MeshBounds
+        if manual_bounds:
+            (ftle_xr, ftle_yr, ftle_zr) = self.results_processor.set_data_range_manual(
+                manual_bounds[0],
+                manual_bounds[1],
+                streach=streach,
+                cell_size=cell_size,
+            )
+            _update_bounds("FTLE_MeshBounds", ftle_xr, ftle_yr, ftle_zr)
+            _update_res("FTLE_MeshBounds")
+
+        # Otherwise, if auto_range is on but no manual bounds => copy from Data to FTLE
+        elif auto_range:
+            _update_bounds("FTLE_MeshBounds", x_range, y_range, z_range)
+            _update_res("FTLE_MeshBounds")
 
     def set_path_defaults(self):
         self.__update_dict.update(
@@ -313,10 +342,13 @@ class Config:
 
     def process_directory(self, auto_range, cell_size, direction, manual_bounds=None):
         self.set_path_defaults()
-        if auto_range:
-            self.set_data_range_defaults(
-                cell_size=cell_size, manual_bounds=manual_bounds
-            )
+        # if auto_range:
+        self.set_data_range_defaults(
+            auto_range=auto_range,
+            cell_size=cell_size,
+            streach=True,
+            manual_bounds=manual_bounds,
+        )
         if direction == "backward":
             self.set_backwards_defaults()
         elif direction == "forward":
