@@ -9,10 +9,12 @@ from unittest import mock
 from click.testing import CliRunner
 from unittest.mock import patch
 from flowvcutils.cli import jsonlogger
+from flowvcutils.cli import vtu2bin
 from flowvcutils.cli import inigenerator
 from flowvcutils.cli import simulationgenerator
 from flowvcutils.cli import filerename
 from flowvcutils.cli import filerenumber
+
 from flowvcutils.cli import main as cli_main
 from flowvcutils.jsonlogger import settup_logging
 
@@ -60,6 +62,49 @@ def test_integration_main_jsonlogger(monkeypatch, capsys):
     except json.JSONDecodeError:
         pytest.fail("Captured output is not valid json")
     assert test_message in log_entry.get("message", "")
+
+
+@patch("flowvcutils.cli.process_folder")
+def test_vtu2bin_defaults(mock_process_folder, runner):
+    """
+    Test calling vtu2bin with minimal arguments (defaults).
+    Ensures process_folder is called with the correct defaults.
+    """
+    result = runner.invoke(vtu2bin, ["0", "10"])
+    assert result.exit_code == 0, f"CLI exited with an error: {result.output}"
+    mock_process_folder.assert_called_once()
+    # You can inspect call_args / call_kwargs to verify the passed data:
+    _, call_kwargs = mock_process_folder.call_args
+    assert call_kwargs["root"] == os.getcwd()
+    assert call_kwargs["output"] == os.getcwd()
+    assert call_kwargs["file_name"] == os.path.basename(os.getcwd())
+    assert call_kwargs["extension"] == ".vtu"
+    assert call_kwargs["start"] == 0
+    assert call_kwargs["stop"] == 10
+    assert call_kwargs["increment"] == 50
+    assert call_kwargs["num_digits"] == 5
+    assert call_kwargs["field_name"] == "velocity"
+
+
+@patch("flowvcutils.cli.process_directory")
+def test_vtu2bin_directory_mode(mock_process_directory, runner):
+    """
+    Test calling vtu2bin in 'batch' mode.
+    Ensures process_directory is called instead of process_folder.
+    """
+    result = runner.invoke(
+        vtu2bin, ["0", "50", "--batch", "--increment", "25", "--field_name", "myfield"]
+    )
+    assert result.exit_code == 0, f"CLI exited with an error: {result.output}"
+    mock_process_directory.assert_called_once()
+    _, call_kwargs = mock_process_directory.call_args
+    assert call_kwargs["root"] == os.getcwd()
+    assert call_kwargs["extension"] == ".vtu"
+    assert call_kwargs["start"] == 0
+    assert call_kwargs["stop"] == 50
+    assert call_kwargs["increment"] == 25
+    assert call_kwargs["num_digits"] == 5
+    assert call_kwargs["field_name"] == "myfield"
 
 
 @patch("flowvcutils.cli.inigenerator_main")
