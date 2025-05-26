@@ -1,6 +1,7 @@
 import pytest
 import vtk
 import os
+import math
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from flowvcutils.inigenerator import (
@@ -393,3 +394,73 @@ def test_integration_full_config(create_sample_vtu_file):
     assert Output_TDelta > 0
     assert not (Output_TEnd > Data_TMax)
     assert not (Output_TEnd < Data_TMin)
+
+
+def test_integration_manual_bounds():
+    """
+    Test that manual bounds are set correctly and the .in file picks them up,
+    rather than reading from a .vtu file.
+    """
+    # Arbitrary example bounds: x in [0.0,1.0], y in [2.0,3.0], z in [4.0,4.2]
+    # with cell_size=0.1 => xres=10, yres=10, zres=2
+    manual_bounds = ((0.0, 2.0, 4.0), (0.95, 3.0, 4.16))
+    cell_size = 0.1
+
+    with TemporaryDirectory() as temp_dir:
+        os.mkdir(os.path.join(temp_dir, "input_bin"))
+        # Call the generator, passing our manual bounds
+        inigenerator_main(
+            directory=temp_dir,
+            auto_range=True,  # "auto" sizing, but overridden by manual_bounds
+            cell_size=cell_size,
+            direction="backward",
+            batch=False,
+            manual_bounds=manual_bounds,
+        )
+
+        # The generator should produce an .in file named after the directory
+        dir_name = os.path.basename(temp_dir)
+        in_file_name = (
+            f"{dir_name}.in" if not dir_name.endswith("_") else f"{dir_name[:-1]}.in"
+        )
+        in_file = Path(temp_dir) / "input_bin" / in_file_name
+
+        # Ensure file was created
+        assert in_file.exists(), f"{in_file} was not created."
+
+        # Read certain fields from the .in file
+        var_list = [
+            "data_meshbounds.xmin",
+            "data_meshbounds.xmax",
+            "data_meshbounds.ymin",
+            "data_meshbounds.ymax",
+            "data_meshbounds.zmin",
+            "data_meshbounds.zmax",
+            "ftle_meshbounds.xres",
+            "ftle_meshbounds.yres",
+            "ftle_meshbounds.zres",
+        ]
+        config_values = load_config(str(in_file), var_list)
+
+        # Convert to float/int as appropriate
+        xmin = float(config_values["data_meshbounds.xmin"])
+        xmax = float(config_values["data_meshbounds.xmax"])
+        ymin = float(config_values["data_meshbounds.ymin"])
+        ymax = float(config_values["data_meshbounds.ymax"])
+        zmin = float(config_values["data_meshbounds.zmin"])
+        zmax = float(config_values["data_meshbounds.zmax"])
+        xres = int(config_values["ftle_meshbounds.xres"])
+        yres = int(config_values["ftle_meshbounds.yres"])
+        zres = int(config_values["ftle_meshbounds.zres"])
+
+        # Check bounding box: cell_size=0.1 => expected domain [0..1], [2..3], [4..4.2]
+        # => xres=10, yres=10, zres=2
+        assert math.isclose(xmin, 0.0), f"Expected 0.0, got {xmin}"
+        assert math.isclose(xmax, 1.0), f"Expected 1.0, got {xmax}"
+        assert math.isclose(ymin, 2.0), f"Expected 2.0, got {ymin}"
+        assert math.isclose(ymax, 3.0), f"Expected 3.0, got {ymax}"
+        assert math.isclose(zmin, 4.0), f"Expected 4.0, got {zmin}"
+        assert math.isclose(zmax, 4.2), f"Expected 4.2, got {zmax}"
+        assert xres == 10, f"Expected xres=10, got {xres}"
+        assert yres == 10, f"Expected yres=10, got {yres}"
+        assert zres == 2, f"Expected zres=2, got {zres}"

@@ -52,11 +52,26 @@ def jsonlogger(num_lines):
     help="forward or backward ftle",
 )
 @click.option("--batch", is_flag=True, default=False, help="run for each subdirectory")
-def inigenerator(directory, auto_range, cell_size, direction, batch):
+@click.option(
+    "--manual_bounds",
+    nargs=6,
+    type=float,
+    default=None,
+    help="Manually specify [min_x min_y min_z max_x max_y max_z].",
+)
+def inigenerator(directory, auto_range, cell_size, direction, batch, manual_bounds):
     """
     Generate a .ini file for the flow vc.
     """
-    inigenerator_main(directory, auto_range, cell_size, direction, batch)
+    if manual_bounds:
+        # parse 6 numbers into two (x,y,z) points
+        (min_x, min_y, min_z, max_x, max_y, max_z) = manual_bounds
+        manual_bounds_tuple = ((min_x, min_y, min_z), (max_x, max_y, max_z))
+    else:
+        manual_bounds_tuple = None
+    inigenerator_main(
+        directory, auto_range, cell_size, direction, batch, manual_bounds_tuple
+    )
 
 
 @cli.command()

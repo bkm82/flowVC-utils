@@ -117,6 +117,31 @@ class resultsProcessor:
         new_max = current_point
         return (new_max, n_pts)
 
+    def set_data_range_manual(self, min_xyz, max_xyz, streach=False, cell_size=0):
+        # Manually set
+        min_x, min_y, min_z = min_xyz
+        max_x, max_y, max_z = max_xyz
+        self.min_x, self.max_x = min_x, max_x
+        self.min_y, self.max_y = min_y, max_y
+        self.min_z, self.max_z = min_z, max_z
+
+        if streach:
+            self.max_x, self.x_points = self.streach_bounds(
+                self.min_x, self.max_x, cell_size
+            )
+            self.max_y, self.y_points = self.streach_bounds(
+                self.min_y, self.max_y, cell_size
+            )
+            self.max_z, self.z_points = self.streach_bounds(
+                self.min_z, self.max_z, cell_size
+            )
+
+        return (
+            (self.min_x, self.max_x),
+            (self.min_y, self.max_y),
+            (self.min_z, self.max_z),
+        )
+
     def find_data_range(self, file_path=None, streach=False, cell_size=0):
         """
         Find the min and max x, y, and z coordinates in a .vtu file.
@@ -180,10 +205,19 @@ class Config:
         self.load_config()
         self.__update_dict = {}
 
-    def set_data_range_defaults(self, cell_size, streach=True):
-        x_range, y_range, z_range = self.results_processor.find_data_range(
-            streach=streach, cell_size=cell_size
-        )
+    def set_data_range_defaults(self, cell_size, streach=True, manual_bounds=None):
+        if manual_bounds:
+
+            (x_range, y_range, z_range) = self.results_processor.set_data_range_manual(
+                manual_bounds[0],  # (min_x, min_y, min_z)
+                manual_bounds[1],  # (max_x, max_y, max_z)
+                streach,
+                cell_size,
+            )
+        else:
+            x_range, y_range, z_range = self.results_processor.find_data_range(
+                streach=streach, cell_size=cell_size
+            )
 
         self.__update_dict.update(
             {
@@ -277,10 +311,12 @@ class Config:
             for key, value in self.config.items("Outputs"):
                 configfile.write(f"{key} = {value} \n")
 
-    def process_directory(self, auto_range, cell_size, direction):
+    def process_directory(self, auto_range, cell_size, direction, manual_bounds=None):
         self.set_path_defaults()
         if auto_range:
-            self.set_data_range_defaults(cell_size=cell_size)
+            self.set_data_range_defaults(
+                cell_size=cell_size, manual_bounds=manual_bounds
+            )
         if direction == "backward":
             self.set_backwards_defaults()
         elif direction == "forward":
@@ -317,14 +353,14 @@ class ConfigBatch:
             config.process_directory(*args, **kwargs)
 
 
-def main(directory, auto_range, cell_size, direction, batch=False):
+def main(directory, auto_range, cell_size, direction, batch=False, manual_bounds=None):
     settup_logging()
     logger.info("Starting inigenerator")
     if batch:
         batch_config = ConfigBatch(parent_directory=directory)
-        batch_config.process_directory(auto_range, cell_size, direction)
+        batch_config.process_directory(auto_range, cell_size, direction, manual_bounds)
     else:
         directory_handler = directoryHandler(directory)
         processor = resultsProcessor(directory_handler)
         config = Config(processor)
-        config.process_directory(auto_range, cell_size, direction)
+        config.process_directory(auto_range, cell_size, direction, manual_bounds)
