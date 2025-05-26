@@ -102,7 +102,7 @@ def settup_logging(config_file_path=None):
         config = json.load(f_in)
 
     #    for handler_name, handler in config["handlers"].items():
-    for handler_name, handler in config["handlers"].items():
+    for _handler_name, handler in config["handlers"].items():
         if "filename" in handler:
             handler["filename"] = str(logs_dir / pathlib.Path(handler["filename"]).name)
 
